@@ -1,0 +1,33 @@
+\tikzstyle{my_style_0}=[rectangle, draw=black, fill=black!10,thick, text width=3cm, align=center, rounded corners=.1cm]
+\tikzstyle{my_style_1}=[rectangle, draw=black, fill=black!10,thick, text width=6cm, align=center, rounded corners=.1cm]
+
+\begin{tikzpicture}
+    %node distance=2cm and 2cm,
+    %Nodes
+    \node (a) at (-1.5,0)               [my_style_0] {Generate steering velocity};
+    \node (b) at ($(a)+(1.5,-1.5)$)     [my_style_1] {Constrain control action};
+    \node (c) at ($(b)+(0,-1.5)$)       [my_style_1] {Update state};
+    \node (d) at ($(c)+(0,-2)$)         [my_style_1] {Generate LiDAR scan,\\ get new observation,\\ check terminal condition,\\ get distance travelled};
+    \node (e) at ($(d)+(0,-2)$)         [my_style_1] {Generate reward};
+
+    %Input, output nodes
+    \node (f) at (1.5,1.5) [above] {$a_{\text{long},d}$};
+    \node (g) at (-1.5,1.5) [above] {$\delta_{d}$};
+    \node (h) at ($(e)+(0,-1)$) [] {};
+    \node (i) at ($(h)+(0,-0.5)$) [below] {\emph{observation}, $r$, \emph{done flag} };
+
+    %Arrows and lines between nodes
+    \draw[->] (f) -- (f|-b.north)               node [] (l1) {};
+    \draw[->] (g) -- (g|-a.north)               node [] (l2) {};
+    \draw[->] (a) --   (a.south|-b.north)       node [midway, right] (l3) {$\hat{\delta_d}$};
+    \draw[->] (b) --   (c)                      node [midway, right] (l4) {$[u_1, u_2]^\intercal$};
+    \draw[->] (c) --   (d)                      node [midway, right] (l5) {$\bm{x}$};
+    \draw[->] (d) --   (e)                      node [midway, right] (l6) {\emph{observation, done flag}};
+    \draw[-]  (e) -- (h)                        node [midway, right] (l7) {$r$};
+    \draw[->] (e) -- (i)                        node [] (l2) {};
+
+    %Boundary lines
+    \draw [dashed] (-3.5,1) -- (3.5,1);
+    \draw [dashed] ($(h)+(-3.5,0)$) -- ($(h)+(3.5,0)$);
+
+\end{tikzpicture}

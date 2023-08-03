@@ -1,0 +1,57 @@
+\begin{algorithm}[hbt!]
+\caption{Twin delay deep deterministic policy gradient}\label{alg:td3_mod}
+\nonl\textbf{Input}: Table \ref{tab:inital_values} parameters \\
+\nonl\textbf{Output}: Trained actor DNN $\pi_{\bm{\phi}}$ \\
+
+\vspace{0.5cm} 
+
+Initialise critic networks $Q_{\bm{\theta}_1}, Q_{\bm{\theta}_2}$ and actor network $\pi_{\bm{\phi}}$ 
+with \\
+\nonl parameters $\bm{\theta}_1, \bm{\theta}_2$ and $\bm{\phi}$ \\
+Initialise target networks $Q_{\bm{\theta}_1'}$, $Q_{\bm{\theta}_2'}$ and $\pi_{\bm{\phi}'}$ with weights \\
+\nonl $\bm{\theta}_1' \leftarrow \bm{\theta}_1$, $\bm{\theta}_2' \leftarrow \bm{\theta}_2$, and $\bm{\phi}' \leftarrow \bm{\phi}$ \\
+Initialise experience replay buffer $\mathcal{B}$ \\
+
+\vspace{0.3cm}
+
+\While{\emph{MDP time steps} $<M$ }
+{
+    Reset simulator (start new episode) \\
+    \For{t=0, T}
+    {
+        Sample action with exploration noise from end-to-end agent, \\
+        \nonl $a_{t} = \left[ a_{\text{long},d}, \delta_{d} \right] \leftarrow \text{scale}( \pi_{\bm{\phi}}(o_t) + \epsilon ), \hspace{0.2cm} \epsilon \sim \mathcal{N}(0, \sigma_{\text{action}})$ \\
+            \For{n=0, N}
+            {   
+                Modify $a_{\text{long},d}$ according to Equation \ref{eq:speed_limit} to limit velocity\\
+                Simulator executes action $a_t$ \\
+                Observe environment step reward $r_{t,n}$ \\  
+                Update MDP one step reward: $r_t = r_t + r_{t,n}$ \\
+                Sample observation with noise, \\
+                \nonl $o_{t} \leftarrow  o_{t} + \epsilon, \hspace{0.2cm} \epsilon \sim \mathcal{N}(0, \sigma_{\text{observation}})$ \\
+            }
+        Store transition tuple $(o_t,a_t,r_t,o_{t+1})$ in $\mathcal{B}$ \\
+
+        \vspace{0.3cm}
+        
+        Sample mini-batch of $B$ transitions $(o_i,a_i,r_i,o_{i+1})$ from $\mathcal{B}$ \\
+        Select target actions:\\
+        \nonl $\tilde{a} \leftarrow \pi_{\bm{\phi}'}(o_{t+1}) + \epsilon$, \hspace{0.2cm} $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+        Set TD target:
+        $y_i \leftarrow r_i + \gamma \min_{q=1,2} Q_{\bm{\theta}_q'}(o_{i+1}, \tilde{a})$ \\
+        Update critics by minimising the loss:
+        \nonl $J_{\bm{\theta}_q} \leftarrow  \frac{1}{N} \sum_{i}^{N} (y_i - Q_{\bm{\theta}_q}(o_i,a_i))^{2} $ \\
+
+        \vspace{0.3cm}
+        
+        \If{t \emph{ mod } d}
+        {
+            Update $\bm{\phi}$ by the deterministic policy gradient: \\
+            \nonl $\nabla_{\bm{\phi}} J(\bm{\phi}) = \frac{1}{N} \sum_{i}^{N} \nabla_a Q_{\bm{\theta}_1} (o_i,a) | _{a=\pi_{\bm{\phi}}(o_i)} \nabla_{\bm{\phi}} \pi_{\bm{\phi}}(o_i)$ \\
+            Update target networks: \\
+            $\bm{\theta}_{q}' \leftarrow \tau \bm{\theta}_q + (1 - \tau) \bm{\theta}_{q}'$ \\
+            $\bm{\phi}' \leftarrow \tau \bm{\phi} + (1 - \tau) \bm{\theta}'$ \\
+        }
+    }
+}
+\end{algorithm}

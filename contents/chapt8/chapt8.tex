@@ -1,0 +1,71 @@
+\chapter{Conclusion}\label{chp:conclusion}
+
+% Current learning-based solutions to autonomous racing lack the incorporation of insights from classical approaches to create algorithms that are robust of practical model mismatches.
+% As a result, many learning-based approaches experience a decline in performance when model mismatches are present.
+% This thesis considered the design and implementation of a learning-based autonomous racing algorithm that demonstrates robustness towards practical model mismatches by incorporating insights from classical approaches to autonomous racing.
+% In this chapter, we evaluate the development of this project according to the problem definition and objectives outlined in Chapter \ref{chp:introduction}
+
+
+Existing learning-based solutions for autonomous racing often fail to integrate insights from classical approaches, resulting in algorithms that are not robust against practical model mismatches. 
+Consequently, the performance of many learning-based approaches deteriorates when faced with such scenarios.
+
+This thesis considered the design and implementation of a learning-based autonomous racing algorithm that demonstrates robustness towards practical model mismatches by incorporating insights from classical approaches.
+In this chapter, we assess the progress and development of this project based on the aim and objectives outlined in Chapter \ref{chp:introduction}.
+
+
+
+\section{Work completed}
+
+The aim of this research project was to develop a learning-based racing algorithm that is robust towards practical model mismatches that vehicles may encounter during real-world deployment.
+To achieve this goal, several key steps were undertaken, including the implementation of a bicycle vehicle model that accurately captures high-speed dynamics, the development of a baseline end-to-end learning-based solution for comparative analysis, and the design of our algorithm. Additionally, an investigation was conducted to evaluate the performance of both our solution and the baseline approach under conditions involving model mismatches.
+
+
+Chapter \ref{chp:end_to_end_autonomous_racing} presents the end-to-end baseline solution, which directly maps observation data to control commands.
+When evaluated on the relatively simple Porto track, end-to-end agents demonstrated competitive performance, successfully completing all of their laps.
+However, end-to-end agents exhibited erratic behaviour such as slaloming when tasked with racing on longer and more intricate tracks.
+Furthermore, they failed to complete a significant portion of their evaluation laps on longer tracks.
+
+
+Additionally, during a preliminary investigation into the robustness of end-to-end algorithms towards a decrease in road surface friction, we observed that the agent tended to crash.
+To enhance robustness towards model mismatches in the friction coefficient, domain randomisation was investigated by adding Gaussian noise to the nominal friction coefficient at the start of every episode.
+However, randomising the domain offered no major benefits in agent performance.
+The unsatisfactory performance of end-to-end agents on longer tracks and under model mismatch conditions, combined with the limited effectiveness of domain randomisation techniques further motivated the development of our solution.
+
+
+Our proposed solution, which is presented in Chapter \ref{chp:partial_end_to_end_autonomous_racing}, introduced a partial end-to-end autonomous driving algorithm  that decouples the planning and control tasks.
+Within the partial end-to-end framework, an RL agent generates a trajectory comprising a path and velocity, which is subsequently tracked using a pure pursuit steering controller and a proportional velocity controller, respectively.
+To facilitate path generation, we allowed agents to select the constraints of a cubic polynomial function in the Frenet frame, enabling the consistent  generation of smooth and continuous paths.
+
+
+By specifying the path within the Frenet frame, partial end-to-end agents were able to execute smooth trajectories, and also constrained the agents to select paths that remained within the track boundaries. 
+As a result, training time was reduced significantly, and the number of collisions during training was minimal compared to end-to-end agents.
+Additionally, the partial end-to-end agents successfully completed all evaluation laps under conditions where no model mismatch was present, even on complex circuits such as Barcelona-Catalunya and Monaco. 
+Thus, even under nominal conditions, partial end-to-end agents demonstrated substantial advantages over their end-to-end counterparts.
+
+
+Following the evaluation of the partial end-to-end algorithm under ideal conditions, we examined its performance in scenarios involving practical model mismatches. 
+These investigations specifically considered model mismatches in the vehicle mass, cornering stiffness coefficient, and road surface friction coefficient.
+In each of the model mismatch scenarios analyzed, the partial end-to-end agent consistently outperformed the baseline end-to-end agent. 
+Notably, the partial end-to-end agents exhibited similar trajectories prior to and following the introduction of model mismatches. 
+This trend was particularly evident when model mismatches related to the vehicle mass and cornering stiffness were considered.
+Thus, the decoupling of trajectory generation and control, combined with the use of feedback controllers, offers better performance than an end-to-end approach to vehicle control in model mismatch conditions.
+
+
+
+\section{Future work}
+
+The performance of partial end-to-end agents under nominal conditions, as well as conditions where model mismatches are present, highlights the potential of these algorithms in developing robust learning-based driving systems that can handle uncertainties in vehicle dynamics.
+To further strengthen the case for the partial end-to-end approach, the next development step is to conduct model mismatch experiments on a physical vehicle.
+This would contribute to building a stronger argument for the practical implementation of these algorithms in real-world driving scenarios.
+
+
+Although our experiments focused on racing, the results have implications for addressing the broader road-going autonomous driving problem.
+Future work should therefore encompass investigating the application of partial end-to-end algorithms to road-driving scenarios.
+For example, when considering the road-going autonomous driving task, decoupling planning from control may provide additional benefits, as it allows the planner and controller to be developed independently of each other.
+This approach facilitates the use of a single generic planning agent that can be applied to similar car models, while specific controllers are developed for each car model.
+Consequently, it may lead to consistent planning behavior across a fleet of vehicles, as well as enable easier algorithm development.
+
+In closing, partial end-to-end represents a promising solution for designing learning-based algorithms that are flexible, easily trainable, safe, and robust towards practical model mismatches.
+
+
+

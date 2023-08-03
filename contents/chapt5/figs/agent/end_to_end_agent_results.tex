@@ -1,0 +1,19 @@
+\newcolumntype{R}{>{\centering\arraybackslash}p{2.5cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.2cm}}
+\begin{table}[!htb]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{\textwidth}{RLLLL} 
+    \hline
+    \textbf{Run} & \textbf{Training time [minutes]} & \textbf{Failed laps [\%]} & \textbf{Average lap time [s]} & \textbf{Standard deviation of lap time [s]}\\ 
+    \hline
+    $1$     & $15.0$     & $0.00$    & $6.23$    & $0.24$ \\      
+    $2$     & $15.01$    & $0.00$    & $6.01$    & $0.10$ \\
+    $3$     & $15.02$    & $0.00$    & $5.97$    & $0.13$ \\
+    Average & $15.01$    & $0.00$    & $6.07$    & $0.20$ \\
+    \hline
+\end{tabularx}
+\caption[Test results of our final end-to-end agent]{Test results and training time of our final end-to-end agent.}
+\label{tab:end_to_end_results}
+\end{table}

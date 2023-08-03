@@ -1,0 +1,20 @@
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.5cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}p{3cm}}
+\newcolumntype{R}{>{\centering\arraybackslash}p{3cm}}
+
+\begin{table}[!htb]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{0.7\textwidth}{LLL} 
+    \hline
+    \textbf{Velocity controller gain, $k_v$} & \textbf{Successful laps [$\%$]} & \textbf{Lap time [s]}\\ 
+    \hline
+    0.5     & $100$     & $48.37$ \\
+    1       & $100$     & $48.34$ \\      
+    2       & $100$     & $47.34$ \\
+    \hline
+\end{tabularx}
+\caption[Evaluation results of agents using different values of $k$]{Results from agents racing under evaluation conditions using different values for the velocity controller gain ($k$).}
+\label{tab:velocity_controller_gain}
+\end{table}

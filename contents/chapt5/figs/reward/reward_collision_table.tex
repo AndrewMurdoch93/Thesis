@@ -1,0 +1,20 @@
+\newcolumntype{R}{>{\centering\arraybackslash}p{3cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.5cm}}
+\begin{table}[!htb]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.9\textwidth}{RLLL} 
+    \hline
+    $\mathbf{r}_{\text{\textbf{collision}}}$ & \textbf{Failed laps [\%]} & \textbf{Average lap time [s]} & \textbf{Standard deviation of lap time [s]}\\ 
+    \hline
+    $0$     & $4.00$   & $5.69$ & $0.16$ \\
+    $-2$    & $1.33$   & $5.63$ & $0.17$ \\
+    $-4$    & $1.00$   & $5.69$ & $0.17$ \\
+    $-8$    & $1.33$   & $6.11$ & $0.47$ \\
+    $-10$   & $0.00$   & $6.07$ & $0.20$ \\
+    \hline
+\end{tabularx}
+\caption[Evaluation results of agents with different collision penalties]{Percentage failed laps and lap times under evaluation conditions for agents trained with $r_{\text{collision}}$ values from ranging from $0$ to $-10$.}
+\label{tab:reward_collision}
+\end{table}

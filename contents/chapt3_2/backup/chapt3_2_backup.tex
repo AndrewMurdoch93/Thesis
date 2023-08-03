@@ -1,0 +1,223 @@
+\chapter{Policy gradient reinforcement learning}
+\label{chp:rl}
+
+In Chapter \ref{chp:mdps}, we introduced a tabular, value-based reinforcement learning technique called Sarsa.
+In value-based techniques, the policy is derived directly from the action-value function $Q$, i.e. taking the argmax of the action-value function.
+An argmax can only be used so long as the action space is discretised.
+This is problematic in cases such as autonomous racing, where precise control actions are required. 
+
+In this chapter, we introduce the Deep deterministic policy gradient (DDPG) and Twin delay deep deterministic policy gradient (TD3) methods.
+These are two techniques that allow for continuous action spaces by representing the policy explicitly as a function.
+We use a notation similar to Sutton and Barto \cite{sutton2020}, denoting a policy with parameters $\phi$ as $\pi_\phi$.
+The parameters are learned based on the gradient of a scalar performance measure $J(\phi)$ with respect to the policy parameters.
+Since these methods seek to maximise performance, \emph{gradient ascent} is performed in $J$:
+\begin{equation}\label{eq:gradient_ascent}
+    \phi_{t+1} =  \phi_{t} + \alpha \nabla J( \phi_{t} ),
+\end{equation}
+hence the name \emph{policy gradient}.
+Equation \ref{eq:gradient_ascent} is analogous to Equation \ref{eq:gradient_descent} for gradient descent.
+DDPG and TD3 are also known as \emph{actor-critic} techniques because their policies and value functions are referred to as actors and critics, respectively.
+
+
+\section{Deep deterministic policy gradient}
+The  DDPG algorithm proposed by Lillicrap et al. \cite{Lillicrap2016} is an \emph{off-policy} actor-critic method for continuous action spaces. 
+We show the pseudocode for it in Algorithm \ref{alg:ddpg}. 
+The fundamental concepts are the same as for Sarsa: (a) the agent selects an action according to the policy, (b) the policy is evaluated by updating the critic, and (c) the policy is improved by updating the actor.
+However, the Lillicrap et al. \cite{Lillicrap2016} add two major components: (d) a replay buffer, and (e) target networks.
+
+\textbf{Policy:}
+As an off-policy algorithm, DDPG learns a desired policy from an exploration policy, where the exploration policy is used to interact with the environment.
+This allows the agent to learn an optimal policy while exploring the environment.
+The desired policy is a neural network that deterministically maps states to actions, $a_t = \pi_{\phi}(s_t)$, where $\phi$ are the neural network parameters. 
+The exploration policy is then $\pi_{\phi}(s_t)$ with a noise process $\mathcal{N}_t$, 
+\begin{equation}\label{eq:dpg_policy}
+    a_t = \pi_{\phi}(s_t) + \mathcal{N}_t,
+\end{equation}
+where $\pi_{\phi}(s_t)$ is obtained by forward propagating $s_t$ through the network using Equations \ref{eq:forward_prop_1} to \ref{eq:forward_prop_3}.
+
+\textbf{Replay buffer:}
+DDPG makes use of an idea introduced by Lin \cite{lin1993}, the experience replay buffer. 
+At each time step $t$, the agent's experience $e_t = (s_t,a_t,r_t,s_{t+1})$ is stored in a data set $\mathcal{B} = e_1, e_2, ... , e_N$. 
+The update to the actor and critic is then applied to a batch of random samples from the replay buffer, $e \sim \mathcal{D}$. 
+Maintaining a history of experiences allows each experience to potentially be used for several weight updates.
+This results in greater data efficiency, reduces the variance of the updates by breaking correlations between samples, and prevents the neural network parameters from getting stuck in local minima \cite{mnih2013}.
+In practice, replay buffers are implemented and used similar to the supervised learning dataset from equation \ref{eq:supdervised_dataset}.
+
+\textbf{Target networks:}
+Lillicrap et al. \cite{Lillicrap2016} employ a neural network as critic to predict the action-value function.
+We denote the critic network with parameters $\theta$ as $Q_{\theta}$.
+However, using the critic network to directly predict the target values during policy evaluation causes training instability, since the critic values are being updated towards a moving target \cite{mnih2013}.
+Lillicrap et al. \cite{Lillicrap2016} address this issue by adapting the idea of \emph{target networks} from Mnih et al. \cite{mnih2013} for actor-critic methods.
+The target networks are a pair of actor-critic networks, denoted $\pi_{\phi'}$ and $Q_{\theta'}$ respectively, which are only used to compute the target to the critic during policy evaluation.
+The target network parameters $\phi'$ and $\theta'$ are updated towards $\phi$ and $\theta$ using a \emph{soft update} rule, 
+\begin{equation}
+\begin{split}
+    \theta' &\leftarrow \tau \theta' + (1 - \tau) \theta, \\
+    \phi' &\leftarrow \tau \phi + (1 - \tau) \phi',
+\end{split}
+\end{equation}
+where $\tau \ll 1$ to prevent the target from changing too quickly, which in turn stabilises learning. 
+
+
+\textbf{Policy evaluation:}
+In the context of DDPG, the policy evaluation step is an update to the critic network $Q_{\theta}$ using gradient descent (Equation \ref{eq:gradient_descent}).
+Furthermore, the cost function (Equation \ref{eq:cost_function}) is computed using the difference between the target and action-values evaluated by the updated critic over a batch of experiences sampled randomly from the replay buffer:
+\begin{equation}
+    J_{\theta}=\frac{1}{N} \sum_{i}^{N} (y_i - Q_{\theta}(s_i,a_i))^2,
+\end{equation}
+where $y_i$ is the target.
+To find this target, the target actor and critics are used to apply the definition from Equation \ref{eq:sarsa_target} to every sample:
+\begin{equation}
+    y_i = r_i + \gamma Q_{\theta'}(s_{i+1}, \pi_{\theta'}(s_{i+1})).
+\end{equation}
+Performing a gradient descent step on a neural network is analogous to applying Equation \ref{eq:tab_policy_eval} to the tabular case.
+
+\textbf{Policy improvement:}
+In Sarsa, the policy was improved implicitly using an $\epsilon$-greedy policy. 
+However, in the context of DDPG, the policy must be improved explicitly.
+This is done by updating the neural network parameters with gradient ascent (Equation \ref{eq:gradient_ascent}).
+The gradient of the performance measure $\nabla_{\phi}J(\phi)$ is derived by Silver et al. \cite{silver2014} as
+\begin{equation}
+\begin{split}
+    \nabla_{\phi} J(\phi) &\approx \mathbb{E}[ \nabla_{\phi} Q_{\theta}(s,a) |_{s=s_t, a=\pi_{\phi}(s_t)}]\\
+    &= \mathbb{E} [ \nabla_{a} Q_{\theta}(s,a)|_{s=s_t, a=\pi_{\phi}(s_t)} \nabla_{\phi} \pi_{\phi}(s)|_{s=s_t}].
+    \label{eq:deterministic_policy_gradient}
+    \end{split}
+\end{equation}
+Practically this is achieved by computing a gradient descent step (Equation \ref{eq:gradient_descent}) with a negative cost argument.
+The cost function is set equal to the mean over the action-values of the experiences sampled for the policy evaluation step.
+
+At the time of its release, DDPG was a state of the art model-free technique for continuous action spaces, even being competitive with algorithms which have full access to the dynamics model. 
+However, there are improvements to be made.
+Overestimation bias, whereby a state with a low value is approximated as having a high value is an issue identified by Fujimoto et al. \cite{Fujimoto2018}. 
+The next section introduces an algorithm that makes improvements over DDPG by addressing value overestimation.
+
+\begin{algorithm}[htb!]
+\SetAlgoLined
+\caption{Deep deterministic policy gradient}\label{alg:ddpg}
+Initialise critic network $Q_{\theta}(s,a)$ and actor $\pi_{\phi}(s)$ with weights $\theta$ and $\phi$ \\
+Initialise target network $Q_{\theta'}$ and $\pi_{\phi'}$ with weights $\theta' \leftarrow \theta$, $\phi' \leftarrow \phi$ \\
+Initialise replay buffer $\mathcal{B}$ \\
+\For{episode = 1, M}
+{
+    Initialise a random noise process $\mathcal{N}$ for action exploration \\
+    Receive initial observation state $s_0$\\
+    \For{t=0, T}
+    {
+        $\text{Select action } a_t = \pi_{\phi}(s_t) + \mathcal{N}_t$\\
+        Execute action $a_t$, observe reward $r_t$, observe new state $s_{t+1}$ \\
+        Store transition $(s_t, a_t, r_t, s_{t+1})$ in $\mathcal{B}$ \\
+        Sample a random minibatch of $N$ transitions $(s_i, a_i, r_i, s_{i+1})$ \\
+        \nonl from $\mathcal{B}$ \\
+        Set TD target: $y_i = r_i + \gamma Q_{\theta'}(s_{i+1}, \pi_{\phi'}(s_{i+1}))$ \\
+        Update critic by minimising the loss: \hspace{1.72cm}
+            \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}%
+            \begin{tabular}{l}Policy\\evaluation\end{tabular}$}} \\
+        \nonl  $J_{\theta}=\frac{1}{N} \sum_{i}^{N} (y_i - Q_{\theta}(s_i,a_i))^2 $ \\
+        Update the actor policy using the \\
+        \nonl sampled policy gradient: \hspace{4cm}
+            \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}%
+            \begin{tabular}{l}Policy\\improvement\end{tabular}$}} \\
+        \nonl $\nabla_{\phi} J \approx \frac{1}{N} \sum_{i}^{N} \nabla_{a} Q_{\theta}(s_i,a)|_{a=\pi_{\phi}(s_i)} \nabla_{\phi} \pi_{\phi}(s_i) $\\
+        Update the target networks:\\
+        $\theta' \leftarrow \tau \theta' + (1 - \tau) \theta$\\
+        $\phi' \leftarrow \tau \phi + (1 - \tau) \phi'$\\
+    }
+}
+\end{algorithm}
+
+
+\section{Twin delay deep deterministic policy gradient}\label{sec:td3}
+
+The twin delay deep deterministic policy gradient (TD3) presented by Fujimoto et al. \cite{Fujimoto2018} is a modification to DDPG that addresses overestimation of action-values as a result of using function approximators, as well as high variance in the critic update.
+TD3 maintains the action selection mechanism, target networks and experience replay buffer from DDPG, but introduces three new ideas: target policy smoothing, clipped double Q-learning and delayed actor and target network updates.
+The pseudocode is shown in Algorithm \ref{alg:td3}.
+
+
+
+% Action-value overestimation is an issue since it may develop into a significant bias over many update steps, and may lead to poor quality policies \cite{hasselt2015}.
+% Likewise, variance in the critic update produces poor quality policies and slows learning.
+% TD3 maintains the target networks, experience replay buffer, action selection mechanism and actor update from DDPG, with a few key differences shown in Algorithm \ref{alg:td3}.
+
+\begin{algorithm}[hbt!]
+\caption{Twin delay deep deterministic policy gradient}\label{alg:td3}
+Initialise critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ 
+with \\
+\nonl parameters $\theta_1, \theta_2$ and $\pi_\phi$ \\
+Initialise target networks $Q_{\theta_1'}$, $Q_{\theta_2'}$ and $\pi_{\phi'}$ with weights \\
+\nonl $\theta_1' \leftarrow \theta_1$, $\theta_2' \leftarrow \theta_2$, and $\phi' \leftarrow \phi$ \\
+Initialise experience replay buffer $\mathcal{B}$ \\
+\For{episode = 1, M}
+{
+
+    \For{t=0, T}
+    {
+        Select an action with random exploration noise \\
+        \nonl $a_t \sim \pi_{\phi}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+        Execute action $a_t$, observe reward $r$ and new state $s_{t+1}$ \\
+        Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+        Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+        Select target actions:\\
+        \nonl $\tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+        Set TD target:
+        $y_i \leftarrow r_i + \gamma \min_{q=1,2} Q_{\theta_q'}(s_{i+1}, \tilde{a})$ \\
+        Update critics by minimising the loss: \hspace{1.8cm}
+            \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}
+            \begin{tabular}{l}Policy\\evaluation\end{tabular}$}} \\
+        \nonl $J_{\theta_q} \leftarrow  \frac{1}{N} \sum_{i}^{N} (y_i - Q_{\theta_q}(s_i,a_i))^{2} $ \\
+        \If{$t \text{ mod } d$}
+        {
+            Update $\phi$ by the deterministic \\
+            \nonl policy gradient: \hspace{5.2cm}
+                \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}
+                \begin{tabular}{l}Policy\\improvement\end{tabular}$}} \\
+            \nonl $\nabla_\phi J(\phi) = \frac{1}{N} \sum_{i}^{N} \nabla_a Q_{\theta_1} (s_i,a) | _{a=\pi_{\phi}(s_i)} \nabla_\phi \pi_\phi(s_i)$ \\
+            Update target networks: \\
+            $\theta_{q}' \leftarrow \tau \theta_q + (1 - \tau) \theta_{q}'$ \\
+            $\phi' \leftarrow \tau \phi + (1 - \tau) \theta'$ \\
+        }
+    }
+}
+\end{algorithm}
+
+\textbf{Target policy regularisation:}
+High variance critic updates in the policy evaluation step result in poor quality policies and slow learning.
+Fujimoto et al. \cite{Fujimoto2018} address this issue by introducing a regularisation strategy for the critic update. 
+They add small amount of noise $\mathcal{N}$ to the target action $\tilde{a}$,
+\begin{equation}
+    \tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon, \epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c),
+\end{equation}
+where $c$ is the magnitude of upper and lower limits of the added noise.
+This smooths the value estimate in the critic update.
+
+
+\textbf{Clipped double Q-learning:}
+Maximisation of a noisy value estimate in the policy evaluation step results in overestimation bias, whereby bad states are evaluated as high value. 
+To combat overestimation bias, Fujimoto et al. \cite{Fujimoto2018} adapt double Q-learning from Hasselt et al. \cite{hasselt2015} for deterministic policy gradients. 
+In double Q-learning, two critics, denoted $Q_{\theta_1}$ and $Q_{\theta_2}$ are maintained.
+This allows two independent targets to be calculated at every time step.
+Both critics are then updated towards the target containing the minimum of their two estimated action values:
+\begin{equation}
+    y_i \leftarrow r_i + \gamma \min_{q=1,2} Q_{\theta_q'}(s_{i+1}, \hat{a}).
+\end{equation}
+Furthermore, the update to the actor in the policy improvement step is always made with respect to $Q_{\theta_{1}}$.
+Overall, the addition of double Q-learning stabilises and results in more reliable learning.
+
+\textbf{Delayed updates}:
+The final modification that TD3 makes is that the actor and target networks are only udpated every $d$ time steps.
+This minimises the likelihood of repeating policy  updates with respect to an unchanged critic.
+
+% To the best of our knowledge, TD3 is the state current of the art in reinforcement learning algorithms for continuous action spaces.
+
+
+\section{Summary}
+In this chapter, we have reviewed the DDPG and TD3 methods.
+These RL techniques allow for continuous action-spaces by using a neural network to represent the policy.
+This is especially important in the context of autonomous racing, as the driving task necessitates very fine control actions.
+Furthermore, they generalise over states by using neural networks to approximate the action-value function.
+To the best of our knowledge, TD3 is the state current of the art in reinforcement learning algorithms for continuous action spaces.
+
+It was stated in Chapter \ref{chp:mdps} that solving a problem with RL requires that problem to be modelled as an MDP.
+This will be the focus of the next chapter
+
+% \input{contents/chapt3/figs/rl_summary_table.tex}

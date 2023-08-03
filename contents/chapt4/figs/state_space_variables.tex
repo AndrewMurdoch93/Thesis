@@ -1,0 +1,27 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.5cm}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{1.5cm}}
+\newcolumntype{M}{>{\raggedright\arraybackslash}p{\textwidth-5cm}}
+
+\begin{table}[!htb]
+\renewcommand{\arraystretch}{1.1}
+%\resizebox{\textwidth}{!}{
+\centering
+\begin{tabularx}{\textwidth}{RLLX} 
+    \hline
+    \small \textbf{Description} & \small \textbf{Symbol} & \small \textbf{Unit} & \small \textbf{\mbox{Reference direction}} \\ 
+    \hline
+    \small $x$-Coordinate              & \small $s_x$             & \small m       & \small Right, from bottom left corner to vehicle CoG\\
+    \small $y$-Coordinate              & \small $s_y$             & \small m       & \small Up, from bottom left corner to vehicle CoG\\
+    \small Steering angle              & \small $\delta$          & \small rad     & \small Anti-clockwise, from vehicle heading to steering wheel                                                                                          direction\\\
+    \small Longitudinal velocity       & \small $v$               & \small m/s     & \small Direction of heading \\
+    \small Heading                     & \small $\psi$            & \small rad     & \small Anti-clockwise, from $x$-axis to vehicle longitudinal axis\\
+    \small Heading rate                & \small $\dot{\psi}$      & \small rad/s   & \small Anti-clockwise \\
+    \small Slip angle                  & \small $\beta$           & \small rad     & \small Anti-clockwise, from heading to direction of motion \\
+    % \small Steering rate               & \small $v_\delta$        & \small $u_1$ & \small [rad/s]   & \small Anti-clockwise \\
+    % \small Longitudinal acceleration   & \small$a_{\text{long}}$  & \small $u_2$ & \small [m/s]     & \small Direction of heading \\
+    \hline
+\end{tabularx}
+%}
+\caption[A description of the state space variables]{A description of each state space variable, along with its symbol, unit and reference direction. A depiction of each of these state variables on a diagram of the vehicle is shown in Figure \ref{fig:vehicle_dynamics_model}.}
+\label{tab:state_space_variables}
+\end{table}

@@ -1,0 +1,110 @@
+\chapter{Conclusion}\label{chp:conclusion}
+
+This thesis considered the design and implementation of a learning-based autonomous racing algorithm that demonstrates robustness towards the sim2real gap.
+The proposed solution introduces a partial end-to-end autonomous driving algorithm. 
+Although our driving algorithm was applied to learn F1tenth racing, the techniques presented in this project are relevant to solving the broader road-going autonomous driving problem, since racing acts as a proxy for normal road driving \cite{Weiss2020a}.
+The outcome of our work is presented in this chapter.
+
+
+% \section{Literature study and research gaps}
+
+% Many learning-based solutions for the autonomous racing task follow an end-to-end design philosophy, whereby a DNN is used to generate control commands directly from sensor data \cite{Fuchs2021, Song2021}.
+% While this research direction shows promise, end-to-end techniques often exhibit performance limitations when deployed in real-world scenarios. 
+% Current solutions to enhancing the robustness of learning-based solutions towards the sim2real gap include randomising the vehicle model during training and smoothing the control actions.
+% However, even with the application of these techniques, the deployed solutions still tend to encounter crashes in real-world settings.
+
+
+% Some learning-based approaches to solving the autonomous driving task utilise a partial end-to-end algorirthm structure, whereby the DNN is integrated into a modular system of components.
+% A promising partial end-to-end approach involves integrating the DNN into a planner alongside traditional controllers.
+% This approach benefits from the heuristic nature of learning-based approaches in the planner, while also leveraging the reliability offered by classical techniques in the controller.
+% Notably, several authors have reported that partial end-to-end agents have a performance advantage over end-to-end agents.
+% Nonetheless, a research gap exists regarding the utilization of the partial end-to-end algorithm structure to address current performance issues encountered by learning-based autonomous racing solutions when facing model mismatch conditions.
+
+
+\section{Summary and contributions}
+
+% The implementation of our custom F1tenth simulator was described in Chapter \ref{chp:modelling}. 
+% It uses a high fidelity single-track dynamics model to generate accurate state transitions as required by the MDP structure.
+% Whereas the official F1tenth simulator is not compatible with fully end-to-end systems, our simulator is compatible with both fully end-to-end and partial end-to-end systems.
+% As such, it provided a suitable platform for comparing end-to-end and partial end-to-end approaches.
+
+
+% Using our simulator, we developed an end-to-end baseline solution.
+% There were several interesting design considerations for this project that are usually not considered when deploying an RL algorithm in a simulation environment.
+% These were the selection of an appropriate action sampling rate and safe bounds for the action space (i.e., limiting the velocity).
+% Contrary to the result we expect from classical controllers, the end-to-end solution performed better when sampled at a slow rate.
+% % Our experiments showed that the end-to-end agent performed best at a low sample rate of $5$ Hz.
+% Furthermore, we discovered that end-to-end agents exploit the simulator by drifting at large vehicle slip angles.
+% This issue was resolved by limiting the maximum speed of the agent.
+% We then determined that the agent observation space that results in the best performance includes both pose and LiDAR data.
+% We also described our reward signal, which consisted of a penalty at every time step, a reward for distance distance travelled and a penalty for colliding with the track boundary.
+% By weighting these three reward signal components correctly, we were able to achieve a $0\%$ crash rate under test conditions.
+
+
+
+% We then described our neural network design and hyper-parameter tuning procedure.
+% Finally, the issue of reward signal design was considered.
+% Our reward signal consisted of a penalty at every time step, a reward for distance distance travelled and a penalty for colliding with the track boundary.
+% We were able to achieve a $0\%$ crash rate under test conditions by weighting these three reward signal components correctly.
+
+% After addressing the end-to-end baseline, we developed a partial end-to-end solution technique.
+% Our design had an RL agent perform the task of local planner by outputting a path and desired velocity at a fixed sampling rate.
+% The path and velocity were tracked using a pure pursuit steering controller and proportional controller, respectively.
+% We found that performing path planning in a a curvi-linear coordinate frame that was attached to the track centerline known as a Frenet frame yielded significant reduction in required training time over end-to-end agents.
+% Planning in the this frame allowed us to define a path that does not intersect with track boundaries, which reduced the average number of crashes during training by $95.3\%$ over end-to-end agents.
+
+
+% We then provided a comparison between our partial end-to-end solution and the end-to-end baseline under conditions where there are errors present in the vehicle model.
+% We considered scenarios where there is an accounted for (a) mass on the vehicle, (b) change in tire stiffness, and (c) change in road surface friction.
+% In all three cases, our partial end-to-end solution outperformed the end-to-end baseline by a significant margin.
+
+% As expected, the end-to-end agent was sensitive to vehicle model errors.
+% Placing a mass on the vehicle, decreasing the rear tire cornering stiffness and modifying the road surface friction caused the agent to slalom.
+% Increasing the front tire stiffness caused it to drive aggressively, whereas decreasing it caused the vehicle to understeer
+% In all of our tests, the end-to-end agent experienced a significant decrease in lap completion rate.
+% Furthermore, the behaviour was erratic and inconsistent.
+% Thus, the vehicle dynamics must be modelled extremely accurately during training for the agent to retain its performance when deployed onto a physical vehicle.
+
+% However, the partial end-to-end system faired better than the fully end-to-end agent under conditions where model-mismatch was present.
+% Variations in mass or tire cornering stiffness coefficients did not cause the partial end-to-end agent to crash or even deviate from its original path.
+% Although the vehicle did exhibit understeer when the road surface friction was modified, the effect was not as great as with end-to-end agents. 
+% Furthermore, the partial end-to-end agent completed trajectories that were consistent and repeatable.
+% Thus, we showed that partial end-to-end systems are a viable approach for learning-based solutions to handle modelling errors associated with real-world deployment.
+
+
+\section{Contributions}
+% We developed partial end-to-end system whereby an RL agent acts as a local planner that outputs a short-term path and velocity profile at short intervals.
+
+% Our first contribution was defining a path relative to the Frenet frame such that it is constrained to the track limits.
+% Constraining the path so that it does not intersect with the track boundary resulted in a significant improvement in training time, as well as a zero percent crash rate after training for $1000$ episodes.
+% Furthermore, our partial end-to-end agent had a $3.4\%$ lap time improvement over the end-to-end agent under test conditions. 
+
+% Our second contribution was an extensive comparison between end-to-end and partial end-to-end architectures under model-mismatch conditions.
+% We found that partial end-to-end agents outperform fully end-to-end agents when model mismatches are present.
+
+A summary of the new results (i.e., results that were not present in the literature) from this thesis are:
+
+\begin{itemize}
+    \item Leveraging restrictions on the allowable paths that the agent may select to shape its behaviour.
+    \item A comparison of partial end-to-end and fully end-to-end techniques in a model-mismatch setting. 
+\end{itemize}
+
+
+\section{Recommended future work}
+Current work can be continued to demonstrate the feasibility of the partial end-to-end approach, as well as improve its performance.
+The following areas of future work have been identified:
+
+\begin{itemize}
+    \item Refine path generation technique. Currently, there are no safety checks to see if the path that the agent outputs is feasible to execute. Thus, although the path does not intersect with a boundary, the agent may still crash if it is infeasible to follow. 
+
+    \item Implement a more robust steering controller. The pure pursuit controller is unsuitable for autonomous racing tasks due to its assumption that the vehicle wheels do not slip. The development of a more advanced feedback controller such as that by Ni et al. \cite{Ni2017} may improve the performance of the system. 
+
+    \item Practical hardware deployment of partial end-to-end driving software onto an F1tenth vehicle will create a stronger case for its benefits over end-to-end systems. 
+    Furthermore, if our technique is improved so that the agent achieves a zero percent failure rate throughout training, then this may be a feasible method for online (i.e., on the hardware) training.
+
+    \item Investigate the deployment of partial end-to-end approaches to other robotics platforms.
+    For instance, Truong et al. \cite{Truong2022} proposed a partial end-to-end solution for controlling a robot quadroped.
+\end{itemize}
+
+
+

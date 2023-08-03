@@ -1,0 +1,79 @@
+\tikzstyle{my_style_1}=[rectangle, draw=black, fill=white,thick, minimum width = 1cm, minimum height = 1.6cm, align=center, rounded corners=.1cm]
+\tikzstyle{my_style_2}=[rectangle, draw=black, fill=white,thick, minimum width = 1cm, minimum height = 0.8cm,, align=center, rounded corners=.1cm]
+
+\begin{tikzpicture}
+    
+    %Nodes
+    \draw (1,0) node[shape aspect=1,circle, minimum size=0.1cm, draw] (x1) {};
+    \draw (1,-1) node[shape aspect=1,circle, minimum size=0.1cm, draw] (x2) {};
+    \draw (1,-2) node[shape aspect=1,circle, minimum size=0.1cm, draw] (x3) {};
+    \draw (2,0) node[shape aspect=1,circle, minimum size=0.1cm, draw] (y1) {};
+    \draw (2,-1) node[shape aspect=1,circle, minimum size=0.1cm, draw] (y2) {};
+    \draw (2,-2) node[shape aspect=1,circle, minimum size=0.1cm, draw] (y3) {};
+    \draw (3,-0.5) node[shape aspect=1, circle, minimum size=0.1cm, draw] (z1) {};
+    \draw (3,-1.5) node[shape aspect=1,circle, minimum size=0.1cm,draw] (z2) {};
+
+    % \draw (5,-1) node[shape aspect=1,rectangle, minimum size=0.1cm,draw] (s1) {Scalenetworkoutput};
+    
+    \node (a) at (7.5,-0.5)  [my_style_2] {Scale};
+    \node (b) at (7.5,-1.5)  [my_style_2] {Scale};
+ 
+    %Input and output labels
+    \matrix (m) at (-0.8,-1) [draw=white, left delimiter={[},right delimiter={]}, matrix of math nodes, row sep=1cm] 
+    {\begin{sideways}\small $\text{Observation}^\intercal$ \end{sideways}\\};
+    
+    % \matrix (m) at (7,-1.5) [draw=white, 
+    % left delimiter={[},right delimiter={]}, matrix of math nodes, row sep=1cm] 
+    % { \hat{y}\\ };
+    
+    
+    %Inputs and output arrows
+    \draw[->] (0,0) -- (x1);
+    \draw[->] (0,0) -- (x2);
+    \draw[->] (0,0) -- (x3);
+    
+    \draw[->] (0,-1) -- (x1);
+    \draw[->] (0,-1) -- (x2);
+    \draw[->] (0,-1) -- (x3);
+    
+    \draw[->] (0,-2) -- (x1);
+    \draw[->] (0,-2) -- (x2);
+    \draw[->] (0,-2) -- (x3);
+    
+    % \draw[->] (z1) -- (6.5,-0.5); %node[midway,fill=white] {$\hat{y}$};
+    % \draw[->] (z2) -- (6,-1.5);
+
+    %Hidden connections
+    \draw[->] (x1) -- (y1);
+    \draw[->] (x1) -- (y2);
+    \draw[->] (x1) -- (y3);
+    \draw[->] (x2) -- (y1);
+    \draw[->] (x2) -- (y2);
+    \draw[->] (x2) -- (y3) ;
+    \draw[->] (x3) -- (y1);
+    \draw[->] (x3) -- (y2);
+    \draw[->] (x3) -- (y3);
+    \draw[->] (y1) -- (z1);
+    \draw[->] (y1) -- (z2);
+    \draw[->] (y2) -- (z1);
+    \draw[->] (y2) -- (z2);
+    \draw[->] (y3) -- (z1);
+    \draw[->] (y3) -- (z2);
+
+    %Dotted lines 
+    \draw[loosely dotted] (x1) -- (x2);
+    \draw[loosely dotted] (x2) -- (x3);
+    \draw[loosely dotted] (y1) -- (y2);
+    \draw[loosely dotted] (y2) -- (y3);
+
+    %lines between components
+    \draw[->] (-1.8,-1) -- (-1.4,-1) ; 
+    \draw[->] (z1) -- (z1-|a.west)  node [midway, above] (l1) {\small$a_{\text{norm}} \in (-1,1)$} ;      
+    \draw[->] (z2) -- (z2-|b.west) node [midway, above] (l2) {\small$\delta_{\text{norm}} \in (-1,1)$} ;               
+
+    \draw[->] (a) -- ($(a)+(1.5,0)$) node [right] (l3) {\small $a_{\text{long},d} \in (\underline{a}, \overline{a})$ }; 
+    \draw[->] (b) -- ($(b)+(1.5,0)$) node [right] (l4) {\small $\delta_{d} \in (\underline{\delta}, \overline{\delta})$}; 
+
+    \node[text width=3.7cm, align=center] at (1.5,1) { \hbox{Neural} \hbox{network} \hbox{actor} };
+    
+\end{tikzpicture}

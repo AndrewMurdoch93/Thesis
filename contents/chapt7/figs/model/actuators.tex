@@ -1,0 +1,28 @@
+\newcolumntype{L}{>{\raggedleft\arraybackslash}p{3.5cm}}
+\newcolumntype{R}{>{\centering\arraybackslash}p{1.8cm}}
+
+
+\begin{table}[!htb]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{XRRRR} 
+    \toprule
+    \multirow{2}{*}{\textbf{Agent architecture}}
+    % & \multicolumn{2}{c}{\parbox{3.6cm}{\centering \textbf{Maximum \mbox{longitudinal} \mbox{acceleration}}}} & 
+    % \multicolumn{2}{c}{\parbox{3.6cm}{\centering \textbf{Maximum \mbox{steering} \mbox{velocity}}}}\\
+    % \addlinespace[.5em] \cmidrule{2-5}
+    & \multicolumn{2}{c}{\parbox{3.6cm}{\centering Variation from nominal $a_{\text{max}}$ value }} & 
+    \multicolumn{2}{c}{\parbox{3.6cm}{\centering Variation from nominal $\overline{v}_{\delta}$ value}}\\
+    \cmidrule{2-5}
+    & $-15\%$ & $+15\%$ & $-15\%$ & $+15\%$ \\
+    \midrule
+    End-to-end & $99$ & $98.5$ & $97$ & $99$ \\
+    Steering controller & $100$ & $100$ & $99$ & $100$ \\
+    Velocity controller & $99.5$ & $100$ & $99.5$ & $100$ \\
+    Both controllers & $100$ & $100$ & $100$ & $100$ \\
+    \bottomrule
+\end{tabularx}
+\caption[]{Success rate  of agents with and without }
+\label{tab:noise_results}
+\end{table}

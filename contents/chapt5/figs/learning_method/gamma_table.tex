@@ -1,0 +1,19 @@
+\newcolumntype{R}{>{\centering\arraybackslash}p{3cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.2cm}}
+\begin{table}[htb!]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.8\textwidth}{RLLL} 
+    \hline
+    \textbf{Reward discount rate ($\gamma$)} & \textbf{Failed laps [\%]} & \textbf{Average lap time [s]} & \textbf{Standard deviation of lap time [s]}\\ 
+    \hline
+    $0.95$  & $2.33$    & $6.12$  & $0.28$ \\      
+    $0.98$  & $0.33$    & $6.51$  & $0.28$ \\
+    $0.99$  & $0.00$    & $6.07$  & $0.20$ \\
+    $1$     & $0.33$    & $5.94$  & $0.11$ \\
+    \hline
+\end{tabularx}
+\caption[Evaluation results of end-to-end agents with various reward discount rates]{Percentage failed laps and lap times under evaluation conditions for agents trained with reward discount rates ranging from $0.9$ to $1$.}
+\label{tab:gamma}
+\end{table}

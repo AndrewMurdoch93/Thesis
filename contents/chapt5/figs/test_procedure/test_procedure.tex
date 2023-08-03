@@ -1,0 +1,19 @@
+\begin{algorithm}[htb!]
+\caption{Evaluating the end-to-end algorithm without exploration noise, and with observation noise.}
+\label{alg:end_to_end_deploy}
+\nonl\textbf{Input}: Trained actor DNN $\pi_{\bm{\phi}}$ \\
+\nonl\textbf{Output}: Lap times, collisions over $100$ laps \vspace{0.2cm}\\
+Initialise actor DNN $\pi_{\bm{\phi}}$ with weights $\bm{\phi}$ from training \\
+\For{\emph{episode} = 1, 100}
+{
+    \For{t=0, T}
+    {
+        $\text{Select control action } a_t = [a_{\text{long,d}}, \delta_{d}] \sim \text{scale}(\pi_{\bm{\phi}}(o_t+\epsilon))$ \\
+         \For{n=0, N}
+        {   
+            Modify $a_{\text{long},d}$ according to Equation \ref{eq:speed_limit} to limit velocity \\
+            Simulator executes action $a_t$ \\
+        }
+    }
+}
+\end{algorithm}

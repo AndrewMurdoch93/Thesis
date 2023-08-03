@@ -1,0 +1,14 @@
+\begin{algorithm}[htb!]
+\caption{The simulator execution at every time step.}\label{alg:simulator_step}
+\nonl \textbf{Input}: Control actions $\dot{\delta}_d$ and $a_{\text{long}_d}$ at time step $k$. \\
+\nonl \textbf{Output}: An observation $o_{k+1}$, reward $r_{k+1}$ at time step $k+1$.\\
+\vspace{0.2cm} 
+Simulate servo motor: $\dot{\delta} = \frac{\delta_d - \delta}{|\delta_d - \delta|} \overline{\dot{\delta}}$,\\
+Update state: $\mathbf{x}_{k+1} = \mathbf{x}_{k} + f(\mathbf{x}_k, \mathbf{u}_k) \Delta t$ \\
+Generate LiDAR scan: $[l_0, l_1, \cdots L]$ \\
+Sample the observation: $o_{k+1} = [s_{x}, s_{y}, {\delta}, {\upsilon}, \psi, l_0, l_1, l_2, \cdots L]$\\
+Check for collisions \\
+Get distance travelled: $\Delta D = D_{k+1} - D_{k}$  \\
+Generate reward: $r_{k+1} = r(s_k,a_k)$\\
+\end{algorithm}
+

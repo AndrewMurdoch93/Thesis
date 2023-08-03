@@ -1,0 +1,64 @@
+% \tikzstyle{a}=[rectangle, draw=black, fill=white,thick, minimum width = 2cm, minimum height = 3cm, align=center, rounded corners=.1cm, font=\small]
+\tikzstyle{b} = [rectangle, draw=black, fill=white,thick, minimum width = 2cm, minimum height = 1cm, align=center, rounded corners=.1cm, font=\footnotesize,  align=center]
+\tikzstyle{c} = [shape aspect=1, circle, minimum width=1.8mm, draw=black, inner sep=0pt]
+
+
+\begin{tikzpicture}
+ 
+    % Draw nodes
+    \node (a) at (0,0)      [b, fill=gray!20] {Sensors};
+    \node (left) at (2.5,0)    [b] {Perception};
+    \node(center) at (5,0)  [] {};
+    \node (c) at ($(center)+(2.5,0)$) [] {};
+    \node (d) at ($(center)+(0,0)$) [b] {Planner};
+    \node (right) at (7.5,0)    [] {};
+    \node (e) at (10,0)     [b, fill=gray!20] {Actuators};
+
+    
+
+    %Draw neural network
+    \node (nnl1r1) at ($(c)+(-0.5,0.4)$) [c] {};
+    \node (nnl1r2) at ($(c)+(-0.5,0)$) [c] {};
+    \node (nnl1r3) at ($(c)+(-0.5,-0.4)$) [c] {};
+    
+    \node (nnl2r1) at ($(c)+(0,0.4)$) [c, label={[align=center]\footnotesize Learned\\controller}] {};
+    \node (nnl2r2) at ($(c)+(0,0)$) [c] {};
+    \node (nnl2r3) at ($(c)+(0,-0.4)$) [c] {};
+    \node (nnl3r1) at ($(c)+(0.5,0.2)$) [c] {};
+    \node (nnl3r2) at ($(c)+(0.5,-0.2)$) [c] {};
+
+    
+    
+    % Draw boxes around nodes
+    % Driving architecture
+    \draw[loosely dashed] ($(left)+(-1.25,-0.8)$) -| ($(right)+(1.25,1.6)$) -|  ($(left)+(-1.25,-0.8)$);
+    
+    % Draw connections
+    \draw[->] (a) -- (left);
+    \draw[->] (left) -- (d);
+    \draw[->] (d) -- (nnl1r2);
+    \draw[->] ($(c)+(0.6,0)$) -- (e);
+
+    
+    \draw[->] (nnl1r1) -- (nnl2r1);
+    \draw[->] (nnl1r1) -- (nnl2r2);
+    \draw[->] (nnl1r1) -- (nnl2r3);
+
+    \draw[->] (nnl1r2) -- (nnl2r1);
+    \draw[->] (nnl1r2) -- (nnl2r2);
+    \draw[->] (nnl1r2) -- (nnl2r3);
+
+    \draw[->] (nnl1r3) -- (nnl2r1);
+    \draw[->] (nnl1r3) -- (nnl2r2);
+    \draw[->] (nnl1r3) -- (nnl2r3);
+
+    \draw[->] (nnl2r1) -- (nnl3r1);
+    \draw[->] (nnl2r1) -- (nnl3r2);
+    
+    \draw[->] (nnl2r2) -- (nnl3r1);
+    \draw[->] (nnl2r2) -- (nnl3r2);
+
+    \draw[->] (nnl2r3) -- (nnl3r1);
+    \draw[->] (nnl2r3) -- (nnl3r2);
+    
+\end{tikzpicture}

@@ -1,0 +1,413 @@
+\chapter{Reinforcement learning}\label{chp:rl}
+
+
+Reinforcement learning (RL) is a paradigm of machine learning concerned with training an agent to take sequential decisions in an environment in order to maximise a reward signal.
+This chapter begins with an introduction to Markov Decision Processes (MDPs), which provide the formal framework for modelling the sequential decision-making problem that reinforcement learning aims to solve.
+A comparison of different reinforcment learning methods is then given.
+After careful consideration, the twin delay deep deterministic policy gradient (TD3) RL method was chosen for implementation.
+TD3 is particularly reliant on deep neural networks (DNNs). 
+Consequently, the theoretical backgorund of DNNs are discussed, alongside an in-depth explanation of the TD3 method itself.
+
+
+\section{Markov decision processes}\label{sec:mdps}
+
+The Markov Decision process is a popular mathematical framework for modelling discrete-time decision-making processes where the outcomes are partly random and partly under the control of the \emph{agent} (i.e., the decision maker).
+MDPs are useful for studying optimisation problems whereby the goal is for the agent to learn a sequence of actions that maximise a \emph{reward} signal.
+Such optimisation problems are commonly found in the fields of robotics, automated control, and manufacturing \cite{White1985}.
+The ability of MDPs to model sequential problems is useful for the autonomous racing problem, where the outcome of the race is determined by a sequence of control actions, and the exact vehicle dynamics model is often uncertain.
+
+
+
+Within an MDP, the learner and decision maker is called the agent.
+The environment comprises everything outside of the agent.
+The agent and environment interact in a sequence of discrete time steps, $t=0,1,2,3, \cdots$.
+A representation of this interaction is shown in Figure \ref{fig:agent_env_boundary}.
+At every time step $t$, the agent receives a state $S_t$, which is a representation of the environment, on which basis it selects an action $A_t$.
+The environment represents a set of state transition probabilities that are dependent only on the previous state and action.
+At the next time step $t+1$, the agent receives a scalar reward $R_{t+1}$, along with a new state $S_{t+1}$, which is sampled according to the state transition probabilities \cite{sutton2020}.
+This agent-environment interaction is repeated, giving rise to a trajectory
+\begin{equation}\label{eq:mdp_trajectory}
+S_0, A_0, R_1, S_1, A_1, R_2, S_2, A_2, R_3, \cdots.
+\end{equation}
+
+
+\begin{figure}[!htb]
+\centering
+\input{contents/chapt3/figs/agent_environment_boundary.pdf_tex}
+\caption[The agent environment interaction within an MDP]{The agent environment interaction within an MDP. Adapted from Sutton and Barto \cite{sutton2020}. }
+\label{fig:agent_env_boundary}
+\end{figure}
+
+
+Within the MDP framework, the objective of the agent is described in terms of the reward signal: it must formulate a policy $\pi(a|s)$ that maximises the sum of discounted rewards over the course of its entire trajectory.
+This sum of discounted rewards is called the \emph{return}, and is denoted $G_t$,
+\begin{equation}
+G_t \doteq R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = \sum_{k=t+1}^{T} \gamma^{k-t-1} R_{k},
+\label{eq:G_t_discount}
+\end{equation}
+where $T$ denotes the final time step in the trajectory, and $\gamma$ is a discount factor that determines the weighting of future rewards \cite{sutton2020}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Taxonomy of reinforcement learning}
+
+A taxonomy of RL algorithms is shown in Figure \ref{fig:RL:taxonomy}.
+Broadly speaking, there are two classes of RL techniques: these are model-based and model free approaches.
+Model-free RL methods aim to learn a policy solely through direct trial-and-error interactions with the environment, without utilising a representation of the environment dynamics.
+On the other hand, model-based reinforcement learning involves learning a model of the environment dynamics, which the agent then uses to plan ahead before taking an action \cite{wang2019benchmarking}.
+Due to the complexity involved in learning the dynamics of a race-car, we opted to limit the scope of the project to encompass only model-free methods.
+
+Within model-free techniques, a relevant distinction that can be made is that of value-based and policy gradient methods.
+Value-based RL methods  focus on estimating the action-value function, which represents the expected return of being in a particular state taking a specific action.
+In these methods, the policy is derived from the action-value function.
+For instance, a greedy policy always selects the action associated with the highest action-value.
+However, a limitation of value-based methods is that they require the action-space to be discretised \cite{sutton2020}.
+In the context of autonomous racing, where precise control actions are necessary for maintaining vehicle safety, discretized action-spaces fall short in providing the required level of control.
+
+Meanwhile, policy gradient techniques form a class of RL methods that explicitly represent the agent's policy as a function.
+These methods directly optimise the policy, which serves as a mapping between states and actions, in order to maximise performance.
+Representing the policy as a differentiable function such as a DNN allows for the representation of continuous state and action spaces \cite{silver2014}.
+We have therefore chosen to employ policy gradient methods in this study.
+Specifically, we use a state of the art policy gradient method known as twin delay deep deterministic policy gradient (TD3) \cite{Fujimoto2018}.
+Due to this algorithm's reliance on DNNs to represent the policy, we briefly discuss DNNs before detailing the algorithm itself.
+
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/RL_taxonomy.tex
+    \caption[A taxonomy of reinforcement learning algorithms]{A taxonomy of reinforcement learning algorithms.}
+    \label{fig:RL:taxonomy}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Deep neural networks}\label{sec:dnns}
+
+% According to Goodfellow \cite{Goodfellow2016},
+
+Deep neural networks (DNNs) are computational models which can represent complex relationships in data.
+We present the theory surrounding DNNs in the context of supervised learning.
+In supervised learning, the goal is to approximate a functional mapping, which is denoted as $y=f(\bm{x})$.
+However, the exact function $f(\bm{x})$ is unknown,  and instead, we have a data set
+\begin{equation}\label{eq:supdervised_dataset}
+    \mathcal{D} = \{ (\bm{x}^{[1]}, y^{[1]}), (\bm{x}^{[2]}, y^{[2]}), \cdots, (\bm{x}^{[n]}, y^{[n]}) \}
+\end{equation}
+consisting of examples where $f(\bm{x})$ was evaluated at inputs $\bm{x}^{[i]}$ to produce corresponding outputs $y^{[i]}$.
+The goal of an DNN is to define an mapping $\hat{y}=\hat{f}(\bm{x},\bm{\theta})$ which approximates $f(\bm{x})$ with parameters $\bm{\theta}$.
+The values of $\bm{\theta}$ that result in the best approximation are learned using the provided dataset examples \cite{Goodfellow2016}.
+Furthermore, in the context of applying DNNs to the TD3 algorithm, we are particularly interested in a subset of supervised learning known as regression, whereby both the input and output variables are continuous.
+
+
+Taking inspiration from neural networks in the human brain, the basic component comprising DNNs are \emph{artificial neurons}, which are analogous to their biological counterpart.
+These artificial neurons apply a non-linear function their inputs, and are organised in layers.
+We focus our discussion on feedforward neural networks (FNNs), which are a type of DNN whereby information is passed through the layers of the DNN in sequential order.
+Furthermore, we limit the discussion to \emph{fully connected layers}, in which each of the inputs of neurons in a given layer are connected to he outputs of each of the neurons through a weight, denoted with $w$.
+An example of a feedforward DNN with fully connected layers is shown in Figure \ref{fig:neural_network}.
+According to Ng et al. \cite{Ng2019}, the weights connecting each neuron in the $k$th layer to the preceding layer is given by the matrix
+\begin{equation}
+    \mathbf{W}^{(k)} = 
+    \begin{bmatrix}
+        w_{11} & \cdots &  w_{1d}   \\
+        \vdots & \ddots &           \\
+        w_{m1} &        & w_{md}    \\
+    \end{bmatrix}, 
+\end{equation}
+where $m$ is the number of neurons in the $k$th layer, and $d$ is the number inputs to each neuron (i.e., the number of neurons in the preceding layer).
+Furthermore, each neuron takes a bias, denoted with $b$, as input. 
+The biases of neurons in the $k$th layer are represented as a vector
+\begin{equation}
+    \mathbf{b}^{(k)} = [ b_1 \ldots b_m ]^\intercal,
+\end{equation}
+The weights and biases of all the layers in the network make up its parameters, and are denoted with $\theta$.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/neural_network.tex
+    \caption[A feed forward neural network]{
+    A three layer feedforward DNN with three fully connected layers: an input and a hidden layer of three units each, and an output layer of one unit. 
+    The weight and bias connections of the $k$th layer is denoted $\mathbf{W}^{(k)}$ and $\mathbf{b}^{(k)}$ respectively.
+    Furthermore, the DNN receives an input vector $\bm{x}=[x_1, \ldots ,x_d]$, and output $\hat{y}$.}
+    \label{fig:neural_network}
+\end{figure}
+
+
+% \subsection{Forward propagation}
+
+% The process of evaluating an input $\bm{x}$ to generate an output $\hat{y} = \hat{f}(\bm{x},\theta)$, is known as forward propagation.
+% In forward propagation for feedforward DNNs, the output of each layer is computed sequentially from first to last \cite{Goodfellow2016}.
+% The output of the $k$th layer is denoted with $\mathbf{h}^{(k)}$.
+
+To process inputs, the $k$th layer of a DNN first applies a pre-activation function $\bm{a}^{(k)}(\bm{x})$, 
+which adds the biases and product of the weight matrix and the vector output of the preceding layer, denoted as $\mathbf{h}^{(k-1)}$:
+\begin{equation}\label{eq:dnn_preact}
+    \bm{a}(\bm{x}) = \mathbf{b}^{(1)} + \mathbf{W}^{(k)} \mathbf{h}^{(k-1)}(\bm{x}),
+\end{equation}
+An activation function, denoted as $g^{k}(a)$, is then applied element-wise to the result of the pre-activation from Equation \ref{eq:dnn_preact}:
+\begin{equation}\label{eq:dnn_act}
+    \mathbf{h}^{(k)}(\bm{x}) = \bm{g}^{(k)}( \bm{a}^{(k)} (\bm{x}) ).
+\end{equation}
+Popular choices for activation functions include a linear function whose output is identical to its input
+\begin{equation}
+    g(a) = a,
+    \label{eq:linear_act}
+\end{equation}
+the rectified linear unit (ReLU), which takes the maximum between zero and the weighted sum of its inputs
+\begin{equation}
+    g(a) = \max(0,a),
+    \label{eq:ReLU_act}
+\end{equation}
+as well as the hyperbolic tangent
+\begin{equation}
+    g(a) = \tanh(a).
+    \label{eq:tanh_act}
+\end{equation}
+
+
+The process of evaluating an input $\bm{x}$ to generate an output $\hat{y} = \hat{f}(\bm{x},\theta)$, is known as forward propagation.
+During forward propagation, Equations \ref{eq:dnn_preact} and \ref{eq:dnn_act} are applied to every layer sequentially from first to last \cite{Goodfellow2016}, 
+as shown in Algorithm \ref{alg:forward_prop}.
+In this algorithm, the input to the DNN is set as the 0th layer of the network, and the output of the DNN corresponds to the output of the final layer.
+
+\begin{algorithm}[htb!]
+\caption[Evaluating a single example input via forward propagation]{Evaluating a single example input $\bm{x}$ via forward propagation. Adapted from Goodfellow et al. \cite{Goodfellow2016}.}
+\label{alg:forward_prop}
+\nonl\textbf{Input}: An input $\bm{x}$, DNN with parameters $\{\mathbf{W,b}\} \in \bm{\theta}$ \\
+\nonl\textbf{Output}: DNN output $\hat{y}$ \\
+\vspace{0.3cm} 
+$\mathbf{h}^{(0)} \leftarrow \bm{x}$ \\
+\For{$k=1$, $\cdots$, $K$}
+{
+    $\mathbf{a}^{(k)} \leftarrow \mathbf{b}^{(k)} + \mathbf{W}^{(k)} \mathbf{h}^{(k-1)}$ \\
+    $\mathbf{h}^{(k)} \leftarrow \mathbf{g}^{(k)}(\mathbf{a}^{(k)})$ \\
+}
+$\hat{y} \leftarrow \mathbf{h}^{(K)}$ \\
+\end{algorithm}
+
+
+
+\subsection{Gradient-based learning}\label{sec:grad_des}
+The process through which the optimal set of parameters are determined such that $\hat{f}(\bm{x}, \bm{\theta})$ approximates the mapping between 
+input and output data as accurately as possible is called training.
+Training is accomplished by incrementally adjusting the parameters of the DNN, such that a \emph{cost function}, denoted $J$, is minimised. 
+
+The cost function measures the error between the DNN predicted output $\hat{y} = \hat{f}(\bm{x}, \bm{\theta})$ and target examples of the true function $y = f(\bm{x})$. 
+A popular cost  function that we consider in this study is the mean squared error (MSE) over a batch of data samples,
+\begin{equation}
+    J( \bm{y}, \bm{x}, \bm{\theta}) = \frac{1}{N} \sum_{i=1}^{N} (y^i - \hat{f}(\bm{x}^i, \bm{\theta}))^2,
+    \label{eq:cost_function}
+\end{equation}
+where $\mathbf{y} = [ y^1, y^2, \ldots , y^N ]$ is a vector of training data (often referred to as the \emph{target}), and $\mathbf{\hat{y}} = [ \hat{y}^1, \hat{y}^2, \ldots , \hat{y}^N ]$ is a vector of DNN outputs evaluated at the same inputs as for $\mathbf{y}$.
+When this cost function is minimised over all of the available training data, the neural network becomes a better approximator of the true function $f(\bm{x})$.
+
+
+The iterative process of adjusting the DNN parameters such that the cost function decreases is known as gradient descent.
+% In gradient descent, the parameters of the DNN at a given time step $t$, denoted as $\bm{\theta}_t$, undergo updates by computing the partial derivative of the cost function with respect to those parameters. 
+In gradient descent,  the partial derivative of the cost function with respect to the DNN parameters are computed at every time step. 
+The parameters are then adjusted slightly so that the cost decreases, such that the parameters at the next time step are
+\begin{equation}
+    \bm{\theta}_{t+1} = \bm{\theta}_{t} - \alpha \nabla_{\bm{\theta}_t}J(\bm{\theta}_t),
+    \label{eq:gradient_descent}
+\end{equation}
+where $\alpha$ is a scalar controlling the magnitude of the updates, and is known as the learning rate.
+
+A popular gradient descent method that we consider in this study, which is based on Equation \ref{eq:gradient_descent}, is adaptive moment estimation (Adam), introduced by Kingma and Ba \cite{kingma2015}. 
+Adam computes adaptive learning rates for each parameter in the DNN by keeping track of a decaying average of past gradients, referred to as the momentum. 
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Twin delay deep deterministic policy gradient}\label{sec:td3}
+
+The twin delay deep deterministic policy gradient (TD3) algorithm by Fujimoto et al. \cite{Fujimoto2018}, is a popular RL technique applied to solve robotics problems due to its capability to handle continuous action-spaces.
+The basic idea of TD3 is to represent the policy, denoted as $\pi_{\bm{\phi}}(s)$, as a DNN with parameters $\bm{\phi}$.
+This DNN is also known as the actor.
+To update the actor parameters such that the policy improves, gradient ascent is performed with respect to a performance measure $J(\bm{\phi})$,
+\begin{equation}\label{eq:policy_gradient_ascent}
+    \bm{\phi}_{t+1} = \bm{\phi}_{t} + \alpha \nabla_{\bm{\phi}} J(\bm{\phi}_t).
+\end{equation}
+The performance measure $J$ is defined in terms of an \emph{action-value function}, denoted $Q_{\bm{\theta}}(s,a)$, which is the expected return $\mathbb{E}[G_t]$ from the current state to the end of the episode, given that a specific action is selected in the current state, after which the policy $\pi_{\bm{\theta}}$ is followed.
+This action-value function is known as a critic, and is represented by a DNN with parameters $\bm{\theta}$.
+In TD3, the idea is to set the performance measure equal to the action-value function
+\begin{equation}
+    J(\bm{\phi}) = Q_{\bm{\theta}}(s,a)| _{a=\pi_{\bm{\phi}}(s)}.
+\end{equation}
+Updating the actor parameters as in Equation \ref{eq:policy_gradient_ascent} will then result in a policy that maximises the expected return, thus solving the MDP. 
+TD3 is presented in Algorithm \ref{alg:td3}.
+
+
+\begin{algorithm}[hbt!]
+\caption[Twin delay deep deterministic policy gradient (TD3)]{The twin delay deep deterministic policy gradient (TD3) algorithm, adapted from Fujimoto et al. \cite{Fujimoto2018}.}\label{alg:td3}
+Initialise critic networks $Q_{\bm{\theta}_1}, Q_{\bm{\theta}_2}$ and actor network $\pi_{\bm{\phi}}$ 
+with \\
+\nonl parameters $\bm{\theta}_1, \bm{\theta}_2$ and $\bm{\phi}$ \\
+Initialise target networks $Q_{\bm{\theta}_1'}$, $Q_{\bm{\theta}_2'}$ and $\pi_{\bm{\phi}'}$ with weights \\
+\nonl $\bm{\theta}_1' \leftarrow \bm{\theta}_1$, $\bm{\theta}_2' \leftarrow \bm{\theta}_2$, and $\bm{\phi}' \leftarrow \bm{\phi}$ \\
+Initialise experience replay buffer $\mathcal{B}$ \\
+\vspace{0.5cm}
+\For{\emph{episode} = 0, M}
+{
+    \For{t=0, T}
+    {
+        Select an action with random exploration noise \\
+        \nonl $a_t \sim \pi_{\bm{\phi}}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+        Execute action $a_t$, observe reward $r$ and new state $s_{t+1}$ \\
+        Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+        \vspace{0.5cm}
+        Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+        Select target actions for every sample:\\
+        \nonl $\tilde{a} \leftarrow \pi_{\bm{\phi}'}(s_{i+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+        Set TD target:
+        $y \leftarrow r_i + \gamma \min_{q=1,2} Q_{\bm{\theta}_q'}(s_{i+1}, \tilde{a})$ \\
+        Update critics by minimising the loss: %\hspace{1.8cm}
+            % \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}
+            % \begin{tabular}{l}Policy\\evaluation\end{tabular}$}} \\
+        $\bm{\theta}_q \leftarrow \text{argmin}_{\bm{\theta}_q} ( \frac{1}{N} \sum_{i=0}^{N} (y_i - Q_{\bm{\theta}_q}(s_i,a_i))^{2} ) $ \\
+        \vspace{0.5cm}
+        \If{$t$ \emph{mod} $d$}
+        {
+            Update $\bm{\phi}$ by the deterministic policy gradient: \\ %\hspace{5.2cm} 
+                % \rlap{\smash{$\left.\begin{array}{@{}c@{}}\\{}\\{}\end{array}\right\}
+                % \begin{tabular}{l}Policy\\improvement\end{tabular}$}} \\
+            \nonl $J(\bm{\phi}) = \frac{1}{N} \sum Q_{\bm{\theta}_1}(s_i,a) | _{a=\pi_{\bm{\phi}}(s_i)}$ \\
+            Update target networks: \\
+            $\bm{\theta}_{q}' \leftarrow \tau \bm{\theta}_q + (1 - \tau) \bm{\theta}_{q}'$ \\
+            $\bm{\phi}' \leftarrow \tau \bm{\phi} + (1 - \tau) \bm{\theta}'$ \\
+        }
+    }
+}
+\end{algorithm}
+
+
+
+In the first two lines of this algorithm, the actor and two critic DNNs are initialed as $\pi_{\bm{\phi}}$ and $Q_{\bm{\theta}_q}$, respectively.
+The actor is parameterised by $\bm{\phi}$, and the critics by $\bm{\theta}_q$, where the subscript $q$ indicates the critic number.
+Two critics are utilised to combat a phenomenon known as \emph{overestimation bias}, whereby states with a low real return are evaluated as having a high expected return. 
+
+
+Subsequently, \emph{target networks} are initialised for each critic and the actor.
+These target networks are identical in structure to their corresponding counterparts, and are indicated with a prime symbol.
+Therefore, the target actor and critics are denoted as $\pi_{\bm{\phi}}'$ and $Q_{\bm{\theta}_q}'$, respectively.
+These target networks are updated at a slower rate than their counterparts.
+According to Mnih et al. \cite{mnih2013}, utilising these target networks to update the action-value function increases training stability.
+
+
+Next, a replay buffer, denoted by $\mathcal{B}$, is initialised as an empty array to store the agents experiences.
+These experiences are stored as a tuple 
+\begin{equation}
+    \bm{e}_t = (s_t,a_t,r_t,s_{t+1}),
+\end{equation}
+where $t$ is the time step of the experience.
+By maintaining a history of experiences, each experience can be sampled multiple times to update the parameters of the actor and critics.
+This approach also helps to break correlations between samples, preventing the DNN parameters from converging to a sub-optimal local minima \cite{mnih2013}.
+
+
+After initialising the actor, critics and replay buffer, the TD3 algorithm executes for $M$ number of of episodes, where each episode represents a trajectory of state, action and reward sequences, as shown in Equation \ref{eq:mdp_trajectory}.
+Every episode consists $T$ time steps.
+At each time step, the algorithm follows this structure: the agent is sampled for an action, after which the environment provides the next state and reward.
+Subsequently, the critics are updated to improve the accuracy of action-value estimation.
+Additionally, the policy and target networks are updated every $d$ time steps.
+
+
+
+In line $6$, an action is sampled from the actor using
+\begin{equation}\label{eq:dpg_policy}
+    a_t = \pi_{\bm{\phi}}(s_t) + \epsilon, \hspace{0.3cm} \epsilon \sim \mathcal{N}(0,\sigma),
+\end{equation}
+where $ \pi_{\bm{\phi}}(s_t)$ is obtained by forward passing the state through the actor DNN.
+To encourage exploration, Gaussian noise with a mean of $0$ and a standard deviation of $\sigma$ is added to each action.
+After sampling the new state , denoted as $s_{t+1}$ and reward, denoted as $r_{t}$ from the environment in line $7$, the agent's experience tuple is stored in the replay buffer in line $8$.
+
+
+
+The process of updating the critics occurs in lines $9$ to $12$. 
+Firstly, a batch of $N$ experiences is sampled from the replay buffer.
+Each experience is represented as a tuple comprised of a state $s_i$, action $a_i$, reward $r_i$ and subsequent state $s_{i+1}$.
+For each of these experiences, the target actor is used to select \emph{target actions} associated with the subsequent state,
+\begin{equation}
+    \tilde{a} \leftarrow \pi_{\bm{\phi}'}(s_{i+1}) + \epsilon, \epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c).
+\end{equation}
+Guassian noise is added to the target action with upper and lower magnitude bounds of $c$.
+
+
+
+The critic DNNs are then updated towards a \emph{TD target} vector, denoted as $y$, in line $12$.
+Each element in the TD target vector corresponds to a sampled experience $i$, and is computed by
+\begin{equation}
+    y_i \leftarrow r_i + \gamma \min_{q=1,2} Q_{\bm{\theta}_q'}(s_{i+1}, \hat{a}),
+\end{equation}
+where $\gamma$ is the discount factor. The cost to be utilised in the gradient descent step for the critics, which we denote as $J(\bm{\theta})$, is computed as the MSE between the TD target and the action-values of the sampled experiences, as evaluated by the critics themselves:
+\begin{equation}
+     J(\bm{\phi}) = \frac{1}{N} \sum_{i=0}^{N} (y_i - Q_{\bm{\theta}_q}(s_i,a_i))^{2}.
+\end{equation}
+Note that the cost is computed twice, by taking the MSE between the target and both critics.
+The parameters of both critics are then updated using gradient descent with the objective of minimizing the cost function represented in line $12$.
+Utilising two critics in this manner aims to overcome the issue of overestimation bias of action-values.
+
+
+The updates to the actor and target DNNs occur every $d$ time steps to reduce the variance of their updates. 
+The update to the actor parameters is performed by gradient ascent with respect to the performance measure $J(\bm{\phi})$.
+This performance measure is defined as the the average of the first critics evaluation of the sampled states, where the action is given by the current policy $\pi_{\bm{\theta}}$, over the $N$ experiences sampled from the replay buffer:
+\begin{equation}
+    J(\bm{\theta}) = \frac{1}{N} \sum Q_{\bm{\theta}_1}(s_i,a) | _{a=\pi_{\bm{\phi}}(s_i)}.
+\end{equation}
+Therefore, updating the policy in a way that maximizes the performance measure results in a policy that maximizes the estimated return for each action.
+
+
+Lastly, the target network parameters $\bm{\phi}'$ and $\bm{\theta}'$ are updated towards $\bm{\phi}$ and $\bm{\theta}$ using a \emph{soft update} rule, 
+\begin{equation}
+\begin{split}
+    \bm{\theta}' &\leftarrow \tau \bm{\theta}' + (1 - \tau) \bm{\theta}, \\
+    \bm{\phi}' &\leftarrow \tau \bm{\phi} + (1 - \tau) \bm{\phi}',
+\end{split}
+\end{equation}
+where $\tau \ll 1$ is the soft update rate that prevents the target DNN parameters from changing too quickly, which in turn stabilises learning. 
+
+
+
+\section{Summary}
+
+This chapter presented the theoretical foundation of the Markov Decision Process (MDP), which serves as the formal mathematical framework for the problem that Reinforcement Learning (RL) aims to solve.
+We also explored the field of RL, with particular emphasis on the TD3 algorirthm.
+ 
+
+Within an MDP, the agent interacts with an environment that is defined by a set of state transition probabilities. 
+However, there are many cases (such as autonomous racing) where the state transition probabilities are difficult to represent explicitly.
+In these cases, simulators are used to represent them implicitly by generating the state transition according to the current state and selected action.
+In the next chapter, we discuss how F1tenth autonomous racing is modelled as a simulator environment, 
+such that TD3 can be applied to train RL agents to learn how to race.
+
+
+

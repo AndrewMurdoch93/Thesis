@@ -1,0 +1,13 @@
+\begin{algorithm}[htb!]
+{
+        \For{n=0, N}
+        {
+            Modify $a_{\text{long},d}$ to limit velocity \\
+            Simulator executes control action $a_t$ \\
+            Observe reward $r_{t,n}$ and done condition \\  
+            Update reward: $r_t = r_t + r_{t,n}$ \\
+        }
+}
+\caption[Action execution mechanism for end-to-end agents that ]{Our action execution mechanism that accounts for the different sampling rates of the agent and environment components (e.g., the velocity constraint and simulator). $N$ is calculated using Equation \ref{eq:N}.}
+\label{alg:sample_rate_modification}
+\end{algorithm}

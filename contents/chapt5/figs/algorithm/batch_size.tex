@@ -1,0 +1,23 @@
+\newcolumntype{R}{>{\centering\arraybackslash}p{3cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.2cm}}
+\begin{table}[htb!]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.8\textwidth}{RLLL} 
+    \hline
+    \textbf{Batch size ($B$)} & Training time [minutes] & \textbf{Failed laps [\%]} & \textbf{Average lap time [s]} & \textbf{Standard deviation of lap time [s]}\\ 
+    \hline
+    $50$    & & $2.33$    & $6.12$  & $0.28$ \\      
+    $100$   & & $0.33$    & $6.51$  & $0.28$ \\
+    $150$   & & $0.00$    & $6.07$  & $0.20$ \\
+    $200$   & & $0.33$    & $5.94$  & $0.11$ \\
+    $300$   & & $0.33$    & $5.94$  & $0.11$ \\
+    $400$   & & $0.33$    & $5.94$  & $0.11$ \\
+    $600$   & & $0.33$    & $5.94$  & $0.11$ \\
+    $1000$  & & $0.33$    & $5.94$  & $0.11$ \\
+    \hline
+\end{tabularx}
+\caption[Test results of end-to-end agents with various reward discount rates]{Test results of agents with reward discount rates ranging from $0.9$ to $1$.}
+\label{tab:gamma}
+\end{table}

@@ -1,0 +1,154 @@
+\relax 
+\providecommand{\transparent@use}[1]{}
+\providecommand\hyper@newdestlabel[2]{}
+\@writefile{lof}{\addvspace {10pt}}
+\@writefile{lot}{\addvspace {10pt}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {6}Partial end-to-end autonomous racing}{56}{chapter.6}\protected@file@percent }
+\@writefile{loa}{\addvspace {10\p@ }}
+\newlabel{chp:partial_end_to_end_autonomous_racing}{{\M@TitleReference {6}{Partial end-to-end autonomous racing}}{56}{Partial end-to-end autonomous racing}{chapter.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Partial end-to-end algorithm design}{56}{section.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces The partial end-to-end racing algorithm}}{57}{figure.caption.69}\protected@file@percent }
+\newlabel{fig:steer_vel_architecture}{{\M@TitleReference {6.1}{The partial end-to-end racing algorithm}}{57}{The partial end-to-end racing algorithm}{figure.caption.69}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Planner agent}{57}{subsection.6.1.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces The partial end-to-end planner agent}}{57}{figure.caption.70}\protected@file@percent }
+\newlabel{fig:steer_vel_agent}{{\M@TitleReference {6.2}{The partial end-to-end planner agent}}{57}{The partial end-to-end planner agent}{figure.caption.70}{}}
+\citation{Weiss2020a}
+\citation{Capo2020}
+\citation{keefer2022,Liniger2015a,Wang2021}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Path generation method}{58}{subsection.6.1.2}\protected@file@percent }
+\newlabel{sec:path_construction}{{\M@TitleReference {6.1.2}{Path generation method}}{58}{Path generation method}{subsection.6.1.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces An example of a trajectory in Cartestian and Frenet coordinates}}{58}{figure.caption.71}\protected@file@percent }
+\newlabel{fig:frenet_frame}{{\M@TitleReference {6.3}{An example of a trajectory in Cartestian and Frenet coordinates}}{58}{An example of a trajectory in Cartestian and Frenet coordinates}{figure.caption.71}{}}
+\citation{Evans2021b,Weiss2020}
+\citation{Sakai2018}
+\citation{Patnaik2020}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.3}Steering controller design}{59}{subsection.6.1.3}\protected@file@percent }
+\newlabel{eq:l_d}{{6.2}{59}{Steering controller design}{equation.6.1.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Generating the path in the Frenet frame}}{60}{figure.caption.72}\protected@file@percent }
+\newlabel{fig:polynomial_path_generation}{{\M@TitleReference {6.4}{Generating the path in the Frenet frame}}{60}{Generating the path in the Frenet frame}{figure.caption.72}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.5}{\ignorespaces A depiction of the pure pursuit controller}}{60}{figure.caption.73}\protected@file@percent }
+\newlabel{fig:pure_pursuit}{{\M@TitleReference {6.5}{A depiction of the pure pursuit controller}}{60}{A depiction of the pure pursuit controller}{figure.caption.73}{}}
+\newlabel{eq:delta_d}{{6.3}{60}{Steering controller design}{equation.6.1.3}{}}
+\citation{f1tenth}
+\citation{Betz2021,Rajamani2012}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.4}Velocity controller design}{61}{subsection.6.1.4}\protected@file@percent }
+\newlabel{eq:vel_control}{{6.4}{61}{Velocity controller design}{equation.6.1.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Applying TD3 to partial end-to-end racing}{61}{section.6.2}\protected@file@percent }
+\newlabel{eq:pete_agent_sample}{{6.5}{61}{Applying TD3 to partial end-to-end racing}{equation.6.2.5}{}}
+\newlabel{eq:pete_vel_sample}{{6.6}{61}{Applying TD3 to partial end-to-end racing}{equation.6.2.6}{}}
+\newlabel{eq:pete_steer_sample}{{6.7}{61}{Applying TD3 to partial end-to-end racing}{equation.6.2.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Empirical design}{62}{section.6.3}\protected@file@percent }
+\citation{Patnaik2020}
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Values of hyper-parameters for the partial end-to-end racing algorithm}}{63}{table.caption.74}\protected@file@percent }
+\newlabel{tab:pete_values}{{\M@TitleReference {6.1}{Values of hyper-parameters for the partial end-to-end racing algorithm}}{63}{Values of hyper-parameters for the partial end-to-end racing algorithm}{table.caption.74}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Steering controller tuning}{63}{section.6.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.6}{\ignorespaces Learning curves for partial end-to-end agents trained with different agent sampling rates}}{64}{figure.caption.75}\protected@file@percent }
+\newlabel{fig:f_agent_pete}{{\M@TitleReference {6.6}{Learning curves for partial end-to-end agents trained with different agent sampling rates}}{64}{Learning curves for partial end-to-end agents trained with different agent sampling rates}{figure.caption.75}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.7}{\ignorespaces Tracjectories taken by vehicles following a straight line starting from an offset position}}{64}{figure.caption.76}\protected@file@percent }
+\newlabel{fig:lfc}{{\M@TitleReference {6.7}{Tracjectories taken by vehicles following a straight line starting from an offset position}}{64}{Tracjectories taken by vehicles following a straight line starting from an offset position}{figure.caption.76}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.8}{\ignorespaces Learning curves for tuning the steering controller look-ahead constant of a partial end-to-end agent}}{65}{figure.caption.77}\protected@file@percent }
+\newlabel{fig:lfc_curves}{{\M@TitleReference {6.8}{Learning curves for tuning the steering controller look-ahead constant of a partial end-to-end agent}}{65}{Learning curves for tuning the steering controller look-ahead constant of a partial end-to-end agent}{figure.caption.77}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.9}{\ignorespaces The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya}}{65}{figure.caption.78}\protected@file@percent }
+\newlabel{fig:lfc_paths}{{\M@TitleReference {6.9}{The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya}}{65}{The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya}{figure.caption.78}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}Velocity controller tuning}{66}{section.6.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Evaluation results of agents using different values of $k$}}{66}{table.caption.79}\protected@file@percent }
+\newlabel{tab:velocity_controller_gain}{{\M@TitleReference {6.2}{Evaluation results of agents using different values of $k$}}{66}{Evaluation results of agents using different values of $k$}{table.caption.79}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.6}Racing without model uncertainties}{66}{section.6.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.10}{\ignorespaces Paths taken by partial end-to-end agents utilising controller gain ($k_v$) values of $0.5$, $1$ and $2$ on the final section of Barcelona-Catalunya}}{67}{figure.caption.80}\protected@file@percent }
+\newlabel{fig:kv_paths}{{\M@TitleReference {6.10}{Paths taken by partial end-to-end agents utilising controller gain ($k_v$) values of $0.5$, $1$ and $2$ on the final section of Barcelona-Catalunya}}{67}{Paths taken by partial end-to-end agents utilising controller gain ($k_v$) values of $0.5$, $1$ and $2$ on the final section of Barcelona-Catalunya}{figure.caption.80}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.11}{\ignorespaces Learning curves of partial and fully end-to-end agents trained to race on the Porto and Monaco tracks}}{67}{figure.caption.81}\protected@file@percent }
+\newlabel{fig:all_tracks_train}{{\M@TitleReference {6.11}{Learning curves of partial and fully end-to-end agents trained to race on the Porto and Monaco tracks}}{67}{Learning curves of partial and fully end-to-end agents trained to race on the Porto and Monaco tracks}{figure.caption.81}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.12}{\ignorespaces Locations where the end-to-end and partial end-to-end agents crashed during training.\relax }}{68}{figure.caption.82}\protected@file@percent }
+\newlabel{fig:esp_crashes}{{\M@TitleReference {6.12}{Locations where the end-to-end and partial end-to-end agents crashed during training.\relax }}{68}{Locations where the end-to-end and partial end-to-end agents crashed during training.\relax }{figure.caption.82}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.3}{\ignorespaces Performance of end-to-end and partial end-to-end agents under evaluation conditions}}{68}{table.caption.83}\protected@file@percent }
+\newlabel{tab:peteevaluation}{{\M@TitleReference {6.3}{Performance of end-to-end and partial end-to-end agents under evaluation conditions}}{68}{Performance of end-to-end and partial end-to-end agents under evaluation conditions}{table.caption.83}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.13}{\ignorespaces The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya}}{69}{figure.caption.84}\protected@file@percent }
+\newlabel{fig:esp_eval}{{\M@TitleReference {6.13}{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya}}{69}{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya}{figure.caption.84}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.14}{\ignorespaces The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco}}{69}{figure.caption.85}\protected@file@percent }
+\newlabel{fig:mco_eval}{{\M@TitleReference {6.14}{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco}}{69}{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco}{figure.caption.85}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.15}{\ignorespaces Paths and slip angles of agents racing on Circuit de Monaco}}{70}{figure.caption.86}\protected@file@percent }
+\newlabel{fig:pete:slip}{{\M@TitleReference {6.15}{Paths and slip angles of agents racing on Circuit de Monaco}}{70}{Paths and slip angles of agents racing on Circuit de Monaco}{figure.caption.86}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.7}Evaluating alternative partial end-to-end algorithm architectures}{70}{section.6.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.16}{\ignorespaces Learning curves for agents utilising each algorithm structure}}{71}{figure.caption.87}\protected@file@percent }
+\newlabel{fig:architecture_train}{{\M@TitleReference {6.16}{Learning curves for agents utilising each algorithm structure}}{71}{Learning curves for agents utilising each algorithm structure}{figure.caption.87}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.8}Summary}{71}{section.6.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.17}{\ignorespaces Paths taken by agents utilising each algorithm architecture}}{72}{figure.caption.88}\protected@file@percent }
+\newlabel{fig:architecture_esp}{{\M@TitleReference {6.17}{Paths taken by agents utilising each algorithm architecture}}{72}{Paths taken by agents utilising each algorithm architecture}{figure.caption.88}{}}
+\@setckpt{contents/chapt6/chapt6}{
+\setcounter{page}{73}
+\setcounter{equation}{7}
+\setcounter{enumi}{6}
+\setcounter{enumii}{4}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{@memmarkcntra}{0}
+\setcounter{storedpagenumber}{1}
+\setcounter{book}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{6}
+\setcounter{section}{8}
+\setcounter{subsection}{0}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{@ppsavesec}{0}
+\setcounter{@ppsaveapp}{0}
+\setcounter{vslineno}{0}
+\setcounter{poemline}{0}
+\setcounter{modulo@vs}{0}
+\setcounter{memfvsline}{0}
+\setcounter{verse}{0}
+\setcounter{chrsinstr}{0}
+\setcounter{poem}{0}
+\setcounter{newflo@tctr}{4}
+\setcounter{@contsubnum}{0}
+\setcounter{maxsecnumdepth}{3}
+\setcounter{sidefootnote}{0}
+\setcounter{pagenote}{0}
+\setcounter{pagenoteshadow}{0}
+\setcounter{memfbvline}{0}
+\setcounter{bvlinectr}{0}
+\setcounter{cp@cntr}{0}
+\setcounter{ism@mctr}{0}
+\setcounter{xsm@mctr}{0}
+\setcounter{csm@mctr}{0}
+\setcounter{ksm@mctr}{0}
+\setcounter{xksm@mctr}{0}
+\setcounter{cksm@mctr}{0}
+\setcounter{msm@mctr}{0}
+\setcounter{xmsm@mctr}{0}
+\setcounter{cmsm@mctr}{0}
+\setcounter{bsm@mctr}{0}
+\setcounter{workm@mctr}{0}
+\setcounter{sheetsequence}{85}
+\setcounter{lastsheet}{107}
+\setcounter{lastpage}{95}
+\setcounter{figure}{17}
+\setcounter{lofdepth}{2}
+\setcounter{table}{3}
+\setcounter{lotdepth}{1}
+\setcounter{US@tcnta}{0}
+\setcounter{US@tcntb}{0}
+\setcounter{parentequation}{0}
+\setcounter{section@level}{1}
+\setcounter{Item}{14}
+\setcounter{Hfootnote}{0}
+\setcounter{bookmark@seq@number}{48}
+\setcounter{memhycontfloat}{0}
+\setcounter{Hpagenote}{0}
+\setcounter{NAT@ctr}{0}
+\setcounter{float@type}{4}
+\setcounter{AlgoLine}{10}
+\setcounter{algocfline}{6}
+\setcounter{algocfproc}{6}
+\setcounter{algocf}{6}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{subfigure}{0}
+\setcounter{subtable}{0}
+\setcounter{svg@param@lastpage}{0}
+\setcounter{svg@param@currpage}{-1}
+\setcounter{r@tfl@t}{0}
+}

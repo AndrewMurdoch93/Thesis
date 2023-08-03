@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+    \draw (0,0)  node[shape aspect=1,circle,draw] (x1) {$x_1$};
+    \draw (0,-1.5) node[shape aspect=1,circle,draw] (xi) {$x_j$};
+    \draw (0,-3) node[shape aspect=1,circle,draw] (xI) {$x_d$};
+    \draw (2,-1.5) node[shape aspect=1,circle,draw] (g) {$g(a)$};
+    \draw (1,1) node[shape aspect=1,circle,draw] (b) {$1$};
+    
+    \draw[loosely dotted] (x1) -- (xi);
+    \draw[loosely dotted] (xi) -- (xI);
+    
+    \draw[->] (x1) -- (g) node[midway,fill=white] {$w_1$};
+    \draw[->] (xi) -- (g) node[midway,fill=white] {$w_j$};
+    \draw[->] (xI) -- (g) node[midway,fill=white] {$w_d$};
+    \draw[->] (b) -- (g) node[midway,fill=white] {$b$};
+    \draw[->] (g) -- (3.5,-1.5) node[midway,fill=none] {};
+\end{tikzpicture}

@@ -1,0 +1,39 @@
+\newcolumntype{a}{>{\hsize=1\hsize \centering\arraybackslash}X}
+\newcolumntype{d}{>{\hsize=.5\hsize \centering\arraybackslash}X}
+\newcolumntype{e}{>{\hsize=2\hsize \centering\arraybackslash}X}
+
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{21cm}{|a|d|d|d|d|e|}
+    
+    \hline
+    \small \textbf{Name} & \small \textbf{Model-based} & \small \textbf{Multi-agent} & \small \textbf{Input} & \small \textbf{Physical vehicle} & \small \textbf{sim2real approach} \\
+    \hline
+    \small Schwarting et al. \cite{Schwarting2021} & \checkmark & \checkmark & \small game image & & - \\
+    \hline
+    \small Brunnbauer et al. \cite{brunnbauer2021} & \checkmark & & \small features & \checkmark & - \\
+    \hline
+    \small Perot et al. \cite{Perot2017} & & & \small game image & & - \\
+    \hline
+    \small Jaritz et al.  \cite{Jaritz2018} & & & \small game image & & - \\
+    \hline 
+    \small Fuchs et al. \cite{Fuchs2021} & & & \small features & & \small Test effects of model inaccuracy in simulation \\
+    \hline
+    \small Remonda et al. \cite{Remonda2021} & & & \small features & \checkmark & - \\
+    \hline 
+    \small Song et al. \cite{Song2021} & & \checkmark & \small features & & - \\
+    \hline
+    \small Niu et al. \cite{Niu2020} & & & \small features & & \small Safety module based on learned vehicle model prevents agent from selecting unsafe actions. \\
+    \hline
+    \small Chisari et al. \cite{Chisari2021} & & & \small features & \checkmark & \small Parameter randomisation while training, policy refinement after deployment \\
+    \hline
+    \small Ivanov et al. \cite{Ivanov2020} & & & \small features & \checkmark & \small Parameter randomisation while training \\
+    \hline
+    \small Hsu et al. \cite{hsu2022} & & & \small image & \checkmark & \small Control action smoothing \\
+    \hline
+
+\end{tabularx}
+\caption[A summary of end-to-end reinforcement learning approaches for autonomous racing]{A summary of end-to-end reinforcement learning approaches for autonomous racing.}
+\label{table:autonomous_racing_rl_summary}
+\end{table} 

@@ -1,0 +1,21 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{3.5cm}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{2cm}}
+
+\begin{table}[!htb]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.65\textwidth}{RLL} 
+    \hline
+    \textbf{Number of LiDAR beams} & \textbf{Successful laps [\%]} & \textbf{Lap time [s]}\\ 
+    \hline
+    None    & 99    & 5.15, 0.28 \\
+    3       & 100   & 5.07, 0.18 \\
+    10      & 95    & 5.14, 0.15 \\
+    20      & 100   & 4.98, 0.21 \\
+    50      & 96    & 5.04, 0.17 \\
+    \hline
+\end{tabularx}
+\caption[Observation space]{Observation space.}
+\label{tab:observation_space}
+\end{table}

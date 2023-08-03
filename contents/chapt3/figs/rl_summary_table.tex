@@ -1,0 +1,20 @@
+\newcolumntype{L}{>{\raggedleft\arraybackslash}p{6cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}p{2.8cm}}
+\newcolumntype{R}{>{\centering\arraybackslash}p{1.8cm}}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{0.85\textwidth} {LMR}
+    \hline
+    \textbf{Method} & \textbf{continuous action space} & \textbf{online} \\
+    \hline
+    Value-based, Monte Carlo  &  &   \\
+    Value-based, temporal difference  &  & \checkmark  \\
+    Policy-based & \checkmark &  \\
+    Actor-critic & \checkmark & \checkmark \\
+    \hline
+\end{tabularx}
+\caption[Criteria for reinforcement learning method selection]{A condensed decision criteria for reinforcement learning method selection.}
+\label{table:rl_summary}
+\end{table}

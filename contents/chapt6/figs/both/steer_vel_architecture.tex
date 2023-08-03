@@ -1,0 +1,64 @@
+\tikzstyle{a}=[rectangle, draw=black, fill=white,thick, minimum width = 2cm, minimum height = 3cm, align=center, rounded corners=.1cm]
+\tikzstyle{b}=[rectangle, draw=black, fill=white,thick, minimum width = 1cm, minimum height = 0.8cm,, align=center, rounded corners=.1cm]
+
+\begin{tikzpicture}
+ 
+    % Draw nodes
+    \node (a) at (5,5)  [a] {Planner\\agent};
+    \node (b) at (12.5,5.7)  [b] {Velocity\\constraint};
+    \node (c) at (12.5,2)  [b] {Simulator};
+
+    \node (d) at (9,5.7)  [b] {Velocity\\control};
+    \node (e) at (9,4.3)  [b] {Steering\\control};
+    
+    % Draw boxes around nodes
+    %Driving architecture
+    \draw[loosely dashed] ($(a)+(-1.5,-2)$) -| ($(b)+(1.3,1.5)$) -|  ($(a)+(-1.5,-2)$) node [pos=0.25,above] {Driving architecture};
+    %Environment
+    % \draw[dotted] ($(c)+(-1.5,-1)$) -| ($(b)+(3,1)$) -|  ($(c)+(-1.5,-1)$) node [draw=white,pos=0.25,above,fill=white] {Environment};
+    \draw[loosely dashed] ($(c)+(-5,-1)$) -| ($(b)+(3,1)$) node [pos=0.25,below] {Environment} -| ($(c)+(-5,-1)$);
+    
+    % Draw connections
+    %agent to limit
+    % \draw[<-] (b) -- (b-|a.east);
+    %agent to steer control
+    \draw[<-] (e) -- (e-|a.east);
+    %agent to vel control
+    \draw[<-] (d) -- (d-|a.east);
+    %vel control to speed limit
+    \draw[<-] (b) -- (b-|d.east);
+    %Limit to simulator
+    % \draw[->] (b) -- ($(b)+(2.5,0)$) -- ($(c)+(2.5,-0.2)$) -- ($(c.east)+(0,-0.2)$);
+    \draw[->] (b) -| ($(c)+(2.5,-0.2)$) -- ($(c.east)+(0,-0.2)$);
+    %Agent to simulator
+    % \draw[->] ($(a.east)+(0,-0.5)$) -| ($(c)+(2,0.2)$) -- ($(c.east)+(0,0.2)$);
+    % \draw[->] ($(c)+(2,-0.2)$) -- (c);
+    %Simulator to agent
+    % \draw[->] (c) -| ($(a)+(-2,0)$) node  [pos=0.25,above] {Observation} -- (a);
+    \draw[->] (c) -| ($(a)+(-2,0)$) -- (a);
+    %Steer control to simulator
+    \draw[->] (e.east) -| ($(c)+(2,0.2)$) -- ($(c.east)+(0,0.2)$);
+    %
+
+    
+    % Label connections
+    \node (l1) at ($(a.east)+(0,0.7)$) [above right] {$v_d$};
+    \node (l1) at ($(a.east)+(0,-0.7)$) [above right] {Path};
+    % \node (l2) at ($(a.east)+(0,0.7)$) [above right] {$a_{\text{long},d}$};
+    \node (l3) at (e.east) [above right] {$\delta_{d}$};
+    \node (l4) at (d.east) [above right] {$a_{\text{long},d}$};
+    \node (l5) at (c.west) [above left] {Observation};
+    \node (l6) at (b.east) [above right, fill=white] {$a_{\text{long},d}$};
+
+   
+    % %lines between components
+    % \draw[->] (-1.8,-1) -- (-1.4,-1) ; 
+    % \draw[->] (z1) -- (z1-|a.west)  node [midway, above] (l1) {\small$\hat{y}_1 \in (-1,1)$} ;      
+    % \draw[->] (z2) -- (z2-|a.west) node [midway, above] (l2) {\small$\hat{y}_2 \in (-1,1)$} ;               
+    % \draw[->] ($(a)+(0.6,0.5)$) -- (b) ; 
+    % \draw[->] (b) -- (10,-0.5) node [right] (l3) {\small $a_{\text{long},d}$ }; 
+    % \draw[->] ($(a)+(0.6,-0.5)$) -- (10,-1.5) node [right] (l4) {\small $\delta_{d}$}; 
+
+    % \node[text width=3.7cm, align=center] at (1.5,1) { \hbox{Neural} \hbox{network}  \hbox{policy} };
+    
+\end{tikzpicture}

@@ -1,0 +1,32 @@
+\definecolor{mygold}{RGB}{255,242,204}
+\definecolor{myblue}{RGB}{219,238,243}
+
+\begin{tikzpicture}[level distance=1.7in,sibling distance=.1in,scale=.65]
+%\tikzset{edge from parent/.style= 
+% {thick, draw,edge from parent fork right},every tree node/.style={draw,minimum width=1in,text width=1in, align=center},grow'=right}
+
+\tikzset{edge from parent/.style= 
+ {thick, draw, edge from parent fork down},
+ every tree node/.style={draw, minimum width=1in, text width=1.2in, align=center, rounded corners=.1cm},
+ %gold subtree/.style = {fill={rgb:red,255;green,242;yellow,204}, draw, minimum width=1in, text width=1.2in, align=center, rounded corners=.2cm}
+ %blue subtree/.style =  {fill={rgb:red,219;green,238;yellow,243}, draw, minimum width=1in, text width=1.2in, align=center, rounded corners=.2cm}
+ grow'=down}
+
+\Tree 
+    [.\node[] {\textbf{Autonomous racing \mbox{algorithms} }};
+        [.\node[] {\textbf{Partial end-to-end}}; 
+            [.\node[fill=gray!20] {\textbf{Learned planner}, \\ \mbox{Our approach}, \cite{Capo2020, Weiss2020, Weiss2020a, Weiss2022}. }; ]
+            [.\node[] {\textbf{Learned controller}, \\ \cite{Evans2021b}, \cite{Ghignone2022}.}; ]
+        ]
+        [.\node[] {\textbf{End-to-end}, \\ \cite{Tatulea-Codrean2020}, \cite{Wadekar2021}, \cite{Mahmoud2020}, \cite{Pan2017a}, \cite{lee2019},\cite{Schwarting2021}, \cite{Williams2017}, \cite{Jaritz2018}, \cite{Perot2017}, \cite{Fuchs2021}, \cite{Song2021}, \cite{Niu2020}, \cite{Remonda2021}, \cite{Chisari2021}, \cite{Ivanov2020}, \cite{hsu2022}, \cite{brunnbauer2021}. };
+            % [.\node[fill=myblue] {\textbf{Reinforcement learning}, Section \ref{sec:reinforcement_learning}}; ]
+            % [.\node[fill=myblue] {\textbf{Imitation learning}, Section \ref{sec:imitation_learning}}; ]
+        ] 
+        [.\node[] {\textbf{Classical}, \\ \cite{Niu2020}, \cite{Kritayakirana2012}, \cite{Valls2018}, \cite{alvarez2022}, \cite{Nekkah2020}, \cite{Heilmeier2020}, \cite{Betz_2023}, \cite{Kelly2010}, \cite{Herrmann2019}, \cite{Liniger2015, Liniger2015a}, \cite{Stahl2019}, \cite{Werling2010}, \cite{Li2017}, \cite{Coulter_1992}, \cite{Becker2022}, \cite{Hoffmann2007}, \cite{Beal2013}. };
+            % [.\node[fill=myblue] {\textbf{Control}, Section \ref{sec:control}}; ]
+            % [.\node[fill=myblue] {\textbf{Trajectory planning}, Section \ref{sec:trajectory_planning}}; ]
+            %[.{Global trajectory planning} ]
+        ]
+    ]
+    
+\end{tikzpicture}

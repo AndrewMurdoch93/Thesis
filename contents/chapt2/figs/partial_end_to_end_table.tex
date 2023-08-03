@@ -1,0 +1,24 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.7cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}p{1.8cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}p{2.2cm}}
+\newcolumntype{Y}{>{\centering\arraybackslash}p{1cm}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{4.5cm}}
+
+\begin{table}[htb!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{RYMNL}
+    \hline
+    \small \textbf{Author(s)} &  \small \textbf{Year} & \small \textbf{Learning method} & \small \textbf{Learned component} & \small \textbf{sim2real approach} \\
+    \hline
+    \small Weiss and Behl \cite{Weiss2020, Weiss2020a, Weiss2022} & \small $2020$ & \small IL & \small Planner  & - \\
+    \small Capo et al. \cite{Capo2020} & \small $2022$ & \small RL &  \small Planner & - \\
+    % \small Mahmoud et al. \cite{Mahmoud2020} & \small $2020$ & \small RL & \checkmark & & - \\
+    \small Evans et al. \cite{Evans2021b} & \small $2021$ & \small RL &  \small Controller & - \\
+    \small Ghignone et al. \cite{Ghignone2022} & \small $2022$ & \small RL &  \small Controller  & \small Randomise vehicle model parameters while training \\
+    \hline
+\end{tabularx}
+\caption[A summary of partial end-to-end approaches for autonomous racing]{A summary of partial end-to-end approaches for autonomous racing.}
+\label{table:autonomous_racing_partial_end_to_end_summary}
+\end{table} 

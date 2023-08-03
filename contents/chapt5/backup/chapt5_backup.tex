@@ -1,0 +1,572 @@
+\chapter{End-to-end autonomous racing}
+\label{chp:end_to_end_autonomous racing}
+Having introduced our simulation environment, we formulate an end-to-end solution method whereby an RL agent predicts the controller commands directly from LiDAR and pose information.
+This end-to-end agent was used as a baseline to compare our partial end-to-end algorithm against.
+This is a suitable baseline, as it is the most common existing approach taken to solve the racing problem \cite{Song2021,  Fuchs2021, Ivanov2020, Perot2017, Jaritz2018, Schwarting2021, Niu2020, hsu2022, Chisari2021, brunnbauer2021, Remonda2021}.
+
+
+\section{Training and testing procedures}
+\label{sec:train_and_test_procedures}
+Much of the RL agent design involved experimentally determining hyper-parameters that resulted in fast learning and good policies after being trained.
+These experiments are split into two phases: training and testing.
+
+In the training phase, agents learn how to race around a track from scratch using modified versions of Algorithms \ref{alg:ddpg} and \ref{alg:td3}.
+One execution of either of these algorithms is referred to as a \emph{training run}.
+The training runs each last for $2\cdot10^6$ simulator time steps, corresponding to $5.55$ hours of simulated track time.
+Furthermore, each training run is repeated three times with identical parameters.
+By repeating the experiment, we have an indicator for the robustness of that hyper-parameter set.
+Note that during the training phase, noise is added to every action as shown in Equation \ref{eq:dpg_policy}.
+Thus, it is acceptable that the agent fails to complete laps often during training.
+
+In the testing phase, the agent is `deployed' by allowing the it to race around the track in simulation without updating the neural network parameters or adding any exploration noise to their actions.
+Thus, the action selection mechanism in Equation \ref{eq:dpg_policy} is replaced with 
+\begin{equation}
+    a_t = \pi_{\phi}(s_t).
+\end{equation}
+Since there is no exploration noise, the behaviour observed during these tests is the learned policy of the agent.
+Dangerous behaviour such as track boundary collisions are therefore unacceptable during testing.
+Each of the three agents are tested for 100 episodes each, resulting in 300 test episodes per hyper-parameter set.
+The pseudocode for the test procedure is shown in Algorithm \ref{alg:end_to_end_deploy}.
+
+Our hyper-parameter tuning procedure was to repeat training runs, while keeping all of the hyper-parameters constant except the one being tuned. 
+Only the hyper-parameter being tuned was varied.
+While learning curves are presented to measure the performance of each agent during training, test results are tabularised.
+We selected hyper-parameters by averaging the results over all three runs, and prioritised test results over training results, and safety over lap time.
+Furthermore, after the complete set of hyper-parameters were determined, we completed the tuning procedure again, but varying each parameter only slightly.
+This ensures that the selected a set of parameters are at least locally optimal.
+% Our evaluation metrics were the failure rate (the percentage of times the vehicle collided with track boundaries), lap time and cumulative reward.
+% It was also necessary for us to perform qualative evaluations on the agents behaviour to ensure that it learned appropriately.
+
+\input{contents/chapt5/figs/test_procedure/test_procedure.tex}
+
+\section{Architecture}
+The end-to-end autonomous driving architecture is presented in Figure \ref{fig:end_to_end_architecture}.
+This figure shows that the end-to-end agent processes observations to output lateral and longitundinal control actions.
+
+The lateral action selected by all of the approaches that we reviewed was the steering angle.
+However, we found that there is no clear consensus in literature about what constitutes the longitudinal output of an end-to-end agent.
+While \cite{Fuchs2021, Schwarting2021, Remonda2021} map their action space onto accelerator and brake commands, Brunnbauer et al.  \cite{Brunnbauer2021a} use the agent to predict longitudinal force. Furthermore, the agent by Hsu et al. \cite{hsu2022} predicts velocity. 
+To simplify our simulated system, we mapped our agents actions onto the desired longitudinal acceleration and steering angle, denoted $a_{\text{long},d}$ and $\delta_d$ respectively.
+
+Furthermore, we have not included a perception module in the driving software architecture.
+This module would normally be placed in front of the agent, and would use the LiDAR scan and odometry data to estimate the pose of the vehicle.
+However, the module is an unnecessary feature because the pose is readily available from the simulator.
+It is only necessary when testing on a physical vehicle, since the pose is not available then.
+
+We have also included a component in the driving architecture that limits the velocity of the agent by modifying the agent's longitudinal control action, which is situated in-between the agent and vehicle simulator. 
+For our end-to-end driving architecture to match the definition of an MDP from Section \ref{sec:agent_environment_interface}, the environment must encompass everything apart from the agent.
+The velocity constraint is therefore considered as part of the environment.
+% The implications are that the speed limit
+% This has significant implications for training, as the components of the driving are executed as part of the environment.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt5/figs/architecture/end_to_end_architecture.tex
+    \caption[The end-to-end driving architecture]{The end-to-end driving architecture, comprised of an RL agent which outputs control actions, and a speed limiter. The speed limiter and simulator are also considered as part of the environment.}
+    \label{fig:end_to_end_architecture}
+\end{figure}
+
+Another reconciliation that was made between our driving architecture and the MDP definition in Section \ref{sec:agent_environment_interface} was that the agent is sampled at a slower rate than the velocity constraint and simulator.
+However, the definition of the MDP states that the agent and environment must be sampled at the same rate.
+To account for this, the components inside the MDP environment (i.e., the velocity constraint and simulator), which were sampled at $100$ Hz, were executed $N$ times in-between agent samples,
+\begin{equation}
+    N = \frac{100}{\text{Agent sample rate}},
+\label{eq:N}
+\end{equation}
+, where the desired agent sample rate is in Hz.
+The reward from every call to the simulator was accumulated so that the agent observed the sum of rewards over the $N$ steps.
+This was implemented by replacing the action execution mechanism shown in lines nine, seven and five of Algorithms \ref{alg:ddpg}, \ref{alg:td3}, and \ref{alg:end_to_end_deploy} respectively with the pseudocode shown in Algorithm \ref{alg:sample_rate_modification}.
+
+\input{contents/chapt5/figs/learning_method/algorithm_modification.tex}
+
+The following three sections address the design of important pieces of the driving architecture that are not part of the agent or its training procedure.
+These are (a) the observation space, (b) the speed limiter and (c) the action sampling rate.
+
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input contents/chapt5/figs/architecture/steer_architecture.tex
+%     \caption[]{}
+%     \label{fig:steer_architecture}
+% \end{figure}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input contents/chapt5/figs/architecture/steer_vel_architecture.tex
+%     \caption[]{}
+%     \label{fig:steer_vel_architecture}
+% \end{figure}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input contents/chapt5/figs/architecture/vel_architecture.tex
+%     \caption[]{}
+%     \label{fig:vel_architecture}
+% \end{figure}
+
+
+
+% The results are analysed in terms of collision rate and lap time during training.
+% Collision rate is the fraction of times the agent ends an episode by colliding with the track boundary, and is seen as a measure of safety.
+% The goal is for the agent to minimise the collision rate.
+% For the learning curves, this fraction is obtained by taking the moving average over the previous 500 episodes.
+% The average lap time is taken as moving the average over all three agents for the previous 500 episodes.
+
+%\input{contents/chapt5/figs/observation/observation_table.tex}
+
+%\subsubsection{Observation space}
+\section{Observation}
+Approaches to designing observation spaces generally fall into two categories: those that use only a front facing LiDAR or camera \cite{Perot2017, Jaritz2018, hsu2022, brunnbauer2021}, and those that combine a front facing LiDAR scanner with the vehicle pose, which is comprised by $x$ and $y$ coordinates, longitudinal velocity, and vehicle heading \cite{Song2021,  Fuchs2021, Ivanov2020, Schwarting2021, Niu2020, hsu2022, Chisari2021, Remonda2021}.
+
+To find the observation space that resulted in the best performance, we trained agents that received (a) only the pose, (b) only a LiDAR scan and (c) a combination of vehicle pose and LiDAR scan.
+The learning curves during training for these experiments are shown in Figure \ref{fig:obs_space}. 
+\begin{figure}[b]
+    \centering
+    \input{contents/chapt5/figs/observation/observation_space_1.pgf}
+    \caption[Learning curves of agents with different observation spaces]{Learning curves of agents with different observation spaces.}
+    \label{fig:obs_space}
+\end{figure}
+Three graphs appear in this figure; failure rate, lap time, and episode reward.
+The failure rate is a 500 episode sliding window average of a binary variable that indicates whether a collision has occured in that particular episode.
+Additionally, the average is taken over all three runs, and it is interpreted as the probability that an agent will fail on any given episode.
+The lap times and episode reward are given by a similar 500 episode sliding window average.
+Furthermore, the transparent areas around each result indicates the standard deviation.
+
+The desired behaviour during training is for the agent to minimise both failure rate and lap time.
+This should be observed in conjunction with a maximisation of the reward signal.
+Note that each agent trained for a slightly different number of episodes because the training time was controlled by the number of simulation steps.
+% As such, agents that had longer episodes on average trained for fewer episodes.
+
+% From Figure \ref{fig:obs_space}, we see that agents observing a LiDAR scan learned to finish laps without crashing faster than agents who did not have access to a LiDAR scan.
+% The agent that does not access to the LiDAR scan is `blind' to the track boundaries, and therefore must sample a crash at every point along the track boundary to learn where those boundaries are.
+
+% Furthermore, reinforcement learning algorithms learn by sampling experiences from the environment.
+% Therefore, an agent learns that crashing is undesirable by sampling crashing experiences.
+% Adding the LiDAR scan to the observation allows the agent to learn to avoid track boundaries faster because it samples similar states directly before every crash, i.e. points on the LiDAR scan tend towards zero.
+% We illustrate this in Figure \ref{fig:collision_distribution}, which shows all of the terminal positions of agents until their first successful circumnavigation of the track, of (a) only a LiDAR scan and (b) only the vehicle pose as observation during training
+% We see that the agent observing the LiDAR scan samples collision experiences on the track boundary far fewer times than the agent observing the vehicle pose.
+
+From Figure \ref{fig:obs_space}, we see that agents that observe a LiDAR scan learn to finish laps without crashing faster than agents who do not have access to a LiDAR scan.
+Adding the LiDAR scan to the observation allows an agent to learn to avoid track boundaries faster because it samples similar states directly before every crash, i.e. points on the LiDAR scan tend towards zero.
+We illustrate this point in Figure \ref{fig:collision_distribution}, which shows all of the terminal positions of agents until their first successful circumnavigation of the track during training.
+The left shows an agent using a LiDAR scan, while the right shows an agent with only the vehicle pose.
+Notice that the agent using only the pose samples collisions all around the track.
+However, the agent with access to the LiDAR did not need to sample collisions on the right corner, because the right corner looks similar to the left corner. 
+
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}[htb!]{0.45\textwidth}
+        \centering
+        \includegraphics[height=.56\linewidth]{contents/chapt5/figs/observation/collision_distributions/collision_distribution_lidar.png}
+        \caption{LiDAR}
+        \label{fig:collision_distribution_lidar}
+    \end{subfigure}
+    \hfill
+    % \begin{subfigure}[htb!]{0.3\textwidth}
+    %     \centering
+    %     \includegraphics[height=.55\linewidth]{contents/chapt5/figs/observation/collision_distributions/collision_distribution_lidar_pose.png}
+    %     \caption{LiDAR and pose}
+    %     \label{fig:collision_distribution_lidar_pose}
+    % \end{subfigure}
+    % \hfill
+    \begin{subfigure}[htb!]{0.45\textwidth}
+        \centering
+        \includegraphics[height=.56\linewidth]{contents/chapt5/figs/observation/collision_distributions/collision_distribution_pose.png}
+        \caption{Pose}
+        \label{fig:collision_distribution_pose}
+    \end{subfigure}
+    \hfill
+\caption[Terminal poses of agents during training]{All the terminal states of agents trained with only (a) only LiDAR and (b) only pose observations during training, until their first successful track circumnavigation.}
+\label{fig:collision_distribution}
+\end{figure}
+
+We see from Figure \ref{fig:obs_space} that although the failure rate of agents that observe only the LiDAR scan decreases quickly initially, the failure rate remains high.
+We therefore deduce that LiDAR scan alone is not sufficient to construct a policy for high speed racing.
+This is an intuitive result, as different sections of the track may look similar on a LiDAR scan but require different policies due to differences in the preceding and following track section.
+We therefore choose to include both the vehicle pose and LiDAR scan in the observation.
+Agents that use this observation space train quickly and have good policies (i.e., fast lap times and few crashes).
+Our findings are verified by many research efforts utilising a similar observation space \cite{Song2021,  Fuchs2021, Ivanov2020, Schwarting2021, Niu2020, hsu2022, Chisari2021, Remonda2021}.
+
+
+\textbf{Number of LiDAR beams:}
+Having found that an observation that consists of a LiDAR scan plus the vehicle pose is optimal, we move on to determining the number of beams that should be included in the LiDAR scan.
+The literature showed a wide range used for the number of LiDAR beams, from $10$ be Evans et al. \cite{Evans2021b} to $1080$ by Brunnbauer et al. \cite{brunnbauer2021}.
+We therefore trained multiple agents to determine the number of LiDAR beams that results in optimal performance for our system.
+Figure \ref{fig:n_beams} shows the training results from these experiments.
+The number of LiDAR beams does not significantly impact the collision rate or lap time by the end of training.
+Furthermore, increasing the number of LiDAR beams beyond 10 does not result in faster training, i.e., the agent does not learn to avoid track boundaries faster.
+We therefore chose to include $10$ equi-spaced LiDAR beams with a field of view of $180^{\circ}$
+into our observation space.
+Keeping the observation space smalls allows for the use of smaller, simpler neural networks that have less latency than larger ones.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/observation/observation_n_beams_1.pgf}
+    \caption{Learning curves of agents with different numbers of LiDAR beams during training.}
+    \label{fig:n_beams}
+\end{figure}
+
+\section{Velocity constraint} \label{sec:velocity_constraint}
+We next considered placing constraints on the allowable velocity of the vehicle.
+This is a common practice in the RL literature reviewed. 
+For instance, Ivanov et al. \cite{Ivanov2020} limits the torque applied to the vehicle's driving motors, thereby limiting it's speed to $2.4$ m/s. Hsu et al. \cite{hsu2022} is less conservative, imposing minimum and maximum speed limits of $1.125$ and $9.3$ m/s respectively.
+We imposed artificial speed limits on the agent by modifying the acceleration control action using the constraints 
+\begin{equation}
+    a_{\text{long,}d} = 
+    \begin{cases}
+    0                   &   \text{for } v \geq v_{\text{max}}, \\
+    0                   &   \text{for } v \leq v_{\text{min}}, \\
+    a_{\text{long},d}   &   \text{otherwise},
+    \end{cases}
+\label{eq:speed_limit}
+\end{equation}
+where $v_{\text{max}}$ and $v_{\text{min}}$ are the imposed maximum and minimum allowable velocities respectively.
+Equation \ref{eq:speed_limit} is implemented by the component labelled `Velocity constraint' in the driving architecture shown in Figure \ref{fig:end_to_end_architecture}.
+
+To determine the maximum safe velocity, we trained and tested agents with maximum velocities of $5$, $6$, $7$ and $8$ m/s.
+Figure \ref{fig:vel_profile} shows the velocity and slip angle profiles of these agents completing one lap under test conditions.
+
+Interestingly, the most common learned behaviour of the agents is to maintain maximum velocity around the track.
+We believe this behaviour occurs because even small actions result in large changes in velocity in-between agent action sample times.
+Further exacerbating this effect  is the slow rate at which actions can be sampled from the agent.
+% Another observation about the end-to-end agent is that once it achieves maximum longitudinal velocity, any further positive longitudinal action has the same effect of keeping the vehicle at its maximum velocity, thus making the choice of positive control action arbitrary.
+
+
+At the $30$ and $75$ percent progress mark, maximising the velocity results in slip angles as large as 0.75 radians for the agent with a maximum velocity of 8 m/s.
+Although this agent may achieve fast lap times, any slip angle greater than $0.2$ radians can be considered dangerous and even unrealistic drifting behaviour, since the assumption that tire stiffness varies linearly with lateral force is only valid for slip angles below $0.2$ radians \cite{Vorotovic2013}.
+Thus, allowing the agent to select large velocities enables it to exploit the simulation in an unrealistic manner to achieve fast lap times.
+We chose to limit the vehicle to 5 m/s, as this was the fastest allowable velocity that did not result in the agent exploiting the simulator by operating the car at large slip angles.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/control/velocity_slip_profile.pgf}
+    \caption{The velocity profile and slip angle of agents with different maximum velocities during one test lap.}
+    \label{fig:vel_profile}
+\end{figure}
+
+We also observed that the agent often chose to bring the car to a standstill during training, resulting in excessively long training times.
+This was possibly due to the correlation between forward velocity and crashing. 
+We therefore introduced a minimum speed limit of $3$ m/s to prevent this behaviour.
+Fortunately, the choice of minimum speed limit did not  significantly impact the performance of the agent.
+
+
+\section{Agent sampling rate} 
+Although the effect of varying the sampling rate of the agent on performance is not discussed in literature, we found that it is sensitive to sampling rate, i.e. the rate at which it is called to select an action. 
+We were able to vary the sampling rate of the agent after implementing the modification from Algorithm \ref{alg:sample_rate_modification} to the action selection mechanism of the DDPG and TD3.
+
+We determined plausible ranges for the agent sampling rate by considering the latencies of the agent and simulator.
+The latency of the neural network was measured at $0.4$ ms, corresponding to a maximum action sampling rate of $2500$ Hz.
+However, the maximum useful action sampling rate is determined the environment sampling rate of $100$ Hz.
+Selecting actions at a rate greater than this will result in some actions having no effect on the simulated environment.
+
+We then performed experiments to determine the optimal agent sampling rate within the range $100$ Hz to $4$ Hz.
+The training time and test results of the agents trained during these experiments are shown in Table \ref{tab:control_steps}.
+We found a strong correlation between training time and action sampling rate due to the latency associated with taking an action.
+In fact, training agents with a sampling rate greater than $10$ Hz was infeasible due to the large number of experiments that we ran. 
+
+Furthermore, agents that were trained with high sampling rates (such as $100$ Hz) performed poorly.
+Our explanation for this is that the differences in observations between consecutive simulator time steps are negligible when the sampling rate is high.
+The agent therefore cannot learn meaningful correlations between a selected action and its effect on the environment and reward signal.
+As such, we must select an action sampling rate that is low enough for there to be a significant change in consecutive observations and reward signal.
+However, decreasing the sampling rate too much impedes the performance of the agent by decreasing its response time.
+Our choice for sampling rate was $5$ Hz because it resulted in fast training times, as well as fast lap times and a small number of failed laps during testing.
+Note that $5$ Hz is a relatively slow sampling rate for compared to classical controllers.
+For instance, Li et al. \cite{Li2019} develop path tracking controllers with sampling rates up to $100$ Hz.
+
+\input{contents/chapt5/figs/control/control_steps_table.tex}
+
+The remainder of this chapter covers the components of the end-to-end agent directly related to its neural network, and the training thereof.
+
+\section{Algorithm selection}
+\label{sec:algorithm_selection}
+
+While the most common method used in the literature was DDPG \cite{Ivanov2020, Capo2020, Niu2020, Remonda2021, brunnbauer2021}, several authors have used TD3 for their agents \cite{Ivanov2020, Evans2021b, Evans2021a}.
+As both are considered state of the art methods, we trained agents to experimentally determine which method performs better for the autonomous racing task.
+
+Figure \ref{fig:learning_method_reward} shows the learning curves for the agents using the TD3 and DDPG methods.
+The agents trained with TD3 achieved a lower failure rate, faster lap time and more reward than those trained with DDPG.
+Furthermore, the noisy learning curves produced by agents trained with DDPG indicated that they performed less consistently than agents trained with TD3.
+The differences in performance are also reflected in their test results.
+while TD3 agents failed at a rate of three percent, DDPG agents had a failure rate of 18 percent during testing.
+TD3 was therefore our training method of choice for this project.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/learning_method/learning_method_learning_curve_1.pgf}
+    \caption[Learning curves showing for agents with different learning methods]{Learning curves for agents with different learning methods.}
+    \label{fig:learning_method_reward}
+\end{figure}
+
+We then ran experiments to determine the optimal hyper-parameters for the TD3 algorithm.
+However, since all of the hyper-parameters were tuned in an identical manner using the methods in Section \ref{sec:train_and_test_procedures}, we will only discuss the tuning of the reward discount rate $\gamma$. 
+
+\input{contents/chapt5/figs/learning_method/algorithm_parameters.tex}
+
+The test results of agents trained with various discount rates is shown in Table \ref{tab:gamma}.
+Although we observed a trend of decreasing lap times with increasing discount rate, the only reward discount rate that resulted in no failed laps during testing was $0.99$. 
+This was therefore the chosen value.
+
+\input{contents/chapt5/figs/learning_method/gamma_table.tex}
+
+\section{Neural networks design}
+% Our version of the TD3 algorithm presented in the previous section was used to train agents comprised of neural networks.
+% We now discuss our implementation of these neural networks.
+% Our neural networks designs are inspired by the original TD3 implementation by Fujimoto et al. \cite{Fujimoto2018}, and are implemented in python using the PyTorch library.
+% There are six neural networks in total: an actor and its target, and two critics with their targets.
+% The target networks are identical in structure and hyper-parameter settings to their counterparts.
+
+The TD3 algorithm requires five neural networks. 
+These are an actor $\pi_{\phi}$, two critics $Q_{\theta_{1}}$ and $Q_{\theta_{2}}$, and two target critics $Q_{\theta_{1}'}$ and $Q_{\theta_{2}'}$.
+The target critics are by definition identical in structure to their counterparts (e.g., $Q_{\theta_{1}'}$ is a copy of $Q_{\theta_{1}}$).
+Furthermore, we chose $Q_{\theta_{1}}$ and $Q_{\theta_{2}}$ to have identical structures.
+Therefore, there are only two unique neural networks that had to be designed, which are the actor and critic.
+This is similar to the original implementation by Fujimoto et al. \cite{Fujimoto2018}.
+
+\textbf{Actor:}
+Figure \ref{fig:end_to_end_architecture} showed that the agent outputs steering and acceleration control actions based on its current observation.
+This is accomplished by forward propagating the observation through the actor neural network.
+
+The input to the neural neural network is therefore the normalised observation (i.e. the vehicle pose and LiDAR scan).
+Our actor is a three layer FNN comprised of an input layer, one hidden layer and an output layer.
+The input layer is 400 ReLU activated neurons, and is fully connected to the input.
+A hidden layer of 300 neurons with ReLU activations is fully connected to the input layer.
+Finally, the output layer is fully connected to the hidden layer of two neurons whose outputs correspond to the steering and acceleration commands.
+The activation function of the final layer is a hyperbolic tangent which constrains the actions to $(-1,1)$.
+After the magnitudes of the outputs are constrained, they are scaled so that their range corresponds to the vehicle control constraints from Equations \ref{eq:control_constraints} and \ref{eq:accl_constraint} with parameter values from Table \ref{tab:constraint_parameters}.
+The actor, its inputs and outputs are shown in Figure \ref{fig:actor_architecture}.  
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt5/figs/neural_network/actor.tex
+    \caption[An expanded view of the end-to-end agent actor]{An expanded view of the end-to-end agent actor.}
+    \label{fig:actor_architecture}
+\end{figure}
+
+
+\textbf{Critic:}
+The purpose of the critic is to evaluate the value of an action selected in a particular state.
+This is accomplished by forward propagating the observation and action through the critic network.
+The input to the FNN is therefore the normalised observation plus the normalised action (e.g., the unscaled outputs of the actor).
+We chose the structure of the input layer and hidden layer to be identical to the actor (i.e., fully connected layers with ReLU activation functions).
+Finally, the FNN output is a single neuron with a linear activation applied to it.
+The output of the critic is the action-value of the given state-action pair.
+An expanded view of the critic is shown in Figure \ref{fig:critic_architecture}.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt5/figs/neural_network/critic.tex
+    \caption[An expanded view of the critic neural network]{An expanded view of the critic neural network.}
+    \label{fig:critic_architecture}
+\end{figure}
+
+\textbf{Hyper-parameters:}
+The only hyper-parameters intrinsic to the actor and critics that needed tuning were their learning rates.
+To simplify the tuning process, we used only one learning rate for the actor and critics.
+The learning curves for an experiment during which we varied the learning rate around $10^{-3}$ are shown in Figure \ref{fig:alpha_learning_curve}.
+We found that decreasing the learning rate beneath $10^{-3}$ did not affect the agent performance.
+However, increasing the learning rate reduced the performance significantly.
+We therefore chose $10^{-3}$ as the final value.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/neural_network/alpha_learning_curve_1.pgf}
+    \caption[Learning curves showing reward for agents with varying learning rates]{Learning curves showing reward for agents with learning rates varying from $10^{-4}$ to $2\cdot10^{-3}$.}
+    \label{fig:alpha_learning_curve}
+\end{figure}
+% Table \ref{tab:neural_network_parameters} summarises the remaining important hyper-parameter and design choices for the neural networks.
+% The values in the table were chosen to match those of the original implementation of TD3 by Fujimoto et al. \cite{Fujimoto2018}, as we found that they resulted in robust performance.
+% \input{contents/chapt5/figs/neural_network/neural_network_table.tex}
+
+
+
+\section{Reward signal design}
+The goal of an RL agent is to maximise the expected return (i.e., the cumulative reward) over an episode.
+Therefore, the behaviour of the agent is shaped by carefully selecting the reward that it receives at each time step.
+The process of selecting the reward signal components is known as \emph{reward signal design}.
+
+Our objectives were to construct a reward signal that (a) encourages safety while (b) minimising lap time.
+This was a challenging task, considering that these two objectives conflict with each other.
+Further complicating the task is that the lap time alone is too sparse a signal to allow the agent to learn effectively \cite{Perot2017, Jaritz2018}.
+
+We therefore chose a reward signal that closely approximates minimizing lap time for high reward discount rates by rewarding the agent for the distance it has travelled along the centerline between the current and previous time step, and penalising the agent a small amount on every time step \cite{Fuchs2021}. 
+Additionally, the agent receives a large penalty for colliding with the track boundary. 
+This results in the piecewise reward signal
+\begin{dmath}
+r(s_t,a_t)
+\begin{cases}
+r_{\text{collision}} & \mbox{if collision == True} \\
+%r_{\text{reverse}} & \mbox{if $(D_{t} - D_{t-1}) \leq 0$ } \\
+r_{\text{dist}}(D_{t} - D_{t-1}) + r_{\text{time}} & \mbox{else,} \\
+\end{cases}
+\label{eq:reward_signal}
+\end{dmath}
+where $r_{\text{collision}}$, $r_{\text{dist}}$ and $r_{t}$ are the collision penalty, distance reward and time step penalty respectively. 
+This reward signal is similar to that by \cite{Song2021, Fuchs2021, Ivanov2020, Perot2017, Jaritz2018, brunnbauer2021} and \cite{Evans2021b}.
+Note that the reward signal was sampled at every simulator time step, and accumulated in-between agent samples, as shown in Algorithm \ref{alg:sample_rate_modification}. 
+We now present the tuning procedure for each of the reward signal component values for the Porto track.
+
+\textbf{Time step penalty:}
+We found that penalising the agent by a small amount on every time step resulted in an improvement in average lap time from $9.26$ seconds to $5.62$ seconds over agents which did not receive the penalty.
+We explain this by examining the total reward accumulated over a successful episode, since this is the quantity that the agent learns to maximise (assuming no discounting):
+\begin{equation}
+    \begin{split}
+        R_{\text{total}} &=  \sum_{i=t_1}^{T} \left( r_{\text{dist}}(D_{i}-D_{i-1})+r_{\text{time}} \right), \\
+        &= r_{\text{dist}} \left( (D_1-D_0) + \ldots + (D_{T} - D_{T-1}) \right) + \sum_{i=t_1}^{T} r_{\text{time}}, \\
+        &= r_{\text{dist}} D_T  + n r_{\text{time}}. \\
+    \end{split}
+\label{eq:lap_success_reward}
+\end{equation}
+where $n$ is the number of time steps that the lap took to complete, $T$ is the final time step, and $D_T$ is the track centerline length.
+We simplify the expression for total reward even further by setting $r_{\text{time}}$ equal to $-0.01$, which is the negative of the simulator time step $\Delta t$.
+Since  $n=\frac{\text{lap time}}{\Delta t}$, Equation \ref{eq:lap_success_reward} becomes
+\begin{equation}
+    R_{\text{total}} = r_{\text{dist}} D_T - \text{lap time}.
+\end{equation}
+Because $D_T$ is a constant, it is clear that the agent must minimise lap time to maximise the total reward.
+Furthermore, if no time step penalty is applied, then every successful lap yields the same reward regardless of lap time.
+The choice of time step penalty as $-\Delta t$ is arbitrary because the other reward signal terms are adjusted relative to it.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt5/figs/reward/reward_time.pgf}
+%     \caption{A performance comparison of agents with different values for $r_t$ in the reward signal.}
+%     \label{fig:reward_signal_time}
+% \end{figure}
+
+\textbf{Distance reward:}
+the magnitude of the distance reward affects the behaviour of the agent drastically.
+Intuitively, the agent is encouraged to drive fast when $r_{\text{dist}}$ is small, because then the time step penalty is more significant.
+Our goal is therefore to set the distance reward as small as possible.
+However, setting the distance reward too small results in a policy that crashes the vehicle immediately rather than continuing to race.
+This suicidal behaviour occurs when the agent can only accumulate more negative reward by continuing to race.
+We therefore performed an analysis to determine the minimum value for $r_{\text{dist}}$.
+
+% For this not to occur, the the expected return for continuing to race must be greater than the expected return for terminating the episode by crashing immediately.
+% \begin{equation}
+%     \begin{split}
+%         \sum_{t=0}^{N} \gamma^t (r_{\text{dist}}(D_{t}-D_{t-1})+r_{\text{time}}) > \\ \sum_{t=0}^{M-1} \gamma^t (r_{\text{dist}}(D_{t}-D_{t-1})+r_{\text{time}}) + \gamma^M r_{\text{collision}}, \text{ }M<N, 
+%     \label{eq:distance_reward}
+%     \end{split}
+% \end{equation}
+% where $N$ and $M$ are the number of episodes until the agent finishes the lap, or terminates the episode by crashing, respectively.
+% The inequality is satisfied when the magnitude of the distance reward is great enough to outweigh the time and collision penalties.
+% Unfortunately, Equation \ref{eq:distance_reward} is difficult to solve for $r_{\text{dist}}$ because $M$ and $N$ are unknown.
+% As such, we simplify our analyses by considering the reward for a single time step. 
+
+We found that suicidal behaviour occurs when the agent can only accumulate more negative reward by continuing to race.
+Thus to avoid suicidal behaviour, our rule of thumb is that on any given time step, the reward signal must satisfy
+\begin{equation}
+    r_{\text{dist}}(D_{t} - D_{t-1}) + r_{\text{time}} > 0.
+\end{equation}
+Solving this inequality for $r_{\text{dist}}$ gives us
+\begin{equation}
+    r_{\text{dist}} > \frac{-r_{\text{time}}}{(D_t-D_{t-1})},
+\label{eq:min_r_dist}
+\end{equation}
+where $D_{t}$ and $D_{t-1}$ are unknown.
+To get the smallest value for $r_{\text{dist}}$, we estimate the largest value possible for ($D_{t}$-$D_{t-1}$) by assuming that the vehicle  travels at maximum speed parallel to the centerline,
+\begin{equation}\label{eq:D_t}
+    (D_t - D_{t-1}) = v_{\text{max}} \Delta t.
+\end{equation}
+After substituting $r_{\text{time}}$ as $-\Delta t$, as well as Equation \ref{eq:D_t} into Equation \ref{eq:min_r_dist}, Equation \ref{eq:min_r_dist} becomes
+\begin{equation}\label{eq:min_rdist}
+    r_{\text{dist}} > \frac{1}{v_{\text{max}}}.
+\end{equation}
+Substituting the value for $v_{\text{max}}$ as 5 m/s into Equation \ref{eq:min_rdist} yields an estimated minimum $r_{\text{dist}}$ of $0.2$.
+% If $r_{\text{dist}}$ is set close to this minimum value, then the time step penalty is significant, and the agent is strongly encouraged to minimise lap time. However, if $r_{\text{dist}}$ is set to a larger value, then the time step penalty is not as significant and the agent is not as strongly encouraged to minimise lap time.
+
+We then experimentally determined the best value for the distance reward  by training agents with $r_{\text{dist}}$ close to the estimated minimum value. 
+The learning curves for this experiment are shown in Figure \ref{fig:reward_signal_dist}.
+Unsurprisingly, the agent with $r_{\text{dist}}$ set to $0.1$ (i.e., less than the estimated minimum) learns that terminating the episode immediately is the optimal behaviour, as its failure rate remains at $100$ percent.
+The learning curves show that larger values for $r_{\text{dist}}$ result in slower lap imes. 
+Furthermore, the best lap times were measured when we set $r_{\text{dist}}$ to $0.3$, which is only slightly larger than our estimated minimum.
+We therefore chose an $r_{\text{dist}}$ value of $0.3$.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/reward/distance_reward_v5_1.pgf}
+    \caption[Learning curves of agents with different values for $r_{\text{dist}}$ during training]{Learning of agents with values for $r_{\text{dist}}$ ranging from $0.1$ to $1$.}
+    \label{fig:reward_signal_dist}
+\end{figure}
+
+\textbf{Collision penalty:}
+After having determined values for $r_{\text{time}}$ and $r_{\text{dist}}$, we adjusted the penalty given to the agent when it collides with the track boundary. 
+Setting the penalty too high causes the agent to become so risk averse that it completes laps slowly, while setting it too low can cause the agent to formulate policies that are risky.
+To determine an appropriate region that within we could search for an optimal value experimentally, we worked by the principle that $r_{\text{collision}}$ should be significant compared to the return of the episode up until the time step before the crash. 
+The magnitude of $r_{\text{collision}}$ should then be 
+\begin{equation}
+        r_{\text{collision}} \approx - r_{\text{dist}} D_T  -  n r_{\text{time}}. 
+\label{eq:collision_magnitude}
+\end{equation}
+By making the assumption that the agent crashes very close to the finish line, Equation \ref{eq:collision_magnitude} becomes
+\begin{equation}
+    r_{\text{collision}} \approx \text{lap time} - r_{\text{dist}} \cdot \text{track length}. 
+\end{equation}
+After making the appropriate substitutions, $r_{\text{collision}}$ is approximately -4. 
+We then performed experiments with $r_{\text{collision}}$ set between zero to 10 to determine the best value for it.
+The test results of these experiments are given in Table \ref{tab:reward_collision}.
+From these results, we see that a larger collision penalty correlates to fewer failed laps but slower lap times. 
+We select $r_{\text{collision}}$ as $-10$, as it is the smallest penalty that results in no failed laps.
+
+\input{contents/chapt5/figs/reward/reward_collision_table.tex}
+
+We can also view the effect of increasing the collision penalty by displaying the path taken by agents with different values for $r_{\text{collision}}$ during a test lap, as shown in Figure \ref{fig:path_reward_collision}.
+In this figure, the agent with the lower collision penalty races close to the inside of the track, while the agent that is penalised more heavily takes a much more conservative path by staying clear of the track boundaries, instead preferring to drive near the centerline of the track.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/reward/path_collision_penalty.pgf}
+    \caption[Paths taken by agents trained with different collision penalties]{The paths taken by agents trained with different penalties for colliding with the track boundary.}
+    \label{fig:path_reward_collision}
+\end{figure}
+
+
+\section{Evaluation of an end-to-end agent}
+The hyper-parameters that we selected throughout this chapter were used to train an end-to-end agent that was used as a baseline comparison to measure the performance of the partial end-to-end agents presented in Chapters \ref{chp:partial_end_to_end_autonomous_racing} and \ref{chp:racing}.
+% The normal training and testing procedure from Section \ref{sec:train_and_test_procedures} was followed.
+We now present the learning curves for training, tabulated test results, and a qualitative evaluation of this agent's performance during a single test lap.
+
+The learning curves presented in Figure \ref{fig:end_to_end_learning} show that our end-to-end agent learns to maximise reward by minimising the failure rate (i.e., by avoiding track boundaries) and minimising lap time within about $2\cdot10^3$ episodes.
+It completes training within $3\cdot10^3$ episodes.
+Furthermore, the learning curves are steady and do not fluctuate around their final values.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/agent/end_to_end_final_1.pgf}
+    \caption[Learning curves for final end-to-end agent]{Learning curves for our final end-to-end agent implementation.}
+    \label{fig:end_to_end_learning}
+\end{figure}
+
+Table \ref{tab:end_to_end_results} shows the training time and test results for each individual run, as well as the average result over all the runs. 
+We see that the training time, failure rate, and lap time are extremely consistent over all three runs.
+The benchmark time set by the end-to-end agent on this particular track is $6.07$.
+Furthermore, the end-to-end agent took only $15$ minutes to train.
+This means that on average, each approximately $6$ second simulated episodes took only $0.3$ seconds to execute on the computer. 
+
+\input{contents/chapt5/figs/agent/end_to_end_agent_results.tex}
+
+We also show how the end-to-end agent completes one test lap in Figure \ref{fig:end_to_end_lap}.
+The agent starts at a speed of three m/s, and immediately accelerates to maximum velocity on the starting straight section.
+It maintains its speed through the first corner, taking an inside racing line while maintaining a small slip angle.
+The agent drives slightly too deep into the second corner while breaking to reach a velocity of 4 m/s.
+It then accelerates into the turn, once again taking the inside racing line on the exit.
+The agent finishes the lap without having exploited the simulator exceeding a slip angle of $0.2$.
+Thus, it exhibits both fast and safe behaviour under test conditions.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt5/figs/agent/path_end_to_end_agent.pgf}
+    \caption[The end-to-end agent completing one test lap]{The end-to-end agent completing one test lap.}
+    \label{fig:end_to_end_lap}
+\end{figure}
+
+\section{Summary}
+In this chapter, we have motivated the design of our end-to-end agent.
+We described the end-to-end architecture, selected an appropriate RL method to train the agent, designed the necessary ANNs, as well as the reward signal.
+The result is an agent that performs well on track in terms of both lap time and safety.
+Although the agent performs well, a critique is that the agent sampling rate is relatively slow for a controller.
+Furthermore, end-to-end agents may not be robust to model-mismatches, as described in Chapter \ref{chp:litreview}.
+Nevertheless, the design choices from this chapter lay the groundwork for the partial end-to-end system that we introduce in the next chapter.
+
+% Furthermore, there is no intermediary between the agent and actuators.
+% This is a potentially dangerous setup, as there is nothing stopping the agent from purposefully selecting an action that results in a collision.

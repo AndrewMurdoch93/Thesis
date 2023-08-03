@@ -1,0 +1,10 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {algocf}{\numberline {1}{\ignorespaces The simulator initialisation procedure.\relax }}{6}{algocf.1}%
+\contentsline {algocf}{\numberline {2}{\ignorespaces The simulator execution at every time step.\relax }}{7}{algocf.2}%
+\addvspace {10\p@ }
+\contentsline {algocf}{\numberline {3}{\ignorespaces Twin delay deep deterministic policy gradient\relax }}{12}{algocf.3}%
+\contentsline {algocf}{\numberline {4}{\ignorespaces Evaluating the end-to-end algorithm without exploration noise, and with observation noise.\relax }}{15}{algocf.4}%
+\addvspace {10\p@ }

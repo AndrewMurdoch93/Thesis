@@ -1,0 +1,58 @@
+\definecolor{mygold}{RGB}{255,242,204}
+\definecolor{myblue}{RGB}{219,238,243}
+
+%\begin{tikzpicture}[level distance=1.5in,sibling distance=.1in,scale=.65]
+%\tikzset{edge from parent/.style= 
+% {thick, draw,edge from parent fork right},every tree node/.style={draw,minimum width=1in,text width=1in, align=center},grow'=right}
+
+%\tikzset{edge from parent/.style= 
+% {thick, draw, edge from parent fork down},
+% every tree node/.style={draw,minimum width=1in,text width=1.2in,align=center,rounded corners=.2cm},
+% grow'=down}
+
+%\Tree 
+%    [.\node[fill=mygold] {\textbf{Autonomous racing \mbox{software} \mbox{architecture} }};
+%        [.\node[fill=myblue] {\textbf{Partial end-to-end pipeline}: \cite{Evans2021b}, \cite{Capo2020}, \cite{Ghignone2022},  %\cite{Weiss2020a}. }; ]
+%        [.\node[fill=mygold] {\textbf{End-to-end pipeline}};
+%            [.\node[fill=myblue] {\textbf{Imitation learning}: \cite{Tatulea-Codrean2020}, \cite{Wadekar2021}, \cite{Mahmoud2020}, \cite{Pan2017a}, \cite{lee2019}. }; ]
+%            [.\node[fill=myblue] {\textbf{Reinforcement learning}: \cite{Schwarting2021}, \cite{brunnbauer}, \cite{Williams2017}, \cite{Jaritz2018}, \cite{Perot2017}, \cite{Fuchs2021}, \cite{Song2021}, \cite{Niu2020}, \cite{Remonda2021}, \cite{Chisari2021}, \cite{Ivanov2020}, \cite{hsu2022}. }; ]
+%        ] 
+%        [.\node[fill=mygold] {\textbf{Classic pipeline}};
+%            [.\node[fill=myblue] {\textbf{Full \mbox{driving} stack}: \cite{Valls2018}, \cite{sherif2020}, \cite{Wischnewski2019}, \cite{Vazquez2020}, \cite{alvarez2022}. }; ]
+%            [.\node[fill=myblue] {\textbf{Control}: \cite{Coulter_1992}, \cite{Hoffmann2007}, \cite{talvala2011}, \cite{Kritayakirana2010},\cite{Pup2020}, \cite{Beal2013}, \cite{Liniger2019}, \cite{Williams2016}, \cite{Hewing2018}, \cite{Ji2018}, \cite{Brunner2018a}. }; ]
+%            [.\node[fill=myblue] {\textbf{Trajectory planning}: \cite{Braghin2008}, \cite{Herrmann2019}, \cite{Herrmann2020}, \cite{Cardamone2010}, \cite{Vesel}, \cite{Liniger2015a}, \cite{keefer2022}, \cite{Wang2021}, \cite{Jeon2013}. }; ]
+%            %[.{Global trajectory planning} ]
+%       ]
+%   ]
+    
+%\end{tikzpicture}
+
+\begin{tikzpicture}[level distance=1.45in,sibling distance=.1in,scale=.65]
+%\tikzset{edge from parent/.style= 
+% {thick, draw,edge from parent fork right},every tree node/.style={draw,minimum width=1in,text width=1in, align=center},grow'=right}
+
+\tikzset{edge from parent/.style= 
+ {thick, draw, edge from parent fork down},
+ every tree node/.style={draw,minimum width=1in,text width=1.2in,align=center,rounded corners=.2cm},
+ %gold subtree/.style = {fill={rgb:red,255;green,242;yellow,204}, draw, minimum width=1in, text width=1.2in, align=center, rounded corners=.2cm}
+ %blue subtree/.style =  {fill={rgb:red,219;green,238;yellow,243}, draw, minimum width=1in, text width=1.2in, align=center, rounded corners=.2cm}
+ grow'=down}
+
+\Tree 
+    [.\node[fill=mygold] {\textbf{Autonomous racing \mbox{software} \mbox{architecture} }};
+        [.\node[fill=mygold] {\textbf{Partial end-to-end pipeline}}; 
+            [.\node[fill=myblue] {\textbf{Learned trajectory planner}, \\ \mbox{Our approach}, \cite{Capo2020}, \cite{Weiss2020a}.}; ]
+            [.\node[fill=myblue] {\textbf{Learned controller}, \\ \cite{Evans2021b}, \cite{Ghignone2022}.}; ]
+        ]
+        [.\node[fill=mygold] {\textbf{End-to-end pipeline}, };
+            [.\node[fill=myblue] {\textbf{Reinforcement learning}, \\ \cite{Schwarting2021}, \cite{Williams2017}, \cite{Jaritz2018}, \cite{Perot2017}, \cite{Fuchs2021}, \cite{Song2021}, \cite{Niu2020}, \cite{Remonda2021}, \cite{Chisari2021}, \cite{Ivanov2020}, \cite{hsu2022}, \cite{brunnbauer2021}. }; ]
+            [.\node[fill=myblue] {\textbf{Imitation learning}, \\ \cite{Tatulea-Codrean2020}, \cite{Wadekar2021}, \cite{Mahmoud2020}, \cite{Pan2017a}, \cite{lee2019}. }; ]
+        ] 
+        [.\node[fill=mygold] {\textbf{Classic pipeline}, };
+            [.\node[fill=myblue] {\textbf{Control}, \\ \cite{Coulter_1992}, \cite{Hoffmann2007}, \cite{Niu2020}, \cite{Kritayakirana2012}, \cite{Fu2016}, \cite{alvarez2022}, \cite{Nekkah2020}. }; ]
+            [.\node[fill=myblue] {\textbf{Trajectory planning}, \\ \cite{Anderson2016}, \cite{Funke2017}.}; ]
+            %[.{Global trajectory planning} ]
+        ]
+    ]
+    
+\end{tikzpicture}

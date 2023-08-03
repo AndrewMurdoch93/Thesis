@@ -1,0 +1,22 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{4cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.5cm}}
+
+\begin{table}[htb!]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.95\textwidth}{RLLL} 
+    \hline
+    \textbf{Hyper-parameter} & \textbf{Symbol} & \textbf{Value} & \textbf{Supporting result} \\ 
+    \hline
+    Target update rate                      & $\tau$            & $5\cdot10^{-3}$       & Table \ref{tab:tau_test_results} \\
+    Replay buffer size                      & $\mathcal{B}$     & $5\cdot 10^5$         & - \\
+    Replay batch size                       & $N$               & $100$                 & Table \ref{tab:N_test_results} \\
+    Exploration noise                       & $\mathcal{N}$     & $0.1$                 & Table \ref{tab:noise_test_results} \\
+    Reward discount rate                    & $\gamma$          & $0.99$                & Table \ref{tab:gamma} \\
+    Action samples between network updates  & $d$               & $2$                   & Table \ref{tab:d_test_results} \\
+    \hline
+\end{tabularx}
+\caption[Values of hyper-parameters for our implementation of TD3]{Values of hyper-parameters for our implementation of TD3.}
+\label{tab:algorithm_parameters}
+\end{table}

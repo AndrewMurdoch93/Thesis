@@ -1,0 +1,219 @@
+\chapter{Artificial neural networks}\label{chp:anns}
+
+Artificial neural networks (ANNs) are powerful nonlinear functions approximators that take inspiration from biological neural networks.
+The RL methods applied in this project utilise ANNs to represent an agent's policy \cite{Fujimoto2018}.
+
+The theory of ANNs are more easily explained in the context of supervised learning than reinforcement learning.
+Therefore, in this chapter, we introduce ANNs only in the context of solving supervised learning problems.
+In supervised learning, the goal is to approximate a functional mapping, denoted as $y=f(\bm{x})$.
+However, the exact function $f(\bm{x})$ is unknown,  and instead, we are provided with a data set
+\begin{equation}\label{eq:supdervised_dataset}
+    \mathcal{D} = \{ (\bm{x}^{[1]}, y^{[1]}), (\bm{x}^{[2]}, y^{[2]}), \cdots, (\bm{x}^{[n]}, y^{[n]}) \}
+\end{equation}
+consisting of examples where $f(\bm{x})$ was evaluated at inputs $\bm{x}^{[i]}$ to produce corresponding outputs $y^{[i]}$.
+The goal of an ANN is to define an approximate mapping $\hat{y}=\hat{f}(\bm{x},\bm{\theta})$, which has parameters $\bm{\theta}$.
+The optimal values of $\bm{\theta}$ that result in the best approximation of $f(\bm{x})$ using the provided dataset examples \cite{Goodfellow2016} are then learned.
+In this context, we are particularly interested in a subset of supervised learning known as regression, whereby both the input and output variables are continuous.
+
+The discussion is adapted from Goodfellow \cite{Goodfellow2016} and Ng et al. \cite{Ng2019}. 
+We start our discussion with a description of the artificial neuron, which is the basic component ANNs are comprised of.
+
+
+
+\section{The neuron}
+An artificial neuron is a mathematical model analogous to a biological neuron.
+The neuron, which is depicted in Figure \ref{fig:neuron}, consists of a scalar bias $b$ and a weight vector $\mathbf{w} \in \mathbb{R}^d$, where $d$ is the dimension of the weight vector.
+The process of evaluating an input is known as a \emph{forward pass}.
+During a forward pass, the neuron performs two functions to its input, namely a \emph{pre-activation} function and an \emph{activation} function.
+The pre-activation function is denoted $a(\bm{x})$, and is defined by Goodfellow et al. \cite{Goodfellow2016} as the weighted linear combination of the neurons input $\bm{x}$, and the bias $b$,
+\begin{equation}
+    a(\bm{x}) = b + \mathbf{w}^{\intercal}\bm{x}
+    \label{eq:preactivation}
+\end{equation}
+The activation function, denoted $g(a(\bm{x}))$, then performs a transformation of the result of the pre-activation function, 
+\begin{equation}
+    g(a(\bm{x})) = g(b + \mathbf{w}^\intercal \bm{x}).
+    \label{eq:activation}
+\end{equation}
+Popular choices for activation functions are the linear function,
+\begin{equation}
+    g(a) = a,
+    \label{eq:linear_act}
+\end{equation}
+the Rectified Linear Unit (ReLU), which takes the maximum between zero and the weighted sum of its inputs,
+\begin{equation}
+    g(a) = \max(0,a),
+    \label{eq:ReLU_act}
+\end{equation}
+as well as the hyperbolic tangent ($\tanh$),
+\begin{equation}
+    g(a) = \tanh(a).
+    \label{eq:tanh_act}
+\end{equation}
+
+An ANN is a network of these interconnected neurons. 
+We focus our discussion on the feed forward neural network (FNN), which is a common ANN architecture utilised by reinforcement learning techniques.
+
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/neuron.tex
+    \caption[A single neuron]{A single neuron with a vector of input connections $\bm{x} = [x_1,\ldots,x_d]$. Each input $x_j$ is weighted by a parameter $w_j$. 
+    The neuron applies an activation function $g$ to the pre-activation $a$, which is the weighted sum of its inputs plus a scalar bias $b$.}
+    \label{fig:neuron}
+\end{figure}
+
+
+\section{Feedforward neural networks}
+\label{sec:fnn}
+
+According to Goodfellow et al. \cite{Goodfellow2016}, feedforward neural networks (FNNs) are a type of ANN whereby information is passed directly from the input to the output of the network, without any \emph{feedback connections} in which outputs are fed back into the network as inputs.
+They are represented by composing together many functions.
+For example, three functions, denoted $f^{(1)}$, $f^{(2)}$, and $f^{(3)}$ are combined to form a three layer network, 
+$\hat{f}(\mathbf{x}) = f^{(3)}( f^{(2)}( f^{(1)}(\mathbf{x}) ) )$, where $f^{(1)}$ is the input layer, $f^{(2)}$ is a hidden layer, and $f^{(3)}$ is the output layer.
+An example of such a three layer feedforward neural network is shown in Figure \ref{fig:neural_network}.
+This type of network with multiple layers is also known as a deep neural network (DNN).
+
+Each layer of the DNN is comprised of a number of neurons.
+The DNN depicted in the figure has \emph{fully connected layers}, in which each neuron forms links with all of the neurons in the preceding and following layers.
+By employing numerous interconnected neurons that apply non-linear activation functions to their inputs, an FNN is capable of approximating complex non-linear functions.
+In fact, the universal approximation theorem by Hornik \cite{Hornik1989} states that an FNN, with a sufficient number of connections, can approximate any arbitrary relationship between input and output variables.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/neural_network.tex
+    \caption[A feed forward neural network]{
+    A three layer feedforward DNN with three fully connected layers: an input and a hidden layer of three units each, and an output layer of one unit. 
+    The weight and bias connections of the $k$th layer is denoted $\mathbf{W}^{(k)}$ and $\mathbf{b}^{(k)}$ respectively.
+    Furthermore, the DNN receives an input vector $\bm{x}=[x_1, \ldots ,x_d]$, and output $\hat{y}$.}
+    \label{fig:neural_network}
+\end{figure}
+
+
+To represent one layer of the ANN, matrix notation similar to Ng et al. \cite{Ng2019} is used.
+The weights connecting each neuron in the $k$th layer to the preceding layer is given by the matrix
+\begin{equation}
+    \mathbf{W}^{(k)} = 
+    \begin{bmatrix}
+        w_{11} & \cdots &  w_{1d}   \\
+        \vdots & \ddots &           \\
+        w_{m1} &        & w_{md}    \\
+    \end{bmatrix}, 
+\end{equation}
+where $m$ is the number of neurons in the $k$th layer, and $d$ is the number inputs to each neuron (i.e., the number of neurons in the preceding layer).
+Furthermore, the biases of each neuron in the $k$th layer are represented as a vector
+\begin{equation}
+    \mathbf{b}^{(k)} = [ b_1 \ldots b_m ]^\intercal,
+\end{equation}
+The weights and biases of all the layers in the network make up its parameters, and are denoted $\theta$.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Forward propagation}
+
+The process of evaluating an input $\bm{x}$ to generate an output $\hat{y} = \hat{f}(\bm{x},\theta)$, is known as forward propagation, and is analogous to the forward pass of a single neuron.
+In forward propagation, the output of each layer is computed sequentially from first to last \cite{Goodfellow2016}.
+The output of the $k$th layer is denoted with $\mathbf{h}^{(k)}$.
+Similar to the single neuron, the $k$th layer of a DNN first applies a pre-activation $\bm{a}^{(k)}(\bm{x})$ to its inputs,
+\begin{equation}\label{eq:dnn_preact}
+    \bm{a}(\bm{x}) = \mathbf{b}^{(1)} + \mathbf{W}^{(k)} \mathbf{h}^{(k-1)}(\bm{x}),
+\end{equation}
+which is dependent upon the output of the previous layer.
+An activation function (as in Equations \ref{eq:linear_act} to \ref{eq:tanh_act}) is then applied element-wise to the pre-activation from Equation \ref{eq:dnn_preact}.
+\begin{equation}\label{eq:dnn_act}
+    \mathbf{h}^{(k)}(\bm{x}) = \bm{g}^{(k)}( \bm{a}^{(k)} (\bm{x}) ).
+\end{equation}
+This operation is performed iteratively for each layer to compute the predicted output of the DNN, denoted as $\hat{y}$.
+
+The forward propagation process is illustrated in Algorithm \ref{alg:forward_prop}.
+In this algorithm, the input is initially set as the 0th layer of the network.
+Equations \ref{eq:dnn_preact} and \ref{eq:dnn_act} are subsequently applied to each layer $k$ in a sequential manner, until reaching the final layer denoted as $K$.
+The output of the DNN corresponds to the output of the final layer.
+
+\begin{algorithm}[htb!]
+\caption[Evaluating a single example input via forward propagation]{Evaluating a single example input $\bm{x}$ via forward propagation. Adapted from Goodfellow et al. \cite{Goodfellow2016}.}
+\label{alg:forward_prop}
+\nonl\textbf{Input}: An input $\bm{x}$, DNN with parameters $\{\mathbf{W,b}\} \in \bm{\theta}$ \\
+\nonl\textbf{Output}: DNN output $\hat{y}$ \\
+\vspace{0.3cm} 
+$\mathbf{h}^{(0)} \leftarrow \bm{x}$ \\
+\For{$k=1$, $\cdots$, $K$}
+{
+    $\mathbf{a}^{(k)} \leftarrow \mathbf{b}^{(k)} + \mathbf{W}^{(k)} \mathbf{h}^{(k-1)}$ \\
+    $\mathbf{h}^{(k)} \leftarrow \mathbf{g}^{(k)}(\mathbf{a}^{(k)})$ \\
+}
+$\hat{y} \leftarrow \mathbf{h}^{(K)}$ \\
+\end{algorithm}
+
+We will now discuss how the parameters of the DNN are modified so that the accuracy of these predictions increase.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Gradient-based learning}\label{sec:grad_des}
+The process through which the optimal set of parameters are determined such that $\hat{f}(\bm{x}, \bm{\theta})$ approximates $f(\bm{x})$ as accurate as possible is called training.
+Training is accomplished by incrementally adjusting the parameters of the DNN, such that a \emph{cost function}, denoted  $J$, is minimised. 
+
+The cost function measures the error between the DNN predicted output $\hat{y} = \hat{f}(\bm{x}, \bm{\theta})$ and target examples of the true function $y = f(\bm{x})$. 
+A popular cost  function that we consider in this study is the mean squared error (MSE) over a batch of data samples,
+\begin{equation}
+    J( \bm{y}, \bm{x}, \bm{\theta}) = \frac{1}{N} \sum_{i=1}^{N} (y^i - \hat{f}(\bm{x}^i, \bm{\theta}))^2,
+    \label{eq:cost_function}
+\end{equation}
+where $\mathbf{y} = [ y^1, y^2, \ldots , y^N ]$ is a vector of training data and $\mathbf{\hat{y}} = [ \hat{y}^1, \hat{y}^2, \ldots , \hat{y}^N ]$ is a vector of DNN outputs evaluated at the same inputs.
+When this cost function is minimised, the neural network becomes a better approximator of the true function.
+
+The iterative process of incrementally adjusting the DNN parameters such the cost function decreases is known as gradient descent.
+In gradient descent, the parameters of the DNN at a given time step $t$, denoted as $\bm{\theta}_t$, undergo updates by computing the partial derivative of the cost function with respect to those parameters. 
+The parameters are then adjusted slightly so that the cost decreases, such that the parameters at time step $t+1$ are
+\begin{equation}
+    \bm{\theta}_{t+1} = \bm{\theta}_{t} - \alpha \nabla_{\bm{\theta}_t}J(\bm{\theta}_t),
+    \label{eq:gradient_descent}
+\end{equation}
+where $\alpha$ is a scalar controlling the magnitude of the weight updates known as the learning rate.
+
+A popular gradient descent method that we consider in this study, which is based on Equation \ref{eq:gradient_descent}, is adaptive moment estimation (Adam), introduced by Kingma and Ba \cite{kingma2015}. 
+Adam computes adaptive learning rates for each parameter in the DNN by keeping track of a decaying average of past gradients, referred to as the momentum. 
+The neural network is made more accurate by repeatedly applying gradient descent steps while using different data samples in the cost function.
+
+
+
+\section{Backpropagation}
+The gradient descent method of adjusting an ANN's weights requires the partial derivative of the cost function with respect to each parameter to be calculated.
+The most efficient method for doing this is backpropagation.
+In this method, the partial derivatives of the cost function are taken with respect to each layer in a reverse order through the network.
+Backpropagation is started by computing the partial derivative of the cost function with respect to the output layer.
+The chain rule is then applied to obtain the gradients of each preceding layer, from back to front.
+Ng et al. \cite{Ng2019} give the general equation for the gradients of the weights in the $kth$ layer as
+\begin{equation}\label{eq:dj/dw}
+    \frac{\partial J}{\partial W^{(k)} } =  
+    \frac{\partial J}{\partial \hat{y} } \times
+    \frac{\partial \hat{y}}{\partial \mathbf{h}^{(L-1)} } \times 
+    \frac{\partial \mathbf{h}^{(L-2)}}{\partial \mathbf{h}^{(L-3)} } \times \cdots \times
+    \frac{\partial \mathbf{h}^{(k)}}{\partial  W^{(k)}}.
+\end{equation}
+Similarly, the gradients of the biases of the $k$th layer are found by
+\begin{equation}\label{eq:dj/db}
+    \frac{\partial J}{\partial \mathbf{b}^{(k)} } =  
+    \frac{\partial J}{\partial \hat{y} } \times
+    \frac{\partial \hat{y}}{\partial \mathbf{h}^{(L-1)} } \times 
+    \frac{\partial \mathbf{h}^{(L-2)}}{\partial \mathbf{h}^{(L-3)} } \times \cdots \times
+    \frac{\partial \mathbf{h}^{(k)}}{\partial  \mathbf{b}^{(k)}}.
+\end{equation}
+The gradient term $\nabla_{\theta}J$ from Equation \ref{eq:gradient_descent} is obtained by computing Equations \ref{eq:dj/dw} and \ref{eq:dj/db} for every layer.
+Thus, the backpropagation algorithm is essential in optimising the network parameters so as to increase the accuracy of its predictions.
+
+\section{Summary}
+
+From Chapter \ref{chp:litreview}, learning-based methods to solving the autonomous racing problem typically use deep neural networks (DNNs) to represent their driving policy.
+This chapter has introduced the basic concepts surrounding artificial neural networks (ANNs), which are non-linear function approximators composed of many artificial neurons.
+DNNs are a category of ANNs, and are distinguished by thier architecture having multiple layers of neurons.
+
+In this chapter, we have described how DNNs are applied to solve supervised learning tasks, where the goal is to approximate a function from known examples.
+In the next chapter, we will describe how DNNs are utilised by RL methods to solve robotics problems.
+

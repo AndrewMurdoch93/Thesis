@@ -1,0 +1,47 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{5cm}}
+\newcolumntype{C}{>{\raggedright\arraybackslash}p{2cm}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{5cm}}
+
+\begin{table}[htb!]
+\centering
+%\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabularx}{0.95\textwidth}{RCL} 
+    \hline
+    \textbf{Hyper-parameter} & \textbf{Symbol} & \textbf{Value} \\ 
+    \hline
+    \textbf{Algorithm}                      &                           & \\
+    Maximum time steps                      & $M$                       &  \\
+    Target update rate                      & $\tau$                    & $5\cdot10^{-3}$ \\
+    Replay buffer size                      & $\mathcal{B}$             & $5\cdot 10^5$ \\
+    Replay batch size                       & $B$                       & $400$ \\
+    Exploration noise standard deviation    & $\sigma_{\text{action}}$  & $0.1$ \\
+    Reward discount rate                    & $\gamma$                  & $0.99$ \\
+    Agent samples between network updates   & $d$                       & $2$ \\
+    Agent sample rate                       & $f_{\text{agent}}$        & $5$ Hz \\
+    Target action noise standard deviation  & $\tilde{\sigma}$          & $0.2$ \\ 
+    Target action noise clip                & $c$                       & $0.5$ \\
+    \textbf{Reward signal}                  &                           & \\
+    Distance reward                         & $r_{\text{dist}}$         & $0.2$ \\ 
+    Time step penalty                       & $r_{\text{time}}$         & $0.01$ \\
+    Collision penalty                       & $r_{\text{collision}}$    & $-5$ \\
+    \textbf{Observation}                    &                           & \\
+    Number of LiDAR beams                   & L                         & 20 \\
+    % Observation noise                       & $\sigma_{\text{observation}}$ & $x=0.025$ m, $y=0.025$ m, $\theta=0.05$ rads, $v=0.1$ m/s, $\text{LiDAR distances}=0.01$ m \\                      
+    \textbf{Neural network}                 &                           & \\
+    Learning rate                           & $\alpha$                  & $10^{-3}$ \\
+    Input layer size                        & $m_1$                     & 400 \\
+    Hidden layer size                       & $m_2$                     & 300 \\
+    \textbf{Velocity constraints}           &                           & \\
+    Minimum velocity                        & $v_{\text{min}}$          & $3$ m/s \\
+    Maximum velocity                        & $v_{\text{max}}$          & $5$ m/s \\
+    \textbf{Velocity controller}            &                           & \\
+    Gain                                    & $k_{v}$                   & $0.5$ \\
+    \textbf{Steering controller}            &                           & \\
+    Look-ahead gain                          & $k_{s}$                   & $0.1$ \\
+    Look-ahead constant                      & $L_c$                     & $1$ m \\
+    \hline
+\end{tabularx}
+\caption[Values of hyper-parameters for the partial end-to-end racing algorithm]{Experimentally determined values of hyper-parameters for the partial end-to-end agents trained to race on all three tracks.}
+\label{tab:pete_values}
+\end{table}

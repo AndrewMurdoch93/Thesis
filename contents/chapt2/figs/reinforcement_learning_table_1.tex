@@ -1,0 +1,45 @@
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.7cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}p{1.8cm}}
+\newcolumntype{N}{>{\centering\arraybackslash}p{2.2cm}}
+\newcolumntype{Y}{>{\centering\arraybackslash}p{1cm}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{7cm}}
+
+
+\begin{table}[htb!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+%\resizebox{\textwidth}{!}{
+\begin{tabularx}{\textwidth}{R Y M L}
+    \hline
+    \small \textbf{Author(s)} & \small \textbf{Year} & \small \textbf{Physical \mbox{vehicle}} & \small \textbf{Sim2real research contribution} \\
+    \hline
+   
+    \small Jaritz et al. \cite{Jaritz2018} & \small 2018 & & - \\
+
+    \small Perot et al. \cite{Perot2017} & \small  2017 & & - \\
+
+    \small Fuchs et al. \cite{Fuchs2021} & \small 2021 & & \small Test effects of model inaccuracy in simulation. \\
+
+    \small Song et al. \cite{Fuchs2021} & \small 2021 & & - \\
+
+    \small Wurman et al. \cite{Wurman2022} & \small 2021 & & - \\
+
+    \small Cai et al. \cite{Cai2020} & \small 2021 & & - \\
+
+    \small Niu et al. \cite{Niu2020} & \small 2020 & & \small Safety module based on learned vehicle model prevents agent from selecting unsafe actions. \\
+    
+    \small Brunnbauer et al. \cite{brunnbauer2021} & \small 2021 & F1tenth & - \\
+
+    \small Hsu et al. \cite{hsu2022} & \small 2022 & F1tenth & \small Domain randomisation while training. Control action smoothing. \\
+
+    \small Ivanov et al. \cite{Ivanov2020} & \small 2020 & F1tenth & \small Domain randomisation while training. \\
+
+    \small Chisari et al. \cite{Chisari2021} & \small 2021 & $1:43$ scale cars & \small Domain randomisation while training, policy refinement after deployment. Control action smoothing.\\
+
+    \hline
+
+\end{tabularx}
+%}
+\caption[A summary of end-to-end reinforcement learning approaches for autonomous racing]{A summary of end-to-end reinforcement learning approaches for autonomous racing. }
+\label{table:autonomous_racing_rl_summary}
+\end{table} 

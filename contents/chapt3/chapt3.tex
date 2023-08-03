@@ -1,0 +1,183 @@
+\chapter{Markov decision processes}
+\label{chp:mdps}
+In this chapter we review the \emph{Markov decision process} (MDP), which is a popular mathematical framework for modelling discrete-time decision-making processes where the outcomes are partly random and partly under the control of the \emph{agent} (i.e., the decision maker).
+MDPs are useful for studying optimisation problems whereby the goal is for the agent to learn a sequence of actions that maximise a \emph{reward} signal.
+Such optimisation problems are commonly found in the fields of robotics, automated control, and manufacturing \cite{White1985}.
+The fact that MDPs can model sequential problems is also useful for the autonomous racing problem, where the outcome of the race is determined by a sequence of control actions, and the exact vehicle dynamics model is not known.
+MDPs provide an important theoretical background for RL, because RL methods can only be applied to tasks that have been modelled as MDPs.
+
+After our review of MDPs, we introduce a simple tabular RL method known as Sarsa.
+Our discussion of Sarsa will introduce the basic algorithm components required to understand more advanced RL methods.
+The theory presented in this chapter is adapted from Silver's course \cite{silver2015} and Sutton and Barto's textbook \cite{sutton2020}.
+
+\section{The components of the MDP}
+\label{sec:agent_environment_interface}
+
+Silver \cite{silver2015} lists the components of the Markov decision process as a tuple $\langle \mathcal{S,A,P,R}, \gamma \rangle$, where: 
+\begin{itemize}
+    \item $\mathcal{S}$ is the set of all states,
+    \item $\mathcal{A}$ is the set of all actions available to the agent,
+    \item $\mathcal{P}$ is the probability of each state transition:
+    % \begin{itemize}
+    %     \item $\mathcal{P}_{ss'}^{a} = \mathbb{P} [S_{t+1}=s' |  S_t=s, A_t=a]$,
+    % \end{itemize}
+    \item $\mathcal{R}_{s}^{a} = \mathbb{E} [R_{t+1} | S_t=s, A_t=a]$ is the reward function, and
+    \item $\gamma \in [0,1]$ is the discount factor
+\end{itemize}
+% The following sections describe how each of the elements of the tuple are used in the MDP. We begin by discussing the structure of the MDP, i.e., how the agent and environment interact. 
+% \subsection{The agent environment interface}
+% \label{sec:agent_environment_interface}
+
+In an MDP, the environment comprises everything apart from the agent.
+The agent and environment interact in a sequence of discrete time steps, $t=0,1,2,3, ...$.
+At every time step $t$, the agent observes the environment's state $S_t \in \mathcal{S}$, on which basis it selects an action $A_t \in \mathcal{A}$.
+One time step then passes, after which the next state $S_{t+1}$ is sampled according to the state transition probabilities $\mathcal{P}$, along with a numerical reward $R_{t+1}$.
+This agent environment interaction is repeated as shown in Figure \ref{fig:agent_env_boundary}, giving rise to the trajectory
+\begin{equation}
+S_0, A_0, R_1, S_1, A_1, R_2, S_2, A_2, R_3, ... 
+\label{eq:mdp_trajectory}
+\end{equation}
+The entire trajectory is called an episode.
+Note that there are many cases (such as autonomous racing) where the state transition probabilities are difficult to represent explicitly.
+In these cases, simulators are then used to represent them implicitly by generating the state transition according to the current state and selected action.
+\begin{figure}[!htb]
+\centering
+\input{contents/chapt3/figs/agent_environment_boundary.pdf_tex}
+\caption[The agent environment interface]{The agent environment interface.}
+\label{fig:agent_env_boundary}
+\end{figure}
+
+\section{Rewards and returns}
+The objective of the agent is described in terms of the reward signal: it must maximise the sum of discounted rewards over the course of its entire trajectory.
+This sum of discounted rewards is called the \emph{return}, and is denoted $G_t$,
+\begin{equation}
+G_t \doteq R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = \sum_{k=t+1}^{T} \gamma^{k-t-1} R_{k},
+\label{eq:G_t_discount}
+\end{equation}
+where $T$ denotes the final time step in the trajectory, and $\gamma$ is a discount factor that controls how strongly future rewards are weighted.
+An important property of the MDP is that the returns at successive time steps can be related to each other:
+\begin{equation}
+\begin{split}
+G_t &= R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... \\
+&= R_{t+1} + \gamma (R_{t+2} + \gamma R_{t+3 + ...}) \\
+&= R_{t+1} + \gamma G_{t+1}. 
+\label{eq:G_t_recursive}
+\end{split}
+\end{equation}
+
+\section{Policies and value functions}
+To solve an MDP, it is necessary for the agent to formulate a policy $\pi$ by which it chooses actions, e.i., a mapping from states to the probability of selecting each action:
+\begin{equation}
+\pi(a|s) = \mathbb{P} [A_t=a | S_t=s].
+\label{eq:pi(a|s)}
+\end{equation}
+The agents objective of maximising the reward signal requires a means of evaluating the policy.
+This is accomplished using the \emph{action-value} function, denoted $q_\pi$.
+The action-value is the expected return of the agent starting in state $s$, selecting action $a$, and following policy $\pi$ thereafter:
+\begin{equation}
+q_\pi(s,a) = \mathbb{E}_{\pi} [G_t | S_t=s, A_t=a].
+\label{eq:q_pi(s,a)}
+\end{equation}
+By substituting Equation \ref{eq:G_t_recursive} into Equation \ref{eq:q_pi(s,a)}, Sutton and Barto are able to relate the action-values to those at the next time step:
+\begin{equation}
+q_\pi(s,a) = \mathbb{E}_{\pi} [R_{t+1} + \gamma q_{\pi}(S_{t+1}, A_{t+1}) | S_t = s, A_t=a].
+\label{eq:q_pi(s,a)_1}
+\end{equation}
+According to this equation, the policy and action-values are linked. 
+Hence, better policies results in higher action-values.
+A policy $\pi$ is considered better than policy $\pi'$ if its expected return is greater than that of $\pi'$ for all states, 
+\begin{equation}\label{eq:better_policy_cond}
+    q_\pi(s,a) \geq q_{\pi'}(s,a) \text{ for all } s \in \mathcal{S} \text{ and } a \in \mathcal{A}.
+\end{equation}
+Solving an MDP means finding an optimal policy $\pi_*$ which achieves more reward than all other policies,
+$\pi_* \geq \pi \text{ for all } \pi$. All optimal policies share the same optimal action-value function $q_*$, defined as 
+\begin{equation}
+    q_*(s,a)=\max_\pi q_\pi(s,a) \text{ for all } s \in \mathcal{S} \text{ and } a \in \mathcal{A}.
+\label{eq:q_*(s,a)}
+\end{equation}
+The MDP is considered solved when the optimal action-value function is known, since the agent can achieve the maximum possible reward by always selecting actions that maximise over $\pi_*$.
+The next section shall explain how reinforcement learning methods solve MDPs.
+
+
+
+
+\section{Tabular reinforcement learning}
+This section introduces the simplest tabular RL method, known as Sarsa.
+Tabular methods are suitable to solve problems in which the state and action spaces are (a) discrete, and (b) small enough for the action-value function to be represented as a table wherein each entry corresponds to a state-action pair (i.e., a state, and an action available to the agent in that state).
+Sarsa will serve as the basis for understanding more complex algorithms applied to continuous state and action spaces.
+
+All model-free reinforcement learning techniques solve the MDP and formulate an optimal policy $\pi_*$ by iteratively improving the current policy $\pi$ with respect to the action-value function $q_\pi$ in a two step process known as \emph{policy iteration}.
+The two steps in this process are (a) policy evaluation and (b) policy improvement.
+\emph{Temporal difference} methods such as Sarsa execute these two steps at every MDP time step.
+
+In the policy evaluation step, the action value function $q_\pi$ is estimated.
+This is necessary because the value of the policy is not known until rewards are sampled from the environment.
+The estimated action-value function is denoted $Q$, and is made more accurate by adjusting it towards an updated estimate of the return, called the \emph{target}:
+\begin{equation}\label{eq:tab_policy_eval}
+    Q_{\text{new}} \leftarrow  Q_{\text{old}} + \alpha [\text{target} - Q_{\text{old}}],
+\end{equation}
+where $\alpha$ is the step size parameter that controls how quickly $Q$ is updated.
+Temporal difference methods such as Sarsa use the definition of the return given by Equation \ref{eq:q_pi(s,a)_1} for the target:
+\begin{equation}\label{eq:sarsa_target}
+    \text{target} = R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}).
+\end{equation}
+
+During the policy improvement step, the policy is made better according to the condition in Equation \ref{eq:better_policy_cond}.
+Sarsa accomplishes this using $\epsilon$-\emph{greedy} policy improvement, by which the policy is updated so that the agent chooses the action associated with the maximum action-value a fraction of the time, and otherwise selects a exploratory (i.e., random) action: 
+\begin{equation}
+    \pi'(s) = 
+    \begin{cases}
+    1-\epsilon & \text{if } a = \underset{a \in \mathcal{A}}{\text{argmax }} Q(s,a) \\
+    \frac{\epsilon}{m} & \text{otherwise,}
+    \end{cases}
+\end{equation}
+where $\epsilon$ is the fraction of time that the agent selects an exploratory action.
+According to Silver's  $\epsilon$-greedy policy improvement theorem \cite{silver2015}, the new policy (i.e., the one based on the updated action-value estimate) is a guaranteed improvement over the old policy.
+Furthermore, the policy selects the best actions according to the current action-value estimates most of the time, while allowing the agent explore the state space.
+
+Once the new policy is generated, the action-value function is outdated and must be estimated again,
+hence the policy iterates. 
+Ideally, the action-value function improves until it converges on the optimal action-value function according to Equation \ref{eq:q_*(s,a)}.
+In practice however, the number of iterations is limited. 
+This limit can be specified by the number of episodes or MDP time steps.
+
+The pseudocode for Sarsa is shown in Algorithm \ref{alg:sarsa}.
+After initialising the step size, exploration rate and Q-values, the algorithm executes for $M$ number of episodes.
+The inner while loop is used to generate episodes according to the rules of the MDP given in Section \ref{sec:agent_environment_interface}.
+Policy evaluation occurs in line $10$, each time after an action is taken.
+Furthermore, policy improvement is implied in line $9$ - it occurs at every time step by choosing an action according to an $\epsilon$-greedy policy. 
+
+\begin{algorithm}[htb!]
+\small
+\caption{Sarsa (on policy TD control) for estimating $Q \approx q_*$}\label{alg:sarsa}
+Algorithm parameters: step size $\alpha \in (0,1]$, small $\epsilon > 0$ \\
+Initialise $Q(s,a)$, for all $s \in \mathcal{S}^{+}, a \in \mathcal{A}(s)$ arbitrarily, except $Q(\text{terminal, } \cdot)=0$ \\
+\For{episode = 1, M}
+{
+    $t=0$ \\
+    Initialise $S$ \\
+    Choose $A$ from $S$ using policy derived from $Q$ (e.g., $\epsilon$-greedy) \\ 
+    \While{$S$ is not terminal}
+    {
+        Take action $A$, observe $R$, $S'$ \\
+        Choose $A'$ from $S'$ using policy derived from $Q$ (e.g., $\epsilon$-greedy) \\
+        $Q(S,A) \leftarrow Q(S,A) + \alpha [R + \gamma Q(S',A') - Q(S,A)]$ \\
+        $S \leftarrow S', A \leftarrow A'$ \\
+        $t=t+1$ \\
+    }
+}
+\end{algorithm}
+
+As stated before, there are many scenarios (including autonomous racing) where the state and action spaces are continuous.
+In these cases, the action-value function must be approximated using a function so that the agent can generalise across states.
+Furthermore, the policy must also be represented as a continuous function for continuous action-spaces to be realisable.
+
+
+\section{Summary}
+In this chapter, we introduced the theory surrounding the MDPs, which are the precise mathematical problems that RL attempts to solve.
+the goal of an agent within an MDP is to formulate a policy that maximises a reward signal.
+We also introduced Sarsa, which is an RL method that solves simple MDPs with small action and state spaces that can be tabularised.
+However, in order to solve the autonomous racing problem, we shall require continuous state and action spaces.
+In order to make this realisable, artificial neural networks (ANNs) are commonly used for representing both action-value functions and policies.
+The next chapter will introduce the theory of ANNs.
+

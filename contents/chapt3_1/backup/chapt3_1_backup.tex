@@ -1,0 +1,194 @@
+\chapter{Artificial neural networks}\label{chp:anns}
+
+Artificial neural networks (ANNs) are a powerful nonlinear modelling tool that take inspiration from biological neural networks.
+The goal of an ANN is to approximate some function $f$, i.e., a mapping between input and output variables.
+The RL methods applied in this project utilise ANNs to represent an agent's policy \cite{Fujimoto2018}.
+
+
+However, in this chapter, we introduce ANNs only in the context of solving regression problems.
+Regression is a supervised learning task whereby the output variables are continuous values \cite{Goodfellow2016}.
+For example, a function $y=f(\bm{x})$ maps an input vector $\bm{x}$ to a continuous output value $y$.
+However, we do not have direct access to the function $f(\bm{x})$, but have a dataset
+\begin{equation}\label{eq:supdervised_dataset}
+    \mathcal{D} = \{ (\bm{x}^{[1]}, y^{[1]}), (\bm{x}^{[2]}, y^{[2]}), \cdots, (\bm{x}^{[n]}, y^{[n]}) \}
+\end{equation}
+of examples where $f(\bm{x})$ was evaluated at inputs $\bm{x}^{[i]}$ to produce outputs $y^{[i]}$.
+An ANN defines then a mapping $\hat{y}=\hat{f}(\bm{x},\theta)$, and learns the values of $\theta$ that result in the best approximation of $f(\bm{x})$, using only the examples in the provided dataset \cite{Goodfellow2016}.
+
+The discussion is adapted from Goodfellow \cite{Goodfellow2016} and Ng et al. \cite{Ng2019}. 
+We start our overview with the artificial neuron, which is the most basic building block of ANNs.
+
+\section{The neuron}
+The neuron, shown in Figure \ref{fig:neuron}, applies an \emph{activation function} to its inputs.
+It receives an input vector $\bm{x} \in \mathbb{R}^d$, and has a weight vector $\mathbf{w} \in \mathbb{R}^d$, as well a scalar bias $b$.
+The activation function $g$ is applied to the weighted sum of its inputs $\mathbf{w}$ and the bias $b$,
+\begin{equation}
+    h = g(\bm{x}) = g(b + \mathbf{w}^\intercal \bm{x}).
+    \label{eq:activation}
+\end{equation}
+We considered three activation functions for this study. They were (a) a linear function, (b) a rectified linear unit (ReLU) and (c) a hyperbolic tangent ($\tanh$) function.
+The linear activation is the weighted sum of its inputs and bias,
+\begin{equation}
+    g(\bm{x}) = \text{linear}(\bm{x}) = b + \mathbf{w}^\intercal \bm{x}.
+    \label{eq:linear}
+\end{equation}
+The ReLU activation is a function that takes the maximum between zero and the weighted sum of its inputs,
+\begin{equation}
+    g(\bm{x}) = \text{ReLU}(\bm{x}) = \max(0, b + \mathbf{w}^\intercal \bm{x}).
+    \label{eq:ReLU}
+\end{equation}
+Goodfellow et al. \cite{Goodfellow2016} recommend ReLU as the default activation for many applications.
+We also used the $\tanh$ function, which forces the weighted sum of its inputs into the range $(-1,1)$:
+\begin{equation}
+    g(\bm{x}) = \tanh(\bm{x}) = \tanh(b + \mathbf{w}^\intercal \bm{x}).
+    \label{eq:tanh}
+\end{equation}
+An ANN is a network of these interconnected neurons. We focus our discussion on the feed forward neural network (FNN), which is a standard ANN architecture for reinforcement learning.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/neuron.tex
+    \caption[A single neuron]{A single neuron with a vector of input connections $\bm{x} = [x_1,\ldots,x_I]$. Each input $x_i$ is weighted by a parameter $w_i$. The neuron applies an activation function $g$ to the weighted sum of its inputs plus a scalar bias $b$. The output is denoted $h$.}
+    \label{fig:neuron}
+\end{figure}
+
+\section{Feed forward neural networks}
+\label{sec:fnn}
+
+According to Goodfellow et al. \cite{Goodfellow2016}, feedforward neural networks (FNNs) are a type of ANN whereby information is passed directly from the input to the output of the network, without any \emph{feedback connections} in which outputs are fed back into the network as inputs.
+They are represented by composing together many functions.
+For example, three functions, denoted $f^{(1)}$, $f^{(2)}$, and $f^{(3)}$ $f^{(3)}$ are combined to form a three layer network, 
+$\hat{f}(\mathbf{x}) = f^{(3)}( f^{(2)}( f^{(1)}(\mathbf{x}) ) )$. 
+$f^{(1)}$ is the input layer, $f^{(2)}$ is a hidden layer, and $f^{(3)}$ is the output layer.
+Figure \ref{fig:neural_network} shows an example of such a three-layer neural network.
+An FNN layer is typically comprised of a number of neurons.
+The FNN depicted in the figure has \emph{fully connected layers}, in which each neuron forms links with all of the neurons in the preceding and layers.
+By combining many simple non-linear units in a networked structure, an FNN is able to approximate complex non-linear functions. 
+In fact, according to the universal approximation theorem by Hornink \cite{Hornik1989}, an FNN with an appropriate number of connections can approximate any arbitrary relationship between input and output variables.
+
+Matrix mathematics allows each layer to be computed as a single function.
+For convenience, we use a matrix notation that is similar to Ng et al. \cite{Ng2019}.
+The weights connecting each neuron in the $k$th layer to the preceding layer is given by the matrix $W^{(k)}$, 
+\begin{equation}
+    W^{(k)} = 
+    \begin{bmatrix}
+        \mathbf{w_{1}}^{\intercal}\\
+        \vdots \\
+        \mathbf{w_{m}}^\intercal \\
+    \end{bmatrix}, 
+\end{equation}
+where $\mathbf{w}_{i}^{\intercal}$ is the vector of weights for the $i$th neuron in the $k$th layer, and $m$ is the number of neurons in that layer.
+Furthermore, the biases of every neuron the $j$th layer are written as a vector
+\begin{equation}
+    \mathbf{b}^{(k)} = [ b_1, \ldots, b_m ]^\intercal,
+\end{equation}
+where $\mathbf{b}_{i}$ is the bias of the $i$th neuron in the $k$th layer.
+The weights and biases of all the layers in the network make up its parameters, and are denoted $\theta$.
+This notation is useful when considering the forward and backward propagation of information through the FNN.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt3/figs/neural_network.tex
+    \caption[A feed forward neural network]{A three layer deep FNN with an input layer of three units, one hidden layer of two units and an output layer of one unit. Each layer is fully connected. The weight and bias connections of the $i$th layer is denoted $W^{(i)}$ and $b^{(i)}$ respectively.
+    The FNN receives an input vector $\bm{x}=[x_1, \ldots ,x_I]$ and outputs $\hat{y}$.}
+    \label{fig:neural_network}
+\end{figure}
+
+
+\section{Forward propagation}
+The process of evaluating an input $\bm{x}$ to generate an output $\hat{y} = \hat{f}(\bm{x},\theta)$ is called forward propagation.
+In forward propagation, the output of each layer is computed sequentially from first to last.
+We denote the output of the $k$th layer with $\mathbf{h}^{(k)}$.
+The first step in forward propagation is to calculate the output of the first layer,
+\begin{equation}\label{eq:forward_prop_1}
+    \mathbf{h}^{(1)}(\bm{x}) = g(\mathbf{b}^{(1)} + W^{(1)} \bm{x} ). 
+\end{equation}
+The output of the first hidden layer is the input to the second layer.
+The second layer is computed, which in turn is used to compute the third layer.
+Following this trend, the output of any hidden layer is dependent on the output of the previous layer.
+The general equation to calculate the output of the $k$th layer is
+\begin{equation}\label{eq:forward_prop_2}
+    \mathbf{h}^{(k)}(\bm{x}) = g(\mathbf{b}^{(k)} + W^{(k)} \mathbf{h}^{(k-1)}(\bm{x}) ).
+\end{equation}
+This operation is repeated for each layer, until the output layer.
+The output of the FNN, denoted $\hat{y}$, is then found by computing the output layer in a similar manner to the hidden layers,
+\begin{equation}\label{eq:forward_prop_3}
+    \hat{y} = \mathbf{h}^{(L)}(\bm{x}) = g(W^{(L)} \mathbf{h}^{(L-1)}(\bm{x}) ),
+\end{equation}
+where $L$ is the number of layers in the FNN. Note that there is not bias for the output layer.
+Applying Equations \ref{eq:forward_prop_1} to \ref{eq:forward_prop_3} enables us to use the FNN to predict outputs from input data.
+We will now see how the parameters of the FNN are modified so that the accuracy of the predictions increase.
+
+\section{Gradient descent}\label{sec:grad_des}
+The process through which the optimal set of parameters are determined such that $\hat{f}(\bm{x}, \theta)$ approximates $f(\bm{x})$ as accurate as possible is called learning.
+Learning is accomplished by gradient descent, whereby the parameters are adjusted so as to improve the network performance with respect to a cost function $J(\theta)$, i.e., the cost function is minimised. 
+In the standard gradient descent approach, the update to each parameter $\theta$ is found by computing the partial derivative of the cost function with respect to that parameter. 
+The parameters are then adjusted slightly so that the cost decreases using
+\begin{equation}
+    \theta_{t+1} = \theta_{t} - \alpha \nabla_{\theta_t}J(\theta_t),
+    \label{eq:gradient_descent}
+\end{equation}
+where $\alpha$ is the learning rate, i.e, a scalar controlling the magnitude of the weight updates, and $t$ is the time step. 
+Furthermore, the partial derivative with respect to a parameter $\theta_i$ is known as the gradient of $\theta_i$. 
+
+All gradient descent methods are variations of Equation \ref{eq:gradient_descent}.
+However, the method we consider for this study is adaptive moment estimation (Adam), introduced by Kingma and Ba \cite{kingma2015}. 
+Adam computes adaptive learning rates for each parameter in the ANN by keeping track of a decaying average of past gradients, referred to as the momentum. 
+The neural network is made more accurate by repeatedly applying gradient descent steps while using different data samples in the cost function.
+% Before we can perform the gradient descent, we will need a cost function to minimise and a method to compute gradient of the cost function with respect to the network parameters.
+
+
+\section{Cost functions}
+The aim of gradient descent is to minimise a cost function $J(\theta)$. 
+This cost function is defined in terms of a loss function $\mathcal{L}(\hat{y}, y)$ that measures the error between the FFN predicted output $\hat{y} = \hat{f}(\bm{x}, \theta)$ and target examples of the true function $y = f(\bm{x})$. 
+The loss function that we consider in this study is the square error,
+\begin{equation}\label{eq:nn_loss}
+    \mathcal{L}(\hat{y},y)=(\hat{y}-y)^2.
+\end{equation}
+The cost function is then the mean of the squared error (MSE) over a batch of data samples, namely
+\begin{equation}
+    J(\mathbf{\hat{y}, y}) = \frac{1}{N} \sum_{i=1}^{N} \mathcal{L}(\hat{y}^i, y^i) = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}^i - y^i)^2,
+    \label{eq:cost_function}
+\end{equation}
+where $\mathbf{y} = [ y^1, y^2, \ldots , y^N ]$ is a vector of training data and $\mathbf{\hat{y}} = [ \hat{y}^1, \hat{y}^2, \ldots , \hat{y}^N ]$ is a vector of FNN outputs evaluated at the same inputs.
+When this cost function is minimised, the neural network becomes a better approximator of the true function.
+
+
+\section{Backpropagation}
+The gradient descent method of adjusting an ANN's weights requires the partial derivative of the cost function with respect to each parameter to be calculated.
+The most efficient method for doing this is backpropagation.
+In this method, the partial derivatives of the cost function are taken with respect to each layer in a reverse order through the network.
+Backpropagation is started by computing the partial derivative of the cost function with respect to the output layer.
+The chain rule is then applied to obtain the gradients of each preceding layer, from back to front.
+Ng et al. \cite{Ng2019} give the general equation for the gradients of the weights in the $kth$ layer as
+\begin{equation}\label{eq:dj/dw}
+    \frac{\partial J}{\partial W^{(k)} } =  
+    \frac{\partial J}{\partial \hat{y} } \times
+    \frac{\partial \hat{y}}{\partial \mathbf{h}^{(L-1)} } \times 
+    \frac{\partial \mathbf{h}^{(L-2)}}{\partial \mathbf{h}^{(L-3)} } \times \cdots \times
+    \frac{\partial \mathbf{h}^{(k)}}{\partial  W^{(k)}}.
+\end{equation}
+Similarly, the gradients of the biases of the $k$th layer are found by
+\begin{equation}\label{eq:dj/db}
+    \frac{\partial J}{\partial \mathbf{b}^{(k)} } =  
+    \frac{\partial J}{\partial \hat{y} } \times
+    \frac{\partial \hat{y}}{\partial \mathbf{h}^{(L-1)} } \times 
+    \frac{\partial \mathbf{h}^{(L-2)}}{\partial \mathbf{h}^{(L-3)} } \times \cdots \times
+    \frac{\partial \mathbf{h}^{(k)}}{\partial  \mathbf{b}^{(k)}}.
+\end{equation}
+The gradient term $\nabla_{\theta}J(\theta)$ from Equation \ref{eq:gradient_descent} is obtained by computing Equations \ref{eq:dj/dw} and \ref{eq:dj/db} for every layer.
+Thus, the backpropagation algorithm is essential in optimising the network parameters so as to increase the accuracy of its predictions.
+
+\section{Summary}
+In this Chapter, we have described how ANNs are applied to solve supervised learning tasks, where the goal is to approximate a function from known examples.
+The structure of an FNN, i.e. a neural network with no feedback connections, was described.
+We reviewed the forward propagation method by which the inputs of an FNN are evaluated, as well as the methods adjusting the network parameters, i.e. gradient descent and backpropagation.
+In the next chapter, we will apply FNNs to more advanced reinforcement learning methods that are compatible with continuous state and action spaces, known as policy gradient methods.
+These methods require neural networks to approximate the action-value function and represent the policy.
+
+
+% In this section, we have highlighted the need for function approximation and introduced neural networks as a means to that end.
+% We have given a brief overview of the structure of neural networks, as well as the feedforward mechanism by which it evaluates inputs. We have also reviewed the gradient descent method by which the network is optimised to maximise performance.
+% Looking ahead, we will see that neural networks are not only useful for function approximation, but are also used to represent policies in the case of policy-gradient reinforcement learning methods.
+% As such, ANNs are essential in understanding the reinforcement learning methods presented in the next section.
+

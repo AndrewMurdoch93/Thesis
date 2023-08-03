@@ -1,0 +1,40 @@
+\chapter{Abstract}%===================================================
+
+
+The increasing popularity of self-driving cars has given rise to the emerging field of autonomous racing.
+In this domain, algorithms are tasked with processing sensor data to generate control commands (e.g., steering and throttle) that move a vehicle around a track safely and in the shortest possible time.
+
+This study addresses the significant issue of practical \emph{model-mismatch} in learning-based solutions, particularly in reinforcement learning (RL), for autonomous racing. 
+Model-mismatch occurs when the vehicle dynamics model used for simulation does not accurately represent the real dynamics of the vehicle, leading to a decrease in algorithm performance.
+This is a common issue encountered when considering real-world deployments.
+
+To address this challenge, we propose a partial end-to-end algorithm which decouples the planning and control tasks. 
+Within this framework, a reinforcement learning (RL) agent generates a trajectory comprising a path and velocity, which is subsequently tracked using a pure pursuit steering controller and a proportional velocity controller, respectively.
+In contrast, many learning-based algorithms utilise an end-to-end approach, whereby a deep neural network directly maps from sensor data to control commands.
+
+We extensively evaluate the partial end-to-end algorithm in a custom F1tenth simulation, under conditions where model-mismatches in vehicle mass, cornering stiffness coefficient, and road surface friction coefficient are present. 
+In each of these scenarios, the performance of the partial end-to-end agents remained similar under both nominal and model-mismatch conditions, demonstrating an ability to reliably navigate complex tracks without crashing. 
+Thus, by leveraging the robustness of a classical controller, our partial end-to-end driving algorithm exhibits better robustness towards model-mismatches than an end-to-end baseline algorithm.
+
+
+
+
+\chapter{Acknowledgements}%==================================================
+This thesis appears in its current form due to the assistance and guidance of several people. 
+I would therefore like to offer my sincere thanks to all of them.
+\\ \\
+I am thankful to God for granting me this opportunity to study. I praise Him for His strength, sustenance, and unwavering faithfulness.
+\\ \\
+I would like to express my sincere gratitude to my parents, Ross and Jeanne Murdoch. You have been a source of inspiration, and have fostered continual spiritual and emotional growth, as well as provided financial support throughout my studies.
+\\ \\
+To my supervisors, Dr. J.C. Schoeman and Dr. H.W. Jordaan, I would like to thank you for the guidance that you have provided, as well as the patience and kindness you have shown towards me during my degree. Thank you for the many meetings, comments, corrections, and encouragement.
+\\ \\
+Friends, thank you for your continual support, prayer, and encouragement throughout my studies. 
+\\ \\
+And to my colleagues at the Electronic Systems Laboratory, thank you for making my studies a pleasant experience.
+
+
+
+
+%============================================================================
+\endinput

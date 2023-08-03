@@ -1,0 +1,24 @@
+\newcolumntype{R}{>{\centering\arraybackslash}p{2cm}}
+\newcolumntype{C}{>{\centering\arraybackslash}p{2.3cm}}
+% \newcolumntype{L}{>{\raggedright\arraybackslash}p{5cm}}
+
+\begin{table}[htb!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\small
+\begin{tabularx}{0.95\textwidth}{RCCCC} 
+    \hline
+    & \multicolumn{4}{c}{\textbf{Algorithm}} \\
+    \cmidrule(lr){2-5}
+    \textbf{Track} &  \multicolumn{2}{c}{\textbf{End-to-end}} &  \multicolumn{2}{c}{\textbf{Partial end-to-end}} \\
+    \cmidrule(lr){2-3}  \cmidrule(lr){4-5}
+    & Successful laps [$\%$] & Lap time [s] & Successful laps [$\%$] & Lap time [s] \\
+    \hline
+    Porto & 100 & 6.03 & 100 & 5.86 \\
+    Barcelona-Catalunya & 79 & 47.47 & 100 & 48.34 \\
+    Monaco & 61.67 & 35.82 & 99.33 & 36.39 \\
+    \hline
+\end{tabularx}
+\caption[Performance of end-to-end and partial end-to-end agents under evaluation conditions]{Performance of end-to-end and partial end-to-end agents racing on all three tracks under evaluation conditions.}
+\label{tab:peteevaluation}
+\end{table}

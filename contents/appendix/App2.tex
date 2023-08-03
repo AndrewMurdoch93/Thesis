@@ -1,0 +1,41 @@
+\chapter{Pseudocode}\label{appendix_B}
+
+\begin{algorithm}[htb!]
+{
+        $\cdots$\\
+        $\text{Select action} a_t \leftarrow [\delta_{d}, v_{d}] = \pi_{\phi}(s_t) + \mathcal{N}_t$ \\
+        \For{n=0, N}
+        {   
+            $a_{\text{long},d} \leftarrow \text{velocity_control}(s_t)$ \\
+            Modify $a_{\text{long},d}$ to limit velocity \\
+            Simulator executes ($\delta_d$, $a_{\text{long},d}$) \\
+            Observe reward $r_{t,n}$ and done condition \\  
+            Update reward: $r_t = r_t + r_{t,n}$ \\
+        }
+        Observe new state $s_{t+1}$ and $r_t$ \\
+        $\cdots$\\
+}
+\caption[Modification to the action execution mechanism for partial end-to-end agents with a velocity controller]{Modification to the action execution mechanism of partial end-to-end agents to account for the different sampling rates of the agent and environment components (e.g., the velocity controller, velocity constraint and simulator). $N$ is calculated using Equation \ref{eq:N}.}
+\label{alg:velocity_sample_rate_modification}
+\end{algorithm}
+
+
+\begin{algorithm}[htb!]
+{
+        $\cdots$\\
+        $\text{Select action } a_t \leftarrow [\text{path}, v_{d}] = \pi_{\phi}(s_t) + \mathcal{N}_t$\\
+        \For{n=0, N}
+        {
+            $a_{\text{long},d} \leftarrow \text{velocity_control}(s_t)$ \\
+            Modify $a_{\text{long},d}$ to limit velocity \\
+            $\delta_d \leftarrow \text{steering_control}(s_t)$ \\
+            Simulator executes ($\delta_d$, $a_{\text{long},d}$) \\
+            Observe reward $r_{t,n}$ and done condition \\  
+            Update reward: $r_t = r_t + r_{t,n}$ \\
+        }
+        Observe new state $s_{t+1}$ and $r_t$ \\
+        $\cdots$\\
+}
+\caption[Modification to the action execution mechanism for partial end-to-end agents with a steering and a velocity controller]{Modification to the action execution mechanism of partial end-to-end agents with both a steering and a velocity controller to account for the different sampling rates of the agent and environment components (e.g., the steering and velocity controllers, velocity constraint and simulator). $N$ is calculated using Equation \ref{eq:N}.}
+\label{alg:steer_velocity_sample_rate_modification}
+\end{algorithm}

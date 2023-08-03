@@ -1,0 +1,195 @@
+\documentclass[12pt,oneside,openany,a4paper,%..... Layout
+               english,%.............. Global language selection
+               ]{memoir}
+
+ \usepackage[masters-t,%.......................... Master thesis
+            %  goldenblock,%........................ A5 type block (or a5block or wide)
+            %  a4paper,
+             ]{usthesis}%.......................... US thesis style with memoir
+
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+%
+% PLEASE read the USthesis documentation for the class options
+% and how to set line and paragraph spacing
+%
+
+%==== Miscellaneous =================================================
+%\usepackage{datetime}
+
+%==== Page formatting ===============================================
+\usepackage{lscape}
+%\usepackage[paper=portrait,pagesize=a4paper,12pt]{typearea}
+
+%==== Language setup ================================================
+ \usepackage[latin1]{inputenc}%................... Recognizes ê, ë, etc
+ \usepackage{babel}%.............................. Language setup
+
+%==== Math setup ====================================================
+ \usepackage{amsmath}%............................ Advanced math (before fonts)
+ \usepackage{amssymb}%............................ AMS Symbol fonts
+ \usepackage{breqn}
+%==== Font setup (default is Computer Modern) =======================
+ \usepackage[T1]{fontenc}%........................ Type 1 fonts
+ %\usepackage{fourier}
+ \usepackage{textcomp}%........................... Additional text character
+ \usepackage{bm}%................................. Bold math symbols (after fonts)
+
+%==== Ref's, Bib's and Nomencl ======================================
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{usnomencl}%.......................... List of symbols (in usthesis pack)
+\usepackage{usbib}%.............................. Bibliography    (in usthesis pack)
+
+    \bibliographystyle{usmeg-n}
+    \renewcommand\bibfont{\small}
+
+    %% For usmeg-a, the bib is a list of references. If you
+    %% are using usmeg-n comment out the following lines
+    \addto{\captionsafrikaans}{\renewcommand{\bibname}{Lys van Verwysings}}
+    \addto{\captionsenglish}{\renewcommand{\bibname}{List of References}}
+
+%==== Graphics and Color ============================================
+\usepackage{graphicx}%........................... Graphicx loaded in usthesis
+\usepackage{color}%.............................. Color setup
+\usepackage{eso-pic}%............................ Shipout commands for watermark
+    \newcommand*{\WaterMark}[2][0.15\paperwidth]{%
+        \AddToShipoutPicture*{\AtTextCenter{%
+                \parbox[c]{0pt}{\makebox[0pt][c]{%
+                    \includegraphics[width=#1]{#2}}}}}}
+
+%\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,calc,shapes.geometric,matrix,trees,positioning}
+\usepackage{tikz-qtree}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\SetAlgoLined
+\makeatletter
+\newcommand{\nosemic}{\renewcommand{\@endalgocfline}{\relax}}% Drop semi-colon ;
+\newcommand{\dosemic}{\renewcommand{\@endalgocfline}{\algocf@endline}}% Reinstate semi-colon ;
+\newcommand{\pushline}{\Indp}% Indent
+\newcommand{\popline}{\Indm\dosemic}% Undent
+\let\oldnl\nl% Store \nl in \oldnl
+\newcommand{\nonl}{\renewcommand{\nl}{\let\nl\oldnl}}% Remove line number for one line
+\makeatother
+
+
+\RestyleAlgo{ruled}
+%\usepackage[demo]{graphicx}
+%\usepackage{subfig}
+%\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{dcolumn,tabularx,booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{pgf}
+\usepackage{svg}
+\usepackage{rotating}
+
+
+%==== Local Defs ====================================================
+\makeatletter
+
+%
+% Please insert user defined commands here
+% and NOT in the document itself!
+%
+
+\makeatother
+
+%==== TITLE PAGE ====================================================
+\title{\bfseries{
+             Partial end-to-end reinforcement learning for robustness towards model-mismatch in autonomous racing
+            }}
+
+\author{A.\ Murdoch}{Andrew Murdoch}
+
+\degree{MEng (Electronic)}
+       {Master of Engineering (Electronic)}
+
+\address{
+        Department of Electrical and Electronic Engineering,\\
+        University of Stellenbosch,\\
+        Private Bag X1, Matieland 7602, South Africa.
+        }
+
+\faculty{\AorE{Fakulteit Ingenieurswese}%
+              {Faculty of Engineering}}
+
+\supervisor{Dr.\ J.C.\ Schoeman}
+\cosupervisor{Dr.\ H.W.\ Jordaan}
+
+\setdate{07}{2023}
+
+%\SetSponsor{The financial assistance of the National Research Foundation (NRF)
+%    towards this research is hereby acknowledged. Opinions expressed and
+%    conclusions arrived at, are those of the author and are not necessarily to
+%    be attributed to the NRF.}
+
+
+%====================================================================
+%     MAIN DOCUMENT
+%====================================================================
+\maxsecnumdepth{subsubsection}
+\maxtocdepth{section}
+
+\begin{document}
+
+%==== Front matter ==================================================
+ \frontmatter
+ \WaterMark{UScrest-WM}
+% \vspace{5cm}
+ \TitlePage
+
+ \DeclarationDate{2023/07/01}
+ \DeclarationPage
+
+ \include{frontmatter/Chap-Front}
+
+ \begin{KeepFromToc}
+    \tableofcontents
+\end{KeepFromToc}
+ \clearpage
+
+ \setcounter{lofdepth}{2}
+ \listoffigures
+ \listofalgorithms
+ \clearpage
+ \listoftables
+ \clearpage
+
+ \include{frontmatter/Nomencl}
+
+%==== Main document =================================================
+\mainmatter
+   \setsecnumdepth{subsubsection}
+%   \numberwithin{equation}{section}
+%   \numberwithin{figure}{chapter}
+%   \numberwithin{table}{chapter}
+
+% \include{contents/chapt1/chapt1}
+% \include{contents/chapt2/chapt2}
+% \include{contents/chapt3_1/chapt3_1}
+% \include{contents/chapt3_2/chapt3_2}
+% \include{contents/chapt3_combined/chapt3}
+\include{contents/chapt4/chapt4}
+\include{contents/chapt5/chapt5}
+% \include{contents/chapt6/chapt6}
+% \include{contents/chapt7/chapt7}
+% \include{contents/chapt8/chapt8}
+
+
+%==== Appendices ====================================================
+\appendix
+\appendixpage\relax
+\include{contents/appendix/App1}
+% \include{contents/appendix/App2}
+
+%==== Bibliography acro's & Index ===================================
+\backmatter
+\bibliography{backmatter/library_1}
+
+\end{document}

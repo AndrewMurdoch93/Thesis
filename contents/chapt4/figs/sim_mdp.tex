@@ -1,0 +1,46 @@
+\tikzstyle{a}=[rectangle, draw=black, fill=white,thick, minimum width = 2cm, minimum height = 2cm, align=center, rounded corners=.1cm]
+\tikzstyle{b}=[rectangle, draw=black, fill=white,thick, minimum width = 1cm, minimum height = 1cm,, align=center, rounded corners=.1cm]
+
+\begin{tikzpicture}
+ 
+    % Draw nodes
+    \node (a) at (5,5)  [a] {Autonomous \\racing \\algorithm};
+    % \node (b) at (9,5.5)  [b] {Velocity\\constraint};
+    \node (c) at (5,2.5)  [b] {Simulator};
+
+   
+    % Draw connections
+    %agent to limit
+    \draw[->] ($(a.east)$)  -| ($(c)+(4.5,0)$) -- ($(c.east)$);
+    %Limit to simulator
+    % \draw[->] (b) -- ($(b)+(2.5,0)$) -- ($(c)+(2.5,-0.2)$) -- ($(c.east)+(0,-0.2)$);
+    
+    % \draw[->] (b) -| ($(c)+(2.5,-0.2)$) -- ($(c.east)+(0,-0.2)$);
+    %Agent to simulator
+    % \draw[->] ($(a.east)+(0,-0.5)$) -| ($(c)+(2,0.2)$) -- ($(c.east)+(0,0.2)$);
+    % \draw[->] ($(c)+(2,-0.2)$) -- (c);
+    
+    %Simulator to agent
+    \draw[->] (c) -| ($(a)+(-4.5,0)$) -- (a);
+
+    \draw[dashed] ($(c)+(-3.5,0.7)$) -- ($(c)+(-3.5,-0.5)$);
+    
+    % Label connections
+    \node (l1) at ($(a.east)$) [above right] {$a_k = [\delta_{d}, a_{\text{long},d}]$};
+    \node (l2) at ($(a.west)$) [above left] {$o_{k}$, $r_{k}$};
+    \node (l3) at ($(c.west)$) [above left] {$o_{k+1}$, $r_{k+1}$};
+    \node (l4) at ($(c)+(-3.5,-0.7)$) [below] {$k \leftarrow k+1$};
+    %Inputs and output arrows
+    % \draw[->] (0,0) -- (x1);
+   
+    % %lines between components
+    % \draw[->] (-1.8,-1) -- (-1.4,-1) ; 
+    % \draw[->] (z1) -- (z1-|a.west)  node [midway, above] (l1) {\small$\hat{y}_1 \in (-1,1)$} ;      
+    % \draw[->] (z2) -- (z2-|a.west) node [midway, above] (l2) {\small$\hat{y}_2 \in (-1,1)$} ;               
+    % \draw[->] ($(a)+(0.6,0.5)$) -- (b) ; 
+    % \draw[->] (b) -- (10,-0.5) node [right] (l3) {\small $a_{\text{long},d}$ }; 
+    % \draw[->] ($(a)+(0.6,-0.5)$) -- (10,-1.5) node [right] (l4) {\small $\delta_{d}$}; 
+
+    % \node[text width=3.7cm, align=center] at (1.5,1) { \hbox{Neural} \hbox{network}  \hbox{policy} };
+    
+\end{tikzpicture}

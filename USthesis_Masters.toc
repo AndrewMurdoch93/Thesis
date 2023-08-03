@@ -1,0 +1,28 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Declaration}{i}{section*.2}%
+\contentsline {chapter}{Abstract}{ii}{chapter*.3}%
+\contentsline {chapter}{Acknowledgements}{iii}{chapter*.4}%
+\contentsline {chapter}{List of Figures}{v}{section*.6}%
+\contentsline {chapter}{List of Tables}{viii}{section*.8}%
+\contentsline {chapter}{Nomenclature}{ix}{chapter*.9}%
+\contentsline {chapter}{\chapternumberline {1}Modelling the autonomous racing problem}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Requirements of F1tenth autonomous racing}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Vehicle dynamics}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Simulation environment}{6}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Summary}{8}{section.1.4}%
+\contentsline {chapter}{\chapternumberline {2}End-to-end autonomous racing}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}End-to-end algorithm design}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Applying TD3 to end-to-end autonomous racing}{12}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Empirical design and hyperparameter values}{14}{section.2.3}%
+\contentsline {section}{\numberline {2.4}TD3 hyper-parameters}{16}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Reward signal}{20}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Observation space}{23}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Neural network hyper-parameters}{24}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Velocity constraint}{26}{section.2.8}%
+\contentsline {section}{\numberline {2.9}End-to-end racing without model uncertainty}{27}{section.2.9}%
+\contentsline {section}{\numberline {2.10}End-to-end racing with model uncertainty}{29}{section.2.10}%
+\contentsline {section}{\numberline {2.11}Training with domain randomisation}{30}{section.2.11}%
+\contentsline {section}{\numberline {2.12}Summary}{31}{section.2.12}%
+\contentsline {chapter}{Appendices}{32}{section*.48}%
+\contentsline {appendix}{\chapternumberline {A}Supporting results}{33}{appendix.A}%
+\contentsline {chapter}{List of References}{36}{appendix*.55}%

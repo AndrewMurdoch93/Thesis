@@ -1,0 +1,416 @@
+\chapter{Racing with model uncertainties}
+\label{chp:racing}
+
+In the previous chapters, we presented the designs of software architectures for autonomous racing.
+We have seen that partial end-to-end agents have an advantage over fully end-to-end agents during training and testing.
+However, the results presented in the previous chapters were for settings which did not account for uncertainties associated with real-world deployment.
+% In this chapter, we investigate how introducing uncertainty affects the performance of our agents.
+We will now show how our proposed partial end-to-end architecture outperforms the end-to-end architecture in settings that do not exactly match the training environment.
+These uncertainties manifest as errors in the observation or model of the environment.
+We consider errors stemming from two sources.
+These are  (a) errors in the observation that stem from noisy or inaccurate sensor readings, and (b) errors in the vehicle model parameters.
+
+
+\section{Observation uncertainty}
+Previously, the assumption was made that the agent's observation matches the state of the vehicle and environment perfectly.
+Our observations were produced by sampling the pose from the vehicle state, and generating the corresponding LiDAR scan.
+However, real F1tenth vehicles must estimate their pose from odometry and LiDAR data using a particle filter \cite{f1tenth}.
+Noise and range limitations of sensors increase the difficulty of this task.
+Thus, there is always some inaccuracy in the pose measurement and LiDAR scan during real-world deployment.
+
+Although we needed to ensure that our agents are robust observation uncertainty, the development of realistic sensor models and a particle filter was beyond the scope of this project.
+We therefore chose to model the effect of observation uncertainty by adding Gaussian noise with a zero mean to every element in the observation vector.
+% The appropriate amount of noise that should be added is dependent on the sensor setup and particle filter, neither of which were available.
+
+We tested our agents by repeating our standard procedure described in Section \ref{sec:train_and_test_procedures} multiple times. 
+However, during every repetition of the test, the Gaussian noise added to the observation vector was increased.
+We performed this procedure for every individual element in the observation vector.
+Figure \ref{fig:noise_vary} shows how the percentage of successful laps and lap time vary with increasing noise in each observation element.
+% The results of these experiments are shown in Figure \ref{fig:noise_vary}.
+% Every row of graphs in this figure represents an observation vector element to which noise was added, and the $x$-axis of each of these graphs represent the magnitude of the noise standard deviation.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/observation/noise_vary.pdf_tex}
+    \caption[Agent performance with noise in each observation element]{Agent test results (i.e., successful laps and lap time) with increasing zero mean Gaussian noise levels in each individual observation element.}
+    \label{fig:noise_vary}
+\end{figure}
+
+Unsurprisingly, the number of times each agent completed the lap successfully decreased with increasing observation noise, which was accompanied by increasing lap time.
+However, some architectures proved to be more robust to observation noise than others.
+We now review the performance of each architecture in the presence of observation noise.
+
+\textbf{End-to-end:}
+We see from Figure \ref{fig:noise_vary} that although the performance of the end-to-end agent was worse than all of the partial end-to-end agents in terms of both the number of successful laps and average lap time during tests where no noise was present, its lap completion rate and time were not affected by an increase in noise added to the coordinates, heading or velocity.
+The end-to-end agent showed some sensitivity towards extreme amounts of LiDAR noise, evident by the notable change in lap success rate and time starting at $0.1$ m standard deviation. 
+However, we do not consider this problematic, as the LiDAR noise in a real F1tenth system is not expected to exceed $0.01$ m.
+
+% Figure \ref{fig:control_noise} is presented as an aid to understanding how the neural network chooses control actions that result in successful laps despite the presence of observation noise.
+% The figure shows the normalised steering and acceleration actions selected by an agent at a particular pose while increasing levels of Gaussian noise was present in the LiDAR scan.
+% For every noise value, $50$ actions were recorded.
+
+% We see that only the standard deviation of control actions increases with noise, but the average action value remains unchanged.
+% This means that on average, the agent selects the control action that it would have had there been no noise in the LiDAR scan. 
+% Repeating this experiment with noise added to the coordinates, heading and velocity observations yielded similar results.
+% The neural network therefore acts as a filter that rejects observation noise.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt7/figs/observation/action_noise.pgf}
+%     \caption[The end-to-end agents selected actions with noise observation]{The end-to-end agents selected steering and acceleration actions with zero mean Gaussian noise present in the LiDAR observation. For every $x$-axis value, $50$ actions were recorded.}
+%     \label{fig:control_noise}
+% \end{figure}
+
+\textbf{Steering control:}
+The partial end-to-end agent with only a steering controller proved sensitive to the noise in the elements of the observation vector that were required to construct the path.
+These were the $x$ and $y$ coordinates, along with the heading.
+Intuitively, if the starting position of the vehicle is incorrect then the path is also erroneous.
+Furthermore, the path error is projected forwards in front of the vehicle.
+
+% Figure \ref{fig:noise_path} illustrates a scenario where an incorrect observation can lead to catastrophe.
+% The true position of the vehicle is the red cross. 
+% However, the agent observes its position as the purple cross. 
+% It selects a path corresponding to the orange line.
+% If the observation error is not corrected for, the vehicles attempt to follow the orange path results in the green trajectory. 
+% This green trajectory is identical to the orange one, but with an offset.
+% This offset causes the vehicle to travel dangerously close to the top track boundary.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt7/figs/observation/noise_path.pgf}
+%     \caption[Path differences caused by incorrect coordinate observations]{An illustration of the difference between paths constructed by the agent and actually travelled by the vehicle, caused by an incorrect coordinate observation.}
+%     \label{fig:noise_path}
+% \end{figure}
+
+\textbf{Velocity control:}
+The partial end-to-end agent with only a velocity controller performed poorly when there was noise present in either the velocity or LiDAR observations.
+Once again, the decrease in lap completion rate is associated with an increased lap time.
+This follows the trend exhibited by the agent with a steering controller: the agents were sensitive to noise in the observation element associated with the controller present in the driving architecture.
+
+\textbf{Steering and velocity control:}
+Although agents using a steering or velocity controller alone suffered from decreased performance when noise was added to their observations,
+using a steering and velocity controller together resulted in an agent that was robust to noise in every observation element.
+Neither lap completion rate nor lap time were affected by noise.
+
+In this section, we sought to determine each agents sensitivity towards the presence of noise in single observation elements.
+We will now determine whether the presence of a realistic amount of noise in every observation element has a negative effect on performance.
+We will also investigate whether the common sim2real technique known as \emph{domain randomisation} improves agent performance when noise is present in the observation.
+
+
+\subsection{Training with domain randomisation:}
+In domain randomisation techniques, the properties of the simulation are altered during training. 
+This expands the training domain analogous to data augmentation for supervised learning models, and has shown to improve agent performance \cite{Dai2022}.
+A commonly used domain randomisation idea within autonomous racing literature is to train agents with observation noise \cite{Fuchs2021, Ivanov2020, hsu2022, Chisari2021, Evans2021a}.
+
+We performed experiments to determine whether agents trained with domain randomisation techniques performed any better than agents trained without any noise, under test conditions where noise is present in the observation.
+To accomplish this, we tested the agents that were trained without noise by following the standard test procedure from Section \ref{sec:train_and_test_procedures}, except that noise was added to their observations.
+We then trained an identical set of agents using the same training and testing procedures, but with noise present during training.
+These agents were also tested under conditions where noise was present in the observation vector.
+The standard deviation of noise added to the coordinates, heading, velocity and LiDAR scan during training and testing were $0.025$, $0.05$, $0.1$ and $0.01$ respectively.
+
+Table \ref{tab:noise_results} shows the success rate of agents that were trained with and without observation noise under these test conditions.
+The end-to-end agent and the agent with a velocity controller experienced a slight decrease in performance, but this was not significant enough to warrant major concern.
+Furthermore, we discovered that agents trained with observation noise performed the same as those trained without noise during tests where observation noise was present.
+We therefore chose to continue using the agents trained without observation noise.
+
+\input{contents/chapt7/figs/observation/noise_table.tex}
+
+
+\section{Model uncertainty}
+
+% Reinforcement learning agents are trained in simulation before being deployed onto physical vehicles.
+% A decrease in agent performance normally occurs during real-world deployment, known as the sim2real gap.
+% The sim2real gap occurs because the simulation that is used to train the agents does not perfectly replicate the real world.
+% Therefore, the most straightforward way to `close' the sim2real gap is to ensure that the simulation replicates real-world conditions as accurately as possible.
+% This is achieved by creating accurate vehicle dynamics models through system identification techniques \cite{Zhou2020}.
+
+% However, the vehicle model parameters are difficult to estimate due to the dynamic nature of the driving task.
+% In fact, it is inevitable that the vehicle model parameters change over time, and also likely that they cannot be directly measured while the vehicle is on the track.
+% This results in scenarios where the model used in training does not match the real vehicle model.
+% Furthermore, the real vehicle model cannot be exactly determined.
+% These scenarios are known as \emph{model-mismatch} scenarios \cite{Ghignone2022}.
+% It is therefore not sufficient to simply perform accurate system identification, but we must also ensure that autonomous vehicles are robust to model-mismatches.
+
+
+Reinforcement learning agents are trained in simulation before being deployed onto physical vehicles.
+To ensure that the agent is deployed in a similar environment as its training environment, these simulators attempt to replicate the real world as closely as possible.
+This is achieved by creating accurate vehicle dynamics models through system identification techniques \cite{Zhou2020}.
+
+However, the vehicle model parameters are difficult to estimate due to the dynamic nature of the driving task.
+In fact, it is inevitable that the vehicle model parameters change over time, and also likely that they cannot be directly measured while the vehicle is on the track.
+This results in scenarios where the model used in training not only does not match the real vehicle model, but the real vehicle model also cannot be exactly determined.
+Thus, it is likely that the vehicle dynamics model has been incorrectly determined. 
+This phenomena leads to a decrease in performance, and is known as \emph{model-mismatching} \cite{Ghignone2022}.
+Since some degree of model-mismatch always occurs, it is not sufficient to only perform accurate system identification.
+We must also ensure that autonomous vehicles are robust to model-mismatches.
+
+We expect model-mismatch to be a greater issue in the broader road-going autonomous vehicle problem because public roads and cars are not monitored to the same extent as race cars and tracks.
+However, performing experiments to determine the effect of model-mismatch on an F1tenth car can still give us insight into the road-going problem.
+Specifically, we can determine what type of model inaccuracies are detrimental to agent performance and safety, and to what extent the simulated and real models can be mismatched before catastrophe occurs.
+We shall also compare our partial end-to-end solution with the end-to-end baseline to assess whether it is better at handling model error.
+
+We simulated model-mismatch scenarios by changing the vehicle model in-between training and testing, which is an approach similar to the ones taken by \cite{Fuchs2021, Ghignone2022}.
+In particular, we were interested in an unaccounted for change in 
+(a) the mass and mass distribution of the vehicle,
+(b) tire cornering stiffness coefficient, and 
+(c) Road surface friction coefficient.
+
+
+\subsection{Uncertainty due to an unknown mass:}
+
+A vehicle's occupants and cargo change its total mass, center of gravity and moment of inertia, which in turn have an effect on the vehicle model.
+Although a racing vehicles total mass and center of gravity is controlled, the mass and position of the occupants and payload of a road-going vehicle may vary.
+We therefore performed experiments to determine the effect of varying the vehicle mass and center of gravity on our agents.
+
+We modified the vehicle dynamics model by simulating a mass equal to a tenth of the vehicle's mass placed along the longitudinal axis of the vehicle.
+The position of the mass along the the mass was changed after every run (i.e., each agent was tested for $100$ laps with the mass placed at a certain position).
+The success rates of agents with the mass placed all along the length of the vehicle are graphed in Figure \ref{fig:unknown_mass}.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/unknown_mass.pgf}
+    \caption[Percentage successful laps under test conditions for agents with a point mass placed along the longitudinal axis of the vehicle]{Percentage successful laps under test conditions for agents with a point mass placed along the longitudinal axis of the vehicle.}
+    \label{fig:unknown_mass}
+\end{figure}
+
+We found that the end-to-end agent was sensitive to an accounted for mass on the vehicle, especially when the mass was placed towards the front.
+This is evident by the sharp decrease in lap completion rate as the mass approaches the front axle.
+Furthermore, the end-to-end agent is less susceptible to masses placed at the rear of the vehicle.
+
+However, our partial end-to-end systems are far more robust to a mass model-mismatch.
+Although the partial end-to-end system with only a velocity controller shows a small decrease in success rate when the mass is over the front axle, the agents with steering controllers show no decrease in completion rate regardless of the position of the mass.
+
+% In Figure \ref{fig:unknown_mass_path}, we see the paths taken by each of the agents that we developed under no model-mismatch conditions, as well as with the unaccounted for mass placed directly above the front axle.
+% The end-to-end agent strays from its original path without model-mismatch significantly at the right corner of the track.
+% At this point, slaloming becomes an issue.
+% The danger is that once the agent makes a mistake, it deviates from the path that it would have taken without the unaccounted for mass, after which it is likely to make more mistakes.
+% The effect of these mistakes compound because they follow on each other, resulting in the erratic path that we see in the figure.
+
+% Agents with either only a steering controller or a velocity controller deviate only slightly from the original path with the modelling error is added.
+% Furthermore, the partial end-to-end system with both steering and velocity controllers deviated the least from the original path when the mass was placed on the vehicle.
+% In fact, the path that this agent takes before and after adding the mass match almost exactly.
+% By separating the planning and control tasks, our partial end-to-end system is more robust to model mismatches than fully end-to-end agents.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt7/figs/model/unknown_mass_path_1.pgf}
+%     \caption[Paths taken by agents with and without an accounted for mass placed above the front axle]{Paths taken by agents with and without an unaccounted for mass placed above the front axle.}
+%     \label{fig:unknown_mass_path}
+% \end{figure}
+
+Although Figure \ref{fig:unknown_mass} is a good indicator of the performance of each agent, we would also like to characterise the behaviour of the agents under model-mismatch conditions.
+We therefore present the trajectories taken by an end-to-end agent, as well as a partial end-to-end agent with steering and velocity control, under conditions with and without model-mismatch over one lap in Figure \ref{fig:unknown_mass_trajs_2}.
+
+The trajectory of the end-to-end agent is shown on the left of this figure. 
+We see that the trajectories by the agent with and without model-mismatch are similar on the first straight section of the track, as well as around the first corner.
+However, after the first corner, the end-to-end agent experiences slaloming on both laps.
+The slaloming is characterised by fast and large oscillations in slip angle, as well as the selection of extreme steering angles.
+Without model-mismatch, the end-to-end agent recovers from slaloming before the second corner.
+However, in the presence of model-mismatching, the end-to-end agent is unable to recover from slaloming.
+In fact, the oscillations in slip angle and steering angle grow larger until the end of the lap.
+
+From multiple runs, we observed that end-to-end agents typically slalom after performing sharp braking manoeuvres.
+End-to-end agents are slow to recover from slaloming under conditions with no model-mismatch.
+However, in the presence of model mismatch, end-to-end agents are unable to recover from slaloming, and the vehicle continues to swerve for a long time.
+Thus, the effect of model-mismatches are not felt across the entire operating domain of the agent, but are most catastrophic when the agent leaves its normal operating domain by slipping.
+
+The trajectory by the partial end-to-end agent with a steering and a velocity controller is shown on the right side of Figure \ref{fig:unknown_mass_trajs_2}.
+We see that the partial end-to-end agent executes near identical trajectories regardless of the presence of model-mismatch.
+Decoupling path planning and control is therefore beneficial for scenarios with and without model-mismatches.
+The simple feedback steering control provides stability and robustness to model-mismatches.
+Furthermore, restricting the path inadvertently smooths the steering controls, and prevents the vehicle from selecting extreme steering angles.
+We also see that the addition of the velocity controller smooths the velocity profile.
+Selecting smoother control actions makes slipping less likely.
+
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/unknown_mass_trajs_3.pgf}
+    \caption[Paths taken by agents with and without an accounted for mass placed above the front axle]{Paths taken by agents with and without an unaccounted for mass placed above the front axle.}
+    \label{fig:unknown_mass_trajs_2}
+\end{figure}
+
+% $l_f$ - Center of gravity, measured from from axle
+% $h$ - center of gravity
+% $m$ - mass of vehicle
+% $I$ - Moment of inertia of vehicle
+
+% \subsection{Uncertainty due to a change in motor performance:}
+% It is common knowledge that motor performance degrades over time. This is especially prevalent in combustion engines, and is caused by faulty spark plugs, dirt deposits on fuel injectors, air filters and exhausts and mechanical wear.
+% Electric engines can also suffer from reduced performance due to damaged windings or the breakdown of insulating material.
+% Although race car engine performance is well monitored, the same cannot necessarily be said for road-going vehicles.
+% It is therefore relevant to establish whether a decrease in motor performance will result in cause the driving algorithm to select a catastrophic action.
+
+% % We model the effect of motor performance degradation as a decrease in the maximum steering velocity and longitudinal acceleration values.
+% % Since the controller output is normalised by the maximum acceleration, modifying it affects 
+% % Modifying the maximum acceleration changes the acceleration values because the values are normalised in Equation \ref{eq:vel_control}.  
+
+% \input{contents/chapt7/figs/model/actuators.tex}
+
+\subsection{Uncertainty due to cornering stiffness}
+
+The cornering stiffness is usually considered to be the ratio between the lateral force on a tire and its slip angle.
+However, in Chapter \ref{chp:modelling} we described the how the cornering stiffness term was separated into a tire stiffness coefficient $C_S$, a road surface friction coefficient $\mu$, and a vertical force $F_z$, such that the cornering stiffness is 
+\begin{equation}\label{eq:C_S_mismatch}
+    C_i = \mu C_{S,i} F_{z,i}, \hspace{1cm} i\in\{\text{front, rear}\}
+\end{equation}
+This allows us to model the front and rear tires independently.
+We can also model the tire effects independently of the road surface, whose value is largely influenced by the weather.
+In this section, we investigate the effect of varying the tire cornering stiffness coefficient $C_S$ for the front and rear tires.
+Tire construction and dimensions, the type and quality of the tread, and inflation pressure are significant factors when determining cornering stiffness.
+If any of these factors are not monitored (e.g., a tire deflates or is replaced with a different tire), then a model-mismatch may occur.
+Like with the mass model-mismatch from the previous section, a mismatch in tire parameters is more likely to occur in road-going vehicles because they are not monitored as well as racing vehicles.
+
+Similar to the previous model-mismatch experiments, we simulated a change in cornering stiffness for (a) the front tires, (b) the rear tires, then (c) the front and rear tires in-between training and testing.
+During these tests, the nominal values (i.e., the values used during training) for the front and rear tires of $4.72$ and $5.45$ $\text{rads}^{-1}$ respectively were varied by $\pm 20 \%$. 
+The percentage success laps and average lap times of agents with mismatched cornering stiffness coefficients are graphed in Figure \ref{fig:c_s}.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/cornering_stiffness.pdf_tex}
+    \caption[Success rate under test conditions of agents with mismatched tire cornering stiffness]{Success rate under test conditions of agents with mismatched tire cornering stiffness.}
+    \label{fig:c_s}
+\end{figure}
+
+\textbf{Front tire cornering stiffness}: 
+From Figure \ref{fig:c_s}, we see that end-to-end agents are far more sensitive to a front tire cornering stiffness mismatch than partial end-to-end agents.
+Specifically, end-to-end agents tend to crash when the front tire cornering stiffness is higher than expected.
+The end-to-end agent behaviour that results in this decreased performance is shown on the left of Figure \ref{fig:front_cornering_stiffness_+_paths}.
+From this figure, we see that the end-to-end agent comes closer to the inside of the track when the front tire cornering stiffness is increased.
+This is because increasing the front tire cornering stiffness decreases slip angle of the tire for a given lateral force, which results in more aggressive cornering.
+
+However, Figure \ref{fig:c_s} shows that our partial-end-to-end agent with both steering and velocity control is robust to changes in front tire cornering stiffness.
+The behaviour of this agent is shown on the right of Figure \ref{fig:front_cornering_stiffness_+_paths}.
+We see that the partial end-to-end agent does not deviate significantly from the original path.
+In fact, an increase in the font tire cornering stiffness only results in more accurate path tracking.
+Since the paths are constrained such that they do not intersect with the track boundary, the vehicle does not crash when there is an increase in front tire stiffness coefficient.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/cornering_stiffness.pgf}
+    \caption[Paths taken by agents with no model error, and with an increased tire front tire stiffness coefficient]{Paths taken by agents with no model error, and with an increased tire front tire stiffness coefficient.}
+    \label{fig:front_cornering_stiffness_+_paths}
+\end{figure}
+
+Although Figure \ref{fig:front_cornering_stiffness_+_paths} indicates that the end-to-end agent complete laps successfully when the front tire cornering stiffness is lower than expected, the behaviour of this agent is still dangerous.
+Figure \ref{fig:front_cornering_stiffness_-_paths} shows the paths taken by the end-to-end and partial end-to-end agents with a front tire cornering stiffness of $4.01$, which is $15\%$ smaller than the nominal value of $4.72$.
+We see from this figure that decreasing the front tire cornering stiffness causes end-to-end agents to understeer and drive wide around the corners.
+However, our partial end-to-end agent follows a very similar path to the one it had taken without the decreased front tire cornering stiffness.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/front_cornering_stiffness_path.pgf}
+    \caption[Paths taken by agents with no model error, and with a decreased tire front tire stiffness coefficient]{Paths taken by agents with no model error, and with a decreased tire front tire stiffness coefficient.}
+    \label{fig:front_cornering_stiffness_-_paths}
+\end{figure}
+
+\textbf{Rear tire cornering stiffness:}
+We then examined the performance of the agents under test conditions where the rear tire stiffness was modified.
+The end-to-end agents experience a large decrease in successful laps under conditions where the rear tire stiffness is decreased.
+The reason for this is clear when viewing Figure \ref{fig:rear_cornering_stiffness_-_paths}, which shows the paths and vehicle slip angle of end-to-end and partial end-to-end agents when the rear tire stiffness is decreased by $15\%$.
+We observe large oscillations in vehicle slip angle, which indicates slaloming.
+This happens because smaller rear tire cornering stiffnesses causes the rear of the car to slip more for a given lateral force.
+
+However, our partial end-to-end agent performs much better than the end-to-end agent when the rear tire stiffness is decreased.
+This is not only shown by the fact that the percentage successful laps remains constant regardless of the value of rear tire cornering stiffness coefficient, but also by the behaviour of the agent.
+Figure \ref{fig:rear_cornering_stiffness_-_paths} shows that the partial end-to-end agent follows the same path as it would have without the modelling error.
+Although the decreased rear tire cornering stiffness does result in larger vehicle slip angles, the vehicle does not slalom.
+
+Interestingly, increasing the rear tire cornering stiffness causes the agents to go wide around the corners, which is similar to decreasing front tire cornering stiffness.
+However, as before, the effect of increasing rear tire cornering stiffness is far more pronounced on the end-to-end agents than on the partial end-to-end agents with steering and velocity control.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/rear_c_s_decrease.pgf}
+    \caption[Paths taken by agents with no model error, and with an increased tire front tire stiffness coefficient]{Paths taken by agents with no model error, and with an increased tire front tire stiffness coefficient.}
+    \label{fig:rear_cornering_stiffness_-_paths}
+\end{figure}
+
+
+\textbf{Both tires cornering stiffness:}
+After investigating the effects of varying the cornering stiffness of each tire individually, we then investigated the effect of varying the cornering stiffnesses of both the front and the rear together.
+Figure \ref{fig:c_s} shows that although the end-to-end agent does experience a decrease in performance when the front and rear tire cornering stiffness is increased and decrease together, the effect is less catastrophic than if the front and rear tire cornering stiffnesses are changed individually.
+For instance, the end-to-end agent achieves a $50\%$ success rate when the rear tire cornering stiffness is decreased by $20\%$. 
+However, when the front and rear cornering stiffnesses are decreased together by $20\%$, then the success rate is $97\%$.
+
+Once again, our partial end-to-end agent is robust towards a change in both front and rear cornering stiffness.
+Thus, decoupling the planning and control tasks, and using a feedback controller to follow the path results in more consistent performance when the tire stiffness coefficient is inaccurate.
+
+
+\subsection{Uncertainty due to road surface friction}
+
+In our final model-mismatch test, we investigated the effect of an erroneous road surface friction coefficient on the performance of the end-to-end and partial end-to-end agents.
+There is significant uncertainty attached to the road surface coefficient because of the infeasibility of measuring it directly at every point on the road surface.
+
+Furthermore, the dynamic effect that weather has on the road surface friction coefficient is large.
+For instance, the minimum friction coefficient values for dry asphalt, wet asphalt, gravel, and wet gravel are $0.7$, $0.4$, $0.6$ and $0.3$ respectively \cite{Novikov2018}. 
+Thus, the difference between minimum friction coefficient values for both surfaces is $0.3$.
+In addition to the dynamic effects, weather also has localised effects on the road surface.
+For instance, puddles of water accumulate when it rains, causing some sections of the road to have a lower friction coefficient than elsewhere.
+This all means that the range of friction values encountered by drivers on both public roads and racetracks.
+
+As with the previous model-mismatch experiments, we simulated a change in road surface friction coefficient in-between training and testing.
+Note that our simulator assumes a spatially and temporally uniform road friction coefficient.
+With this assumption, we always consider the worst case scenario whereby the entire road surface has a decreased friction coefficient.
+The percentage successful laps and lap time for the range of friction values that we tested is graphed in Figure \ref{fig:mu}.
+The nominal road friction value used for training, as well as the minimum dry and wet asphalt friction values are shown by the dotted black lines.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/mu.pgf}
+    \caption[]{}
+    \label{fig:mu}
+\end{figure}
+
+Figure \ref{fig:mu} shows that as the friction coefficient is decreased, the end-to-end agent performance decreases more drastically than the partial-end-to-end agent.
+When racing on dry asphalt, the end-to-end agent successfully completes $91$ percent of it laps, compared to the $96$ percent of the partial end-to-end agent.
+The gap in performance between the end-to-end and partial end-to-end agents is even larger when racing on wet asphalt.
+Whereas the end-to-end agent successfully completes only $33$ percent of its laps on the wet surface, the partial end-to-end agent manages $67$ percent.
+For friction coefficients smaller than $0.4$, both agents barely complete any successful laps.
+
+Example paths taken by both agents under conditions where the road surface friction coefficient has been reduced to $0.5$ and $0.8$ (i.e., the average values for wet and dry asphalt) is shown in Figure \ref{fig:mu_wet_gravel_path}.
+In this particular test, the end-to-end agent took erratic paths on both the wet and dry asphalt surfaces, and crashed during the lap on wet asphalt.
+The end-to-end agent did not perform consistently in this test, as it crashed at various points all along the track boundary on consecutive laps with the same starting pose.
+
+However, out partial end-to-end agent completes laps on both surfaces.
+The lap completed on dry asphalt is similar to the lap on the nominal value, but the vehicle comes close to the outside track boundary during the wet lap due to understeer.
+This understeer was expected, as the friction coefficient influences the overall cornering stiffness.
+Thus, decreasing it results in a larger wheel slip angles for a given lateral tire force.
+The partial end-to-end agent distinguished itself by consistently reproducing the path shown in Figure \ref{fig:mu_wet_gravel_path} for every lap that started in the same pose.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt7/figs/model/mu_wet_gravel_path.pgf}
+%     \caption[]{}
+%     \label{fig:mu_wet_gravel_path}
+% \end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt7/figs/model/mu_paths.pgf}
+    \caption[]{}
+    \label{fig:mu_wet_gravel_path}
+\end{figure}
+
+
+\section{Summary}
+
+In this chapter, we compared the performance of end-to-end and partial end-to-end agents under conditions where uncertainties associated with deployment in the real-world were present.
+We first addressed the issue of observation uncertainty by measuring the performance of agents when there was noise present in the observation vector.
+Both the end-to-end and partial end-to-end systems were fairly robust to noise.
+While the performance of the end-to-end system did decreased slightly when noise was present in the observation, the partial end-to-end system was not negatively affected.
+Furthermore, the rate of lap completion under test conditions for agents trained with and without noise in the observation vector was the same.
+
+
+We then compared the performance of our partial end-to-end solution to the end-to-end baseline under conditions where the vehicle model was mismatched.
+The scenarios that we considered were (a) a mismatch in mass, (b) tire cornering stiffness coefficient, and (c) road surface friction coefficient.
+In all three of these cases, our partial end-to-end proved more robust to model mismatches than the end-to-end agent.
+
+We observed that the end-to-end baseline tended to exhibit erratic and dangerous slaloming behaviour, and also selected extreme control actions when model mismatches were present.
+Experiments with the end-to-end agent were also not repeatable, as it exhibited slightly different behaviour on every lap.
+However, our partial end-to-end solution mitigated the effect of model-mismatches by decoupling planning from control.
+The feedback steering controller outputs smooth steering controls at a fast rate, which results in good path tracking behaviour and prevents the vehicle from slaloming.
+Furthermore, our partial end-to-end solution performed laps that were repeatable.
+
+
+

@@ -1,0 +1,57 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: USthesis_Masters.aux
+The style file: usmeg-n.bst
+A level-1 auxiliary file: frontmatter/Chap-Front.aux
+A level-1 auxiliary file: frontmatter/Nomencl.aux
+A level-1 auxiliary file: contents/chapt4/chapt4.aux
+A level-1 auxiliary file: contents/chapt5/chapt5.aux
+A level-1 auxiliary file: contents/appendix/App1.aux
+Database file #1: backmatter/library_1.bib
+Warning--I'm ignoring Chisari2021's extra "url" field
+--line 2364 of file backmatter/library_1.bib
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty journal in brunnbauer2021
+You've used 19 entries,
+            3338 wiz_defined-function locations,
+            801 strings with 10583 characters,
+and the built_in function-call counts, 18818 in all, are:
+= -- 1348
+> -- 539
+< -- 21
++ -- 211
+- -- 173
+* -- 2122
+:= -- 2133
+add.period$ -- 43
+call.type$ -- 19
+change.case$ -- 96
+chr.to.int$ -- 19
+cite$ -- 20
+duplicate$ -- 1988
+empty$ -- 1776
+format.name$ -- 409
+if$ -- 3805
+int.to.chr$ -- 1
+int.to.str$ -- 20
+missing$ -- 228
+newline$ -- 119
+num.names$ -- 59
+pop$ -- 478
+preamble$ -- 1
+purify$ -- 76
+quote$ -- 0
+skip$ -- 454
+stack$ -- 0
+substring$ -- 1113
+swap$ -- 982
+text.length$ -- 18
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 114
+warning$ -- 1
+while$ -- 173
+width$ -- 0
+write$ -- 259
+(There were 2 warnings)

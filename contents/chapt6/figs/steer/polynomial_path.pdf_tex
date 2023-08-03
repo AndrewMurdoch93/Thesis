@@ -1,0 +1,81 @@
+%% Creator: Inkscape 1.2.1 (9c6d41e410, 2022-07-14), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'polynomial_path.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{411.02362205bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.55172414)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{contents/chapt6/figs/steer/polynomial_path.pdf}}%
+    \put(0.52943068,0.17155317){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\\centerline, $s$ [m]\end{tabular}}}}}%
+    \put(0.52869106,0.16416423){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Distance along\end{tabular}}}}}%
+    \put(0.32775882,0.35555687){\color[rgb]{0,0,0}\rotatebox{89.529207}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\\to centerline, $n$ [m]\end{tabular}}}}}%
+    \put(0.25440947,0.35420339){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}s\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{contents/chapt6/figs/steer/polynomial_path.pdf}}%
+    \put(0.10896012,0.38200966){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{contents/chapt6/figs/steer/polynomial_path.pdf}}%
+    \put(0.19175994,0.38925669){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}n\end{tabular}}}}%
+    \put(0.10972095,0.3857106){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\psi_s$\end{tabular}}}}%
+    \put(0.33088648,0.35782145){\color[rgb]{0,0,0}\rotatebox{89.529207}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Distance perpendicular \end{tabular}}}}}%
+    \put(0.0047108,0.30373659){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$n_0$\end{tabular}}}}%
+    \put(0.38438826,0.37274762){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$n_0$\end{tabular}}}}%
+    \put(0.09525586,0.26641733){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$s_0$\end{tabular}}}}%
+    \put(0.42927785,0.20681789){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$s_0$\end{tabular}}}}%
+    \put(0.84869648,0.423177){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$n_1$\end{tabular}}}}%
+    \put(0.38438826,0.42453357){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$n_1$\end{tabular}}}}%
+    \put(0.87085661,0.33976818){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$s_1$\end{tabular}}}}%
+    \put(0.54485121,0.20681789){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$s_1$\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{contents/chapt6/figs/steer/polynomial_path.pdf}}%
+    \put(0.31186274,0.06278131){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Sampled path\end{tabular}}}}}%
+    \put(0.38207753,0.02448108){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Range of selectable paths\end{tabular}}}}}%
+    \put(0.76740948,0.0636234){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Track boundaries\end{tabular}}}}}%
+    \put(0.7609018,0.02467977){\color[rgb]{0,0,0}\rotatebox{-0.10675539}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Track centerline\end{tabular}}}}}%
+  \end{picture}%
+\endgroup%

@@ -1,0 +1,89 @@
+\chapter{Supporting results}\label{appendix_A}
+
+\newcolumntype{R}{>{\centering\arraybackslash}p{3.5cm}}
+\newcolumntype{L}{>{\centering\arraybackslash}p{2.8cm}}
+
+
+\begin{figure}[h]
+    \centering
+    \input{contents/appendix/figs/target_update.pgf}
+    \caption[Learning curves for tuning the target update rate]{Learning curves showing (a) the failure rate, i.e percentage of episodes that ended in  a crash, (b) the lap time of completed laps, and (b) the episode reward for end-to-end agents with target update rates ranging from $0.003$ to $0.007$.}
+    \label{fig:tau}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{RLLL} 
+    \hline
+    \textbf{Target update rate, $\tau$} & \textbf{Successful test laps [\%]} & \textbf{Average test lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
+    \hline
+    $3\cdot10^{-3}$   &   $99$   & $6.85$  & $1.23$      \\     
+    $5\cdot10^{-3}$   &   $100$   & $6.07$  & $0.20$      \\      
+    $7\cdot10^{-3}$   &   $96$   & $6.94$  &  $0.74$     \\
+    \hline
+\end{tabularx}
+\caption[Evalutation results and training time of end-to-end agents with varied target update rates]{Evaluation results and training time of end-to-end agents with target update rates ranging from $3\cdot10^{-3}$ to $7\cdot10^{-3}$.}
+\label{tab:tau_test_results}
+\end{table}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \input{contents/appendix/figs/exploration_noise.pgf}
+    \caption[Learning curves for tuning the exploration noise]{Learning curves showing (a) the failure rate, i.e percentage of episodes that ended in  a crash, (b) the lap time of completed laps, and (b) the episode reward for end-to-end agents with exploration noise standard deviations  ranging from $0.05$ to $0.2$.}
+    \label{fig:simga_action}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{RLLL} 
+    \hline
+    \textbf{Exploration noise standard deviation},  $\sigma_{\text{action}}$ & \textbf{Successful test laps [\%]} & \textbf{Average test lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
+    \hline
+    $0.05$   &   $96$   & $6.13$  & $0.46$      \\     
+    $0.1$   &   $100$   & $6.07$  & $0.20$      \\      
+    $0.2$   &   $100$   & $7.27$  &  $0.67$     \\
+    \hline
+\end{tabularx}
+\caption[Evaluation results and training time of end-to-end agents with varied exploration noise]{Evaluation results and training time of end-to-end agents with exploration noise varying from $0.05$ to $0.15$.}
+\label{tab:noise_test_results}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \input{contents/appendix/figs/update_interval.pgf}
+    \caption[Learning curves for tuning the network update interval]{Learning curves showing (a) the failure rate, i.e percentage of episodes that ended in  a crash, (b) the lap time of completed laps, and (b) the episode reward for end-to-end agents with network update intervals $d$ ranging from $1$ to $3$.}
+    \label{fig:d}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{RLLL} 
+    \hline
+    \textbf{Number of action samples between network updates, $d$} & \textbf{Successful test laps [\%]} & \textbf{Average test lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
+    \hline
+    $1$   &   $99$   & $6.85$  & $1.23$      \\     
+    $2$   &   $100$   & $6.07$  & $0.20$      \\      
+    $3$   &   $96$   & $6.94$  &  $0.74$     \\
+    \hline
+\end{tabularx}
+\caption[Evaluation results and training time of end-to-end agents with varied number of action samples between network updates]{Evaluation results and training time of end-to-end agents with number of action samples between network updates ranging from $1$ to $3$.}
+\label{tab:d_test_results}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

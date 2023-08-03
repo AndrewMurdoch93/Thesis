@@ -1,0 +1,546 @@
+\chapter{Partial end-to-end autonomous racing}
+\label{chp:partial_end_to_end_autonomous_racing}
+
+Having designed the baseline end-to-end agent and motivated the need for driving algorithms that are robust towards modelling errors, we now introduce our partial end-to-end algorithm.
+This approach separates the planning and control tasks, enabling the agent to generate a desired trajectory which is tracked using a set of steering and velocity controllers.
+By decoupling the planning and control aspects, our algorithm aims to enhance robustness against modeling errors that commonly arise during the transfer from simulation to real-world environments.
+
+The chapter begins with a detailed description of the partial end-to-end algorithm.
+Subsequently, we outline the implementation of the TD3 algorithm to train the agent effectively.
+Next, we show the process of determining the optimal hyper-parameters for the partial end-to-end algorithm to ensure the system operates at its peak performance. 
+Additionally, we conducted a comparative analysis, contrasting our chosen partial end-to-end architecture with alternative variations. 
+These variations include architectures with either solely a velocity controller or a steering controller. 
+Finally, we assess the performance of the partial end-to-end algorithm in scenarios where no modeling errors are present, allowing us to gauge the algorithms performance under ideal conditions. 
+
+
+
+\section{Shared design decisions}
+Nearly all of the design work for the end-to-end driving architecture in Chapter \ref{chp:end_to_end_autonomous racing} is directly applicable to our partial end-to-end systems. 
+Therefore, rather than to repeat each design decision from Chapter \ref{chp:end_to_end_autonomous racing}, we only mention the components of the driving architecture and learning process that are shared between all of the architectures.
+
+The training and testing procedures, the selected learning method (TD3) and its hyper-parameters, actor and critic neural network designs and hyper-parameters, observation space consisting of $10$ LiDAR beams and the vehicle pose, longitudinal velocity limits of three and five m/s, five Hz agent sampling rate, and reward signal structure are shared.
+However, the magnitudes of the reward components needed to be re-tuned because adding controllers to the system changed its behaviour significantly.
+The sharing of these components keeps the comparison between the driving architectures fair, and allows us to focus only on the new elements introduced into the driving architecture, namely the steering and velocity controllers.
+
+\section{Partial end-to-end with steering control}
+The partial end-to-end driving architecture with an agent and a steering controller, but no velocity controller is presented in Figure \ref{fig:partial_end_to_end_architecture_steer}. 
+This is similar to the approach taken by Weiss et al. \cite{Weiss2020}.
+In this configuration, the agent is used as a hybrid planner-controller that outputs a planned path and longitudinal acceleration control action.
+As in the end-to-end architecture, the acceleration command is modified so that the vehicle does not exceed the velocity constraints of three and five m/s (as described in described in Section \ref{sec:velocity_constraint}).
+Furthermore, a steering controller is used to generate a desired steering angle to track the path.
+This steering angle, along with the desired longitudinal acceleration are given as input to the simulator.
+To conform to the definition of the MDP, the steering controller, velocity constraint and simulator are treated as part of the environment.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/steer/steer_architecture.tex
+    \caption[The partial end-to-end driving architecture]{The partial end-to-end driving architecture and environment.}
+    \label{fig:partial_end_to_end_architecture_steer}
+\end{figure}
+
+Shown in Figure \ref{fig:steer_agent} is an expanded view of the agent.
+Although the design of the neural network actor is identical to that of the end-to-end agent, its outputs are treated differently.
+There are two neural network outputs, each limited to the range $(-1,1)$.
+The output corresponding to the longitudinal acceleration control action is scaled to the range of acceleration values.
+However, the output corresponding to the lateral action is used to construct a path.
+We have included the `construct path' component inside the agent so that it conforms to the definition of a path planner as outputting a path, rather than a real number that must be converted into a path.
+% The method of path construction is discussed in Section \ref{sec:path_construction}.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/steer/agent.tex
+    \caption[An expanded view of the agent within the partial end-to-end system with only a steering controller]{An expanded view of the agent within the partial end-to-end system with only a steering controller.}
+    \label{fig:steer_agent}
+\end{figure}
+
+As with the end-to-end architecture, the agent operates at five Hz while the environment components operate at $100$ Hz.
+To account for this difference in sample rate, a modification is made to the action execution mechanism of TD3 and the test procedure from Algorithm \ref{alg:end_to_end_deploy}.
+The modification, which is shown in Algorithm \ref{alg:steer_sample_rate_modification}, is analogous to the modification described in Algorithm \ref{alg:sample_rate_modification}.
+For every sampled action from the agent, the environment components are executed $N$ times, where $N$ is calculated using Equation \ref{eq:N}.
+The agent observes the reward accumulated over the $N$ steps, as well as the state after those $N$ steps.
+
+\input{contents/chapt6/figs/steer/steer_TD3_modification.tex}
+
+We will now discuss the two unique components introduced by this variation of the partial end-to-end architecture.
+These are the path construction method and the steering controller.
+
+\subsection{Path construction methods}\label{sec:path_construction}
+Of the literature surveyed, approaches to generating local paths fell into two categories. 
+Many partial end-to-end approaches construct a path using a predefined function that is parameterised by the output of a neural network.
+Examples of this are by Weiss et al. \cite{Weiss2020a} who use bezier curves, and Capo et al. \cite{Capo2020} who predict the offset of a single point ahead of the vehicle with respect to the track centerline.
+Meanwhile, classic approaches such as \cite{keefer2022, Liniger2015a, Wang2021} use multiple motion primitives generated by forward simulating the vehicle dynamics to generate a path.
+As we are using model-free RL agents which do not have direct access to the vehicle model, we are limited to the former approach.
+
+We kept the action space of the agent simple by constructing the path based on a single value (denoted $\hat{y}_2$ in Figure \ref{fig:steer_agent}).
+In this manner, the complexity of the task is reduced.
+Two functions were investigated for constructing the path; (a) a circular arc attached to the vehicle body frame, and (b) a polynomial constructed within the curvi-linear coordinate frame fixed to the track centerline, known as the Frenet frame.
+
+% \textbf{Straight line}:
+% this is the simplest possible parameterised path.
+% The straight line path pass through the origin of a coordinate frame attached to CoG of the vehicle.
+% The output of the neural network is scaled to $(-\frac{\pi}{2}, \frac{\pi}{2})$, and is used as the angle between the vehicles heading and the path.
+% Furthermore, we choose the length of the line as two metres, to be long enough that the vehicle does not reach the end of the path before the agent outputs the next action.
+
+\subsubsection{Circular arc path}
+When constructing a path without forward simulating vehicle dynamics, extra care must be taken to ensure that the path is feasible to follow.
+Our idea to construct paths from circular arcs stem from this requirement, as circles are very similar to the motion primitives of a car.
+The vehicle should therefore be able to track a circular arc very easily.
+In fact, geometric steering controllers such as pure pursuit assume that the vehicle follows a circular trajectory.
+
+An illustration of the circular arc is shown in Figure \ref{fig:circular_arc_path}.
+To constrict the number of possible paths to only those that are feasible and relevant, we attach the path to the body frame of the vehicle.
+This is a frame that originates at the vehicle center of gravity (CoG), and has an $x$ and $y$ axis corresponding to the vehicle longitudinal and lateral directions, respectively.
+The circular path's tangent passes through the body frame origin, and is parallel to the longitudinal direction of the vehicle at that point.
+The agent selects the radius of the circular path, as well as the direction of curvature.
+Furthermore, the radius is restricted to be greater than one meter.
+This minimum radius was chosen such that the smallest possible circular path that can be constructed has a smaller radius than the tightest corner of all the tracks that were simulated.
+Additionally, we only compute the circular path up until two meters away from the vehicle.
+We extend the path with a two meter line straight line segment beyond this two meter radius.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/arc.pdf_tex}
+    \caption[The circular arc path]{The path comprised of a circular arc and straight line segment constructed within the vehicle body frame. The black circle indicates the distance away from the vehicle at which the circular arc and straight line path segments meet. The minimum and maximum allowable actions (corresponding to the right and left most paths), as well as one other example action are shown in blue.}
+    \label{fig:circular_arc_path}
+\end{figure}
+
+% Figure \ref{fig:circle_path} shows the path travelled by the agent utilising the circular arc path strategy during a single test lap.
+% The path taken is less conservative than the end-to-end agent developed in the previous chapter, coming close to the inside of the track at the apex of the both the left and right corners.
+% This behaviour results in an average lap time of $5.58$ seconds, which is $0.49$ seconds faster than the end-to-end agent.
+% Moreover, the improved lap time did not come at the cost of safety, as this agent successfully completed all of its laps under test conditions.
+% However, the downside to using this setup was the additional computational expense in generating the path and running the path tracker, slowing the training time significantly to $26.44$ minutes.
+
+% Figure \ref{fig:circle_path} also gives us further insight into the behaviour of the agent: it learns to move the vehicle into the optimal pose at the next action sampling instance, rather than to select a trajectory that is optimal over its entire length.
+% This is made clear at the points where the planned paths intersect with the track boundary (as at the left and right corners).
+% It would be catastrophic if the vehicle completed the sampled path.
+% However, the vehicle never collides with the boundary because a new path is sampled from the agent before a collision occurs.
+% % This observation holds true for any path generating method.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/circle_path.pgf}
+%     \caption[The path taken by the partial end-to-end agent utilising circular paths]{The path taken by the partial end-to-end agent utilising a steering controller to follow circular local paths.}
+%     \label{fig:circle_path}
+% \end{figure}
+
+
+\subsubsection{Polynomial within the Frenet frame}\label{sec:polynomial_path}
+A Frenet frame is a curvi-linear coordinate system whose horizontal axis is fixed to the centerline. Distance along this axis represents distance along the centerline, and is denoted with $s$. 
+Furthermore, its vertical axis represents perpendicular distance away from the centerline, and is denoted with $n$.
+
+Planning within the Frenet frame is commonplace amongst classic approaches to solving autonomous driving problems \cite{Garlick2021, Vazquez2020, Werling2010}.
+However, we found no investigations into partial end-to-end systems utilising the Frenet frame for autonomous racing tasks.
+The closest related research effort is by Moghadam et al. \cite{Moghadam2020}, who use a reinforcement learning agent to plan trajectories withing the Frenet frame, but apply their system  to a lane merging task in a normal highway driving scenario.
+
+Using a Frenet frame reduces the complexity of the planning task by representing the length of the track as a horizontal line.
+Thus, the task of planning a path around the track reduces to that of planning a path along a horizontal line.
+Furthermore, the track boundaries are also easily representable as distances away from the centerline.
+Thus, paths that do not intersect with the track boundaries can be constructed more easily in Frenet coordinates than Cartesian coordinates.
+% This is useful because constricting the action space so as to not include trajectories that intersect with the track boundaries prevents the vehicle from crashing.
+% In turn, this may enable safe online training on physical vehicles.
+
+Our process of constructing the path within the Frenet frame is shown in Figure \ref{fig:polynomial_path_generation}. 
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex}
+    \caption[Constructing the polynomial path in the Frenet frame]{A depiction of the process of constructing the polynomial path in the Frenet frame. (a) The vehicle coordinates are converted into the Frenet frame, (b) a path is constructed within the Frenet frame, and (c) the path is converted into Cartesian coordinates.}
+    \label{fig:polynomial_path_generation}
+\end{figure}
+The first step is to convert the vehicle coordinates and heading into the Frenet frame, i.e., distance along and perpendicular to the centerline, denoted $s$ and $n$ respectively. 
+The vehicle coordinates in the Frenet frame at the sampling instant are $s_0$ and $n_0$, and the angle between its heading and a tangent to the path at $s_0$ is $\psi_0$. 
+A third order polynomial is then constructed within the Frenet frame between $s_0$ and another point further along the centerline, $s_1$:
+\begin{equation}
+    f(s) = As^3 + Bs^2 + Cs + D,
+\end{equation}
+which is subject to the following constraints:
+\begin{enumerate}
+    \item The path passes through the vehicle CoG, $f(s_0)=n_0$.
+    \item At $s_0$, the path is parallel to the vehicle heading in the Frenet frame, $f'(s_0)=\tan(\psi_0)$.
+     \item The perpendicular distance of the path from the centerline at $s_1$ is $n_1$, $f(s_1)=n_1$. Furthermore, $n_1$ is a value chosen by the agent and is constrained to be within the track boundaries.
+    \item At $s_1$, the path is parallel to the centerline of the track, $f'(s_1)=0$.
+\end{enumerate}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex}
+%     \caption[Constructing the polynomial path in the Frenet frame]{A depiction of the process of constructing the polynomial path in the Frenet frame. (a) The vehicle coordinates are converted into the Frenet frame, (b) a path is constructed within the Frenet frame, and (c) the path is converted into Cartesian coordinates.}
+%     \label{fig:polynomial_path_generation}
+% \end{figure}
+
+We chose $s_1$ to be three metres ahead of $s_0$ along the centerline of the track.
+Furthermore, we extended the path with a horizontal line at $(s_1,n_1)$ to prevent the vehicle from reaching the end of the path before receiving a new action from the agent.
+We then converted the path in the Frenet frame into Cartesian coordinates for compatibility with the path follower.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex}
+%     \caption[Constructing the polynomial path in the Frenet frame]{A depiction of the process of constructing the polynomial path in the Frenet frame. (a) The vehicle coordinates are converted into the Frenet frame, (b) a path is constructed within the Frenet frame, and (c) the path is converted into Cartesian coordinates.}
+%     \label{fig:polynomial_path_generation}
+% \end{figure}
+
+\subsubsection{A comparison between path construction methods}\label{sec:path_comparison}
+
+Figure \ref{fig:path_method_comparison} shows the paths taken by agents using the circular arc and Frenet frame polynomial path generating methods during one test lap, while Figure \ref{fig:path_learning_curves} and Table \ref{tab:path_test_results} show their learning curves and test results, respectively.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/path_method_comparison.pgf}
+    \caption[Paths taken by the partial end-to-end agents with only steering control]{Paths taken by partial end-to-end agents with only a steering controller.}
+    \label{fig:path_method_comparison}
+\end{figure}
+
+We see from Figure \ref{fig:path_method_comparison} the agent utilising the circular arc path method is less conservative than the end-to-end agent.
+It comes closer to the inside of the track at the apex of the both the left and right corners.
+This behaviour results in an average lap time of $5.58$ seconds, which is a $0.49$ second improvement over the end-to-end agent.
+It also beats the partial end-to-end agent utilising the Frenet frame polynomial path by $0.29$ seconds.
+Moreover, the improved lap time did not come at the cost of safety, as this agent successfully completed all of its laps under test conditions.
+However, the downside to using this setup was the additional computational expense of generating the path and running the path tracker. 
+This extra latency increased the training time significantly to $26.44$ minutes.
+
+
+A closer inspection of the agent utilising the circular path in Figure \ref{fig:path_method_comparison} reveals that although many of the paths planned by the agent intersect with the track boundary, the vehicle never collides with the boundary.
+This gives us some interesting insight into the behaviour of the agent within the partial end-to-end system which is unlike classical planners.
+Namely, it does not select a trajectory that is optimal over its entire length.
+Instead, it learns to move the vehicle into the optimal pose at the next action sampling instance.
+The vehicle never collides with the boundary because a new path is sampled from the agent before a collision occurs.
+In fact, it would be catastrophic if the vehicle completed the sampled path.
+
+In some cases, this type of behaviour is so extreme that the path selected by the agent and the vehicles actual trajectory do not coincide.
+One such example is presented in Figure \ref{fig:understeer_path}, which shows a snippet of the path taken by the agent rounding the right corner.
+The agent tends to understeer and go wide around the corner.
+However, it learns to select a path with a tighter radius so that it can pass through the corner without colliding with the outside of the track.
+Thus, the agent appears to be `compensating' for the poor controller tracking performance.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/understeer_path.pgf}
+    \caption[A snippet of the path taken by a partial end-to-end agent]{A snippet of the path taken by the partial end-to-end agent with steering control utilising the circular arc path construction method.}
+    \label{fig:understeer_path}
+\end{figure}
+
+Figure \ref{fig:path_method_comparison} also shows the path taken by an agent utilising the Frenet frame polynomial method.
+This agent completes the lap in $5.87$ seconds, making it faster than the end-to-end agent, although slightly slower than an agent utilising the circular path.
+Furthermore, none of the paths selected by this agent intersect the boundary.
+Thus, the constraint placed on the Frenet frame polynomial path can prevent the vehicle from crashing, so long as it follows the path.
+
+This translates into a marked difference between the learning curves of agents using the Frenet frame polynomial path method, and those who do not. 
+These learning curves are presented in Figure \ref{fig:path_learning_curves}.
+Both the end-to-end agent and partial end-to-end agent utilising the circular path exhibit similar learning curves.
+They initially have a $100\%$ failure rate, which then decreases along with lap time. 
+However, the failure rate never reaches $0\%$ during training.
+In fact, the partial end-to-end agent using the circular path and the end-to-end agent crash $879$ and $559$ times on average during training respectively.
+
+However, our partial end-to-end agent that utilises the Frenet frame displays a learning curve with an entirely different trend.
+It successfully complete laps from the start of training.
+After only a few crashes, the failure rate decreases to $0\%$ for the remainder of the training period.
+In fact, the average number of crashes during training was reduced to a mere $26$.
+This comes alongside a significant improvement in training time, as the agent reaches a steady policy after less than $1000$ episodes.
+Furthermore, training only took $18.27$ minutes to complete, approximately two thirds of the time that the agent utilising the circular arc path took to train.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/steer_learning_curve.pgf}
+    \caption[Learning curves of partial end-to-end agents with different methods of generating paths]{Learning curves of partial end-to-end agents with different methods of generating paths, as well as the the end-to-end baseline agent.}
+    \label{fig:path_learning_curves}
+\end{figure}
+
+Thus, we can assert that the method of path generation has a significant impact on the behaviour of the agent, its training time, and performance in testing.
+Restricting the range of selectable paths so that they do not intersect with the track boundary not only significantly improves training performance and lap time, but may also be a viable route for safe online (i.e., on a physical vehicle) training.
+We will proceed using only the Frenet frame polynomial, which we consider to be the more interesting and promising method.
+
+\input{contents/chapt6/figs/steer/path_test_table.tex}
+
+\subsection{Steering controller implementation}\label{sec:steer_controller_implementation}
+We now discuss our method of generating steering commands so that the vehicle follows the path planned by the agent.
+Of the research efforts into partial end-to-end systems with steering control reviewed, two use a pure pursuit steering controller \cite{Evans2021b, Weiss2020}.
+The popularity of this controller, along with the fact that it does not perform any optimisations that require a vehicle dynamics model guided our decision to implement it as our path tracker.
+Our own implementation of pure pursuit was inspired by Sakai et al. \cite{Sakai2018}.
+
+The pure pursuit controller steers the vehicle towards a \emph{target point} on the path that is a specified \emph{look-ahead} distance away from the rear axle, as depicted in Figure \ref{fig:pure_pursuit}.
+The look-ahead distance $l_{d}$ is found by 
+\begin{equation}
+    l_d = k \cdot v + L_{c},
+\end{equation}
+where $k$ is the look-ahead gain, $L_{c}$ is a constant and $v$ is the longitudinal velocity of the vehicle. 
+The look-ahead distance is adjusted according to the velocity based on the finding by Patnaik et al. \cite{Patnaik2020} that larger look-ahead distances are required for higher velocities to maintain stability.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/pure_pursuit.pdf_tex}
+    \caption[A depiction of the pure pursuit controller variables]{A depiction of the pure pursuit controller variables. $l_d$, $L$, and $\alpha$ are the look-ahead distance, wheelbase, and angle between vehicle's heading and look-ahead distance vector respectively. Furthermore, the blue line represents the path of that the rear wheel should travel to reach the target point.}
+    \label{fig:pure_pursuit}
+\end{figure}
+
+At every time step, the look-ahead point is recalculated  based on the current position of the vehicle.
+The desired steering angle is then computed so that the rear wheel travels in a circular arc to the target point, as shown by the blue line in Figure \ref{fig:pure_pursuit}. The formula used to calculate this steering angle is 
+\begin{equation}
+    \delta_d = \tan^{-1} \left( \frac{2L\sin(\alpha)}{l_d} \right),
+\end{equation}
+where $L$ is the wheelbase of the vehicle, and $\alpha$ is the angle between vehicle's heading and look-ahead distance vector.
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/pure_pursuit.pdf_tex}
+%     \caption[A depiction of the pure pursuit controller variables]{A depiction of the pure pursuit controller variables. $l_d$, $L$, and $\alpha$ are the look-ahead distance, wheelbase, and angle between vehicle's heading and look-ahead distance vector respectively. Furthermore, the blue line represents the path of that the rear wheel should travel to reach the target point.}
+%     \label{fig:pure_pursuit}
+% \end{figure}
+
+% We then selected values for the look-ahead gain $k$ and constant $L_c$ to optimise the performance of the agent.
+Patnaik et al. \cite{Patnaik2020} state that the velocity should not be the dominant term in determining the look-ahead distance. 
+The value for the look-ahead gain $k$ was therefore chosen as $0.1$, after which we determined the look-ahead constant $L_{c}$ experimentally.
+Figure \ref{fig:lfc}
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/pure_pursuit_lfc_1.pgf}
+    \caption[Paths taken by vehicles following a straight line starting from an offset position]{Paths taken by vehicles following a straight line starting from an offset position.}
+    \label{fig:lfc}
+\end{figure}
+visualises the effect of varying the look-ahead gain $L_{c}$ by showing the paths travelled by several agents with different look-ahead distances tracking a straight line path segment, but starting from an offset position.
+This is similar to a controller step response.
+While shorter look-ahead distances result in smaller tracking errors, they also cause steering oscillation (known as slaloming).
+Longer look-ahead distances result in less oscillation but larger tracking error.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/pure_pursuit_lfc_1.pgf}
+%     \caption[Paths taken by vehicles following a straight line starting from an offset position]{Paths taken by vehicles following a straight line starting from an offset position.}
+%     \label{fig:lfc}
+% \end{figure}
+
+%The optimal value for $L_{c}$ is also path dependent. Paths with tighter curvatures require a shorter look-ahead distance for accurate tracking.
+%We trained agents with look-ahead distances ranging from $0.5$ to two meters.
+
+The path travelled and steering profiles of agents with look-ahead constants ranging from $0.5$ to two meters during one test lap are shown in Figure \ref{fig:lfc_paths}.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/lfc_paths.pgf}
+    \caption[Paths and steering profiles of agents with different values of $L_{c}$]{Paths and steering profiles of partial end-to-end agents with different values of lookahead constant $L_{c}$ during one test lap.}
+    \label{fig:lfc_paths}
+\end{figure}
+As expected, the agent with too small a look-ahead distance (such as $0.5$ meters) experienced slaloming behaviour.
+This is most clearly seen by the large oscillations in steering angle between $40$ and $70$ percent along the centerline.
+However, setting the look-ahead constant too large (such as two meters) was also detrimental to performance in that the path could not be tracked properly because the response of the vehicle was slow.
+% This caused the agent to select paths that veer extremely far to the right or left, also resulting in a slaloming path.
+We found that a good value for the look-ahead constant was one meter.
+Agents using this value for the look-ahead constant did not exhibit slaloming behaviour.
+They also outperformed agents using smaller and larger look-ahead constants in terms of failure rate and lap time under test conditions (see Table \ref{tab:Lc_test_results} for results).
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/steer/lfc_paths.pgf}
+%     \caption[Paths and steering profiles of agents with different values of $L_{c}$]{Paths and steering profiles of partial end-to-end agents with different values of lookahead constant $L_{c}$ during one test lap.}
+%     \label{fig:lfc_paths}
+% \end{figure}
+
+We benchmarked the performance of our pure pursuit controller against an implementation of the Stanley controller by Sakai et al. \cite{Sakai2018}. 
+The learning curves of this experiment are shown in Figure \ref{fig:path_tracker_comparison}.
+They show that agents with our pure pursuit implementation learned to successfully complete laps more effectively than agents with a Stanley controller.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/path_tracker_comparison_learning_curve.pgf}
+    \caption[Learning curves of agents using pure pursuit and Stanley controllers]{Learning curves of agents using pure pursuit and Stanley controllers.}
+    \label{fig:path_tracker_comparison}
+\end{figure}
+
+
+Despite the success of the partial end-to-end system with a steering controller (e.g., faster training involving less collisions, and a faster policy during deployment), the addition of the steering controller did not improve the partial end-to-end system's ability to predict reasonable velocity profiles.
+% A typical velocity profile from this agent is shown in Figure \ref{fig:velocity_profile_steer_agent}.
+In fact, agents with only a steering controller predicted velocity profiles that are similar to end-to-end agent, in that they continually selected the fastest velocity. 
+The velocity profile taken by the agent using the Frenet frame polynomial path is shown in Figure \ref{fig:velocity_profile_steer_agent}.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/steer/velocity_profile_steer_agent.pgf}
+    \caption[Partial end-to-end velocity profile]{A velocity profile from the partial end-to-end agent with only steering control.}
+    \label{fig:velocity_profile_steer_agent}
+\end{figure}
+We shall now investigate partial end-to-end systems with only a velocity controller. 
+By adding a velocity controller in the loop, we may modify the behaviour of the agent so that it selects a better velocity profile.
+
+
+\section{Partial end-to-end with velocity control}
+
+We now present our next progression in partial end-to-end architectures. 
+This architecture includes a velocity controller but no steering controller, as shown in Figure \ref{fig:vel_architecture}. 
+It is similar to the approaches taken by \cite{Ghignone2022, Evans2021b, Evans2021a}.
+The reinforcement learning agent acts as a hybrid planner and controller, generating steering commands and desired velocities at a rate of five Hz.
+These velocities are tracked using a proportional controller at a rate of $100$ Hz.
+This configuration of this partial end-to-end architecture is built into the official F1tenth architectures, and is used by several approaches \cite{hsu2022, Evans2021a}.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/velocity/vel_architecture.tex
+    \caption[The partial end-to-end architecture with only velocity control]{The partial end-to-end architecture with only velocity control. $\delta_{d}$, $v_{d}$, and $a_{\text{long},d}$ indicate the desired steering angle, longitudinal velocity and longitudinal acceleration respectively.}
+    \label{fig:vel_architecture}
+\end{figure}
+
+Shown in Figure \ref{fig:vel_agent} is an expanded view of the agent.
+As per usual, there are two neural network outputs scaled to a range of $(-1,1)$.
+The longitudinal and lateral outputs are scaled to the appropriate ranges of the longitudinal velocity and steering angle, respectively.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/velocity/agent.tex
+    \caption[An expanded view of the agent within the partial end-to-end system with a velocity controller]{An expanded view of the agent within the partial end-to-end system with a velocity controller.}
+    \label{fig:vel_agent}
+\end{figure}
+
+As with the previous agents, the action execution mechanism is modified to account for the difference in sample rates between the agent and environment components.
+Since the modification is similar to the ones made for both the end-to-end and other partial end-to-end agents, we only show the Algorithm in Algorithm \ref{alg:velocity_sample_rate_modification} in Appendix \ref{appendix_B}.
+
+\subsection{Velocity controller implementation}\label{sec:velocity_controller_implementation}
+Our velocity controller is implemented identically to the proportional controller that is integrated into the official F1tenth simulator \cite{f1tenth}.
+The F1tenth implementation emulates the behaviour of a closed loop velocity controller and motor by computing an acceleration based on the normalised difference between the desired and actual longitudinal velocities of the vehicle,
+\begin{equation}
+    a = 
+    \begin{cases}
+        k \frac{a_{\text{max}}}{\overline{v}}(v_d - v) & \text{for } v_d \geq v\\
+        k \frac{a_{\text{max}}}{\underline{v}}(v_d - v) & \text{for } v_d < v,
+    \end{cases}
+\label{eq:vel_control}
+\end{equation}
+where $v$, $\underline{v}$, $\overline{v}$, and $k$ are the actual velocity, minimum and maximum allowable velocities, and gain, respectively.
+This is useful for us, considering that we do not have a physical motor to model.
+
+Furthermore, the reward signal needed to be re-tuned after implementing the controller.
+Using the official F1tenth gym's value for the controller gain $k$ as two, we found that an $r_{\text{dist}}$ of $0.2$ and an $r_{\text{collision}}$ of $-2$ result in $100\%$ success rate under test conditions.
+
+% \input{contents/chapt6/figs/velocity/velocity_gain_table.tex}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/velocity/velocity_reward_collision.pgf}
+%     \caption{Caption}
+%     \label{fig:velocity_control_lap_reward}
+% \end{figure}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/velocity/reward_velocity_controller.pgf}
+%     \caption{Caption}
+%     \label{fig:velocity_control_lap_reward}
+% \end{figure}
+
+\subsection{Evaluation of an agent with a velocity controller}
+
+The path taken and longitudinal velocity profile of an agent with a velocity controller, as well as an end-to-end agent without velocity control is shown in Figure \ref{fig:velocity_control_lap}.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/velocity/velocity_control_lap_1.pgf}
+    \caption[Agents with and without a velocity controller completing one test lap]{The path and longitudinal velocity profile of agents with and without a velocity controller during one test lap.}
+    \label{fig:velocity_control_lap}
+\end{figure}
+From the figure, we see that the addition of the velocity controller significantly affects the behaviour of an agent.
+Unlike end-to-end agents, an agent with the velocity controller is able to maintain a velocity other than the maximum.
+However, its velocity profiles are still far from perfect.
+For instance, the vehicle decelerates in the straight section at $10\%$ progress along the centerline before accelerating into the corner.
+Nonetheless, we see that selecting a slower speed on average allows the agent can take the corners on the inside of the track.
+Even though the average speed selected by the agent with velocity control was lower than the ones without velocity control, it still achieved a competitive lap time of $5.95$ seconds, which was $0.12$ seconds faster than the end-to-end agent.
+
+However, a major disadvantage of the partial end-to-end agent with a velocity controller was tat it took  $29.56$ minutes to train, which was significantly longer than the end-to-end agents.
+This may be linked to the fact that it is necessary for this agent to learn a more complex velocity profile.
+We shall now investigate an approach which includes both a steering and a velocity controller.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/velocity/velocity_control_learning_curves.pgf}
+%     \caption[Learning curves of agents with and without a velocity controller]{Learning curves of agents with and without a velocity controller.}
+%     \label{fig:velocity_control_learning_curves}
+% \end{figure}
+
+\section{Partial end-to-end with steering and velocity control}
+We now present our partial end-to-end driving architecture that has both a steering controller and a longitudinal velocity controller, as shown in Figure \ref{fig:steer_vel_architecture}.
+This is the same as the approaches by \cite{Capo2020, Moghadam2020}.
+Whereas the agent acted as a hybrid planner-controller in the previous two partial end-to-end systems, it is a true local planner in this architecture.
+The agent outputs a path and a desired velocity, which are tracked using a steering controller and a velocity controller respectively.
+The implementations of these controllers are given in Sections \ref{sec:steer_controller_implementation} and \ref{sec:velocity_controller_implementation}.
+Similar to the previous driving architectures, actions are sampled from the agent at five Hz, while the controllers operate at $100$ Hz.
+The modification to the action execution mechanism to allow for the difference in sample rates is shown in Algorithm \ref{alg:steer_velocity_sample_rate_modification} in Appendix \ref{appendix_B}.
+Furthermore, we re-tuned the reward signals and found that an $r_{\text{dist}}$ of $0.2$ and an $r_{\text{collision}}$ of $-2$ results in the best performance.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/both/steer_vel_architecture.tex
+    \caption[The partial end-to-end architecture with steering and velocity controllers]{The partial end-to-end architecture with steering and velocity controllers. $\delta_{d}$, $v_{d}$, and $a_{\text{long},d}$ indicate the desired steering angle, longitudinal velocity and longitudinal acceleration respectively.}
+    \label{fig:steer_vel_architecture}
+\end{figure}
+
+As per usual, we show an expanded view of the agent in Figure \ref{fig:steer_vel_agent}.
+The two outputs of the neural network correspond to the longitudinal and lateral actions.
+While the longitudinal output is scaled to get the desired velocity, the lateral output is used to construct the path using a polynomial within the Frenet frame, as described in Section \ref{sec:polynomial_path}.
+
+\begin{figure}[htb!]
+    \centering
+    \input contents/chapt6/figs/both/agent.tex
+    \caption[An expanded view of the agent within the partial end-to-end system with a velocity controller]{An expanded view of the agent within the partial end-to-end system with a velocity controller.}
+    \label{fig:steer_vel_agent}
+\end{figure}
+
+
+\subsection{Evaluation of a partial end-to-end agent with a steering and a velocity controller}
+
+Figure \ref{fig:steer_velocity_lap} shows the path and velocity profile of the partial end-to-end agent with both steering and velocity control alongside an agent with only a steering controller.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/both/steer_velocity_lap_1.pgf}
+    \caption[The partial end-to-end agent with a steering and a velocity controller completing one lap under test conditions]{The partial end-to-end agent with a steering and a velocity controller completing one lap under test conditions. An agent with only a steering controller is also shown for comparison.}
+    \label{fig:steer_velocity_lap}
+\end{figure}
+The similarities between these two agents are striking.
+They not only take similar paths around the track, but also have very similar longitudinal velocity profiles.
+Thus, this agent with both a steering and a velocity controller does not inherit the longitudinal behaviour of the agent with only a velocity controller.
+Interestingly, the issue that end-to-end agents are not able to predict high fidelity velocity profiles remains unsolved with the addition of steering and velocity controllers.
+
+% This figure shows the partial end-to-end agent with a steering and velocity controller complete one lap under test conditions, alongside a fully end-to-end agent for reference.
+% Interestingly, the path taken by this agent is similar to the one by the partial end-to-end agent with only a steering controller, which is shown in Figure \ref{fig:path_method_comparison}.
+% However, its longitudinal velocity profile is similar to the agents without a velocity controller (i.e., end-to-end and partial end-to-end with only steering control) that continually select the maximum velocity.
+% Thus, this agent does not inherit the lateral behaviour of the agent with steering control and the longitudinal behaviour of the agent with velocity control.
+% Instead, there is emergent behaviour when using both velocity and steering controllers in one system.
+
+\section{Comparing partial end-to-end architectures}
+
+The learning curves for all of the end-to-end and partial end-to-end systems that we developed are shown in Figure \ref{fig:all_learning_curves}.
+As before, we see clearly that the learning curves of agents are grouped according to whether they have a steering controller and use the Frenet frame to generate a constrained path.
+Agents without a steering controller (i.e., the end-to-end agent, and the agent with the velocity controller) initially have a high failure rate that decreases slowly.
+However, agents with a steering controller completed laps from the start of training regardless of whether they had a velocity controller.
+
+Therefore, the addition of a velocity controller did not change the behaviour of the agent in such a way that was beneficial to training.
+In fact, velocity controllers are linked to an increase in training time.
+The agent with only a velocity controller took $29.56$ minutes to train, while the agent with steering and velocity controllers took $26.62$ minutes. 
+Meanwhile, the end-to-end agent and the agent with only a steering controller took $15.01$ and $18.27$ minutes, respectively.
+
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/both/all_learning_curves.pgf}
+    \caption[Learning curves for all of the agents end-to-end and partial end-to-end systems]{Learning curves showing failure rate, lap time and cumulative episode reward for all of the end-to-end and partial end-to-end systems that we developed.}
+    \label{fig:all_learning_curves}
+\end{figure}
+
+Table \ref{tab:steer_vel_test_table} shows the lap time under test conditions, and training time for all of the end-to-end and partial end-to-end agents that we developed.
+The partial end-to-end agent with both a steering and a velocity controller is the fastest, beating the agent with only a steering controller by a small margin.
+This is followed by the partial end-to-end system with a velocity controller, then the fully end-to-end system.
+
+Table  \ref{tab:steer_vel_test_table} also shows approaches from literature with similar architectures.
+We found that while end-to-end racing is a thoroughly investigated topic, each partial end-to-end configuration has only a few similar approaches in the literature.
+
+\input{contents/chapt6/figs/both/steer_velocity_test_table.tex}
+
+\section{Summary}
+In this chapter, we presented our partial end-to-end driving architectures.
+Since we did not find any comparisons in literature between different configurations of partial end-to-end systems, we developed and tested several configurations.
+These were (a) a system with only a steering controller, (b) a system with only a velocity controller, and (c) a system with both a steering and a velocity controller.
+
+We found that the method by which an agent defines a path for the steering controller to follow significantly impacted performance.
+In fact, the most significant performance gain in both training and testing was made by constraining the path so as to not intersect with the track boundaries.
+We achieved this by defining a polynomial within the Frenet frame, which is a curvi-linear coordinate system attatched to the track centerline.
+Using this setup, we were able to reduce the time needed for training significantly, as well as reduce the number of crashes during training by $96.3\%$.
+
+We also found that the addition of a velocity controller neither resulted in significant performance gains during training and testing, nor improved an agents ability to select an appropriate velocity profile.
+In fact, both systems that we developed with a steering controller exhibited similar longitundinal behaviour regardless of whether they had a velocity controller. 
+Furthermore, systems with velocity controllers took longer to train than those without.
+
+Nevertheless, all of the partial-end-to-end systems performed better than the end-to-end agent in terms of lap time under test conditions.
+So far, these test conditions have been without the model uncertainties that we expect to find when racing on a physical vehicle.
+That is, the vehicle model during training is exactly the same as the vehicle model during testing.
+Furthermore, we have not included the effect of sensor noise or inaccuracy in the pose estimate.
+In the next chapter, we will compare the end-to-end and partial end-to-end systems under these more realistic model-uncertain conditions.
+

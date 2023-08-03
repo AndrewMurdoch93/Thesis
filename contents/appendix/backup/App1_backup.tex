@@ -1,0 +1,219 @@
+\chapter{Appendix}
+\label{appendix_A}
+
+% \begin{algorithm}[htb!]
+% \small
+% \caption{Deep deterministic policy gradient for end-to-end racing}\label{alg:ddpg_end_to_end}
+% Initialise critic network $Q_{\theta}(s,a)$ and actor $\pi_{\phi}(s)$ with weights $\theta$ and $\phi$ \\
+% Initialise target network $Q_{\theta'}$ and $\pi_{\phi'}$ with weights $\theta' \leftarrow \theta$, $\phi' \leftarrow \phi$ \\
+% Initialise replay buffer $\mathcal{B}$ \\
+% \For{episode = 1, M}
+% {
+%     Initialise a random noise process $\mathcal{N}$ for action exploration \\
+%     Receive initial observation state $s_0$\\
+%     $t=0$\\
+%     \While{not done}
+%     {
+%         $\text{Select control action } a_t = [\delta_d, a_{\text{long},d}] = \pi_{\phi}(s_t) + \mathcal{N}_t$\\
+%         \For{n=0, control steps}
+%         {
+%             Scale and limit control action \\
+%             Simulator executes action $a_t$ \\
+%             Observe reward $r_{t,n}$ and done condition \\  
+%             Update reward: $r_t = r_t + r_{t,n}$ \\
+%         }
+%         Observe new state $s_{t+1}$ \\
+%         Store transition $(s_t, a_t, r_t, s_{t+1})$ in $\mathcal{B}$ \\
+%         Sample a random minibatch of $N$ transitions $(s_i, a_i, r_i, s_{i+1})$ from $\mathcal{B}$ \\
+%         Set TD target: $y_i = r_i + \gamma Q_{\theta'}(s_{i+1}, \pi_{\phi'}(s_{i+1}))$ \\
+%         Update critic by minimising the loss: $L_{\theta}=\frac{1}{N} \sum_i (y_i - Q_{\theta}(s_i,a_i))^2 $ \\
+%         Update the actor policy using the sampled policy gradient:
+%         $\nabla_{\phi} J \approx \frac{1}{N} \sum_i \nabla_{a} Q_{\theta}(s,a)|_{s=s_t, a=\pi{\phi}(s_t)} \nabla_{\phi} \pi_{\phi}(s)|_{s=s_t} $\\
+%         Update the target networks:\\
+%         $\theta' \leftarrow \tau \theta' + (1 - \tau) \theta$\\
+%         $\phi' \leftarrow \tau \phi + (1 - \tau) \phi'$\\
+%         $t=t+1$\\
+%     }
+% }
+% \end{algorithm}
+
+% \begin{algorithm}[hbt!]
+% \small
+% \caption{Twin delay deep deterministic policy gradient implementation with end-to-end architecture}\label{alg:td3_end_to_end}
+% Initialise critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ 
+% with parameters $\theta_1, \theta_2$ and $\pi_\phi$ \\
+% Initialise target networks $Q_{\theta_1'}$, $Q_{\theta_2'}$ and $\pi_{\phi'}$ with weights 
+% $\theta_1' \leftarrow \theta_1$, $\theta_2' \leftarrow \theta_2$, and $\phi' \leftarrow \phi$ \\
+% Initialise experience replay buffer $\mathcal{B}$ \\
+% \For{episode = 1, M}
+% {
+%     $t=0$\\
+%     \While{not done}
+%     {
+%         Select an action with random exploration noise $a_t = [\delta_d, a_{\text{long},d}] \sim \pi_{\phi}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+%         \For{n=0, control steps}
+%         {
+%             Simulator executes action $a_t$ \\
+%             Observe reward $r_{t,n}$ and done condition \\  
+%             Update reward: $r_t = r_t + r_{t,n}$ \\
+%         }
+%         Observe new state $s_{t+1}$ \\
+%         Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+%         Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+%         Select target actions: \hspace{5cm}
+%         $\tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+%         Set TD target: \hspace{5cm}
+%         $y \leftarrow r + \gamma \min_{i=1,2} Q_{\theta_i'}(s_{t+1}, \tilde{a})$ \\
+%         Update critics by minimising the loss: \hspace{5cm}
+%         $L_{\theta_i} \leftarrow  \frac{1}{N} \sum (y - Q_{\theta_i}(s,a))^{2} $ \\
+%         \If{$t \text{ mod } d$}
+%         {
+%             Update $\phi$ by the deterministic policy gradient:
+%             $\nabla_\phi J(\phi) = \frac{1}{N} \sum \nabla_a Q_{\theta_1} (s,a) | _{a=\theta_\phi(s)} \nabla_\phi \pi_\phi(s)$ \\
+%             Update target networks: \\
+%             $\theta_{i}' \leftarrow \tau \theta_i + (1 - \tau) \theta_{i}'$ \\
+%             $\phi' \leftarrow \tau \phi + (1 - \tau) \theta'$ \\
+%         }
+%         $t=t+1$\\
+%     }
+% }
+% \end{algorithm}
+
+
+% \begin{algorithm}[hbt!]
+% \small
+% \caption{Twin delay deep deterministic policy gradient implementation for partial end-to-end with steering control}\label{alg:td3_partial_end_to_end_steer}
+% Initialise critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ 
+% with parameters $\theta_1, \theta_2$ and $\pi_\phi$ \\
+% Initialise target networks $Q_{\theta_1'}$, $Q_{\theta_2'}$ and $\pi_{\phi'}$ with weights 
+% $\theta_1' \leftarrow \theta_1$, $\theta_2' \leftarrow \theta_2$, and $\phi' \leftarrow \phi$ \\
+% Initialise experience replay buffer $\mathcal{B}$ \\
+% \For{episode = 1, M}
+% {
+%     $t=0$\\
+%     \While{not done}
+%     {
+%         Select an action with random exploration noise $a_t = [\text{path parameter}, a_{\text{long},d}] \sim \pi_{\phi}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+%         Construct path using path parameter \\
+%         \For{n=0, control steps}
+%         {   
+%             Get $\delta_d$ from pure pursuit path tracker \\
+%             Simulator executes [$\delta_d$, $a_{\text{long},d}$] \\
+%             Observe reward $r_{t,n}$ and done condition \\  
+%             Update reward: $r_t = r_t + r_{t,n}$ \\
+%         }
+%         Observe new state $s_{t+1}$ \\
+%         Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+%         Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+%         Select target actions: \hspace{5cm}
+%         $\tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+%         Set TD target: \hspace{5cm}
+%         $y \leftarrow r + \gamma \min_{i=1,2} Q_{\theta_i'}(s_{t+1}, \tilde{a})$ \\
+%         Update critics by minimising the loss: \hspace{5cm}
+%         $L_{\theta_i} \leftarrow  \frac{1}{N} \sum (y - Q_{\theta_i}(s,a))^{2} $ \\
+%         \If{$t \text{ mod } d$}
+%         {
+%             Update $\phi$ by the deterministic policy gradient:
+%             $\nabla_\phi J(\phi) = \frac{1}{N} \sum \nabla_a Q_{\theta_1} (s,a) | _{a=\theta_\phi(s)} \nabla_\phi \pi_\phi(s)$ \\
+%             Update target networks: \\
+%             $\theta_{i}' \leftarrow \tau \theta_i + (1 - \tau) \theta_{i}'$ \\
+%             $\phi' \leftarrow \tau \phi + (1 - \tau) \theta'$ \\
+%         }
+%         $t=t+1$\\
+%     }
+% }
+% \end{algorithm}
+
+
+% \begin{algorithm}[hbt!]
+% \small
+% \caption{Twin delay deep deterministic policy gradient implementation for partial end-to-end with velocity control}\label{alg:td3_partial_end_to_end_velocity}
+% Initialise critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ 
+% with parameters $\theta_1, \theta_2$ and $\pi_\phi$ \\
+% Initialise target networks $Q_{\theta_1'}$, $Q_{\theta_2'}$ and $\pi_{\phi'}$ with weights 
+% $\theta_1' \leftarrow \theta_1$, $\theta_2' \leftarrow \theta_2$, and $\phi' \leftarrow \phi$ \\
+% Initialise experience replay buffer $\mathcal{B}$ \\
+% \For{episode = 1, M}
+% {
+%     $t=0$\\
+%     \While{not done}
+%     {
+%         Select an action with random exploration noise $a_t = [\delta_d, v_d] \sim \pi_{\phi}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+%         Construct path using path parameter \\
+%         \For{n=0, control steps}
+%         {   
+%             Get $a_{\text{long},d}$ from velocity controller \\
+%             Simulator executes [$\delta_d$, $a_{\text{long},d}$] \\
+%             Observe reward $r_{t,n}$ and done condition \\  
+%             Update reward: $r_t = r_t + r_{t,n}$ \\
+%         }
+%         Observe new state $s_{t+1}$ \\
+%         Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+%         Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+%         Select target actions: \hspace{5cm}
+%         $\tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+%         Set TD target: \hspace{5cm}
+%         $y \leftarrow r + \gamma \min_{i=1,2} Q_{\theta_i'}(s_{t+1}, \tilde{a})$ \\
+%         Update critics by minimising the loss: \hspace{5cm}
+%         $L_{\theta_i} \leftarrow  \frac{1}{N} \sum (y - Q_{\theta_i}(s,a))^{2} $ \\
+%         \If{$t \text{ mod } d$}
+%         {
+%             Update $\phi$ by the deterministic policy gradient:
+%             $\nabla_\phi J(\phi) = \frac{1}{N} \sum \nabla_a Q_{\theta_1} (s,a) | _{a=\theta_\phi(s)} \nabla_\phi \pi_\phi(s)$ \\
+%             Update target networks: \\
+%             $\theta_{i}' \leftarrow \tau \theta_i + (1 - \tau) \theta_{i}'$ \\
+%             $\phi' \leftarrow \tau \phi + (1 - \tau) \theta'$ \\
+%         }
+%         $t=t+1$\\
+%     }
+% }
+% \end{algorithm}
+
+
+% \begin{algorithm}[hbt!]
+% \small
+% \caption{Twin delay deep deterministic policy gradient implementation for partial end-to-end with both steering and velocity control}\label{alg:td3_partial_end_to_end_both}
+% Initialise critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ 
+% with parameters $\theta_1, \theta_2$ and $\pi_\phi$ \\
+% Initialise target networks $Q_{\theta_1'}$, $Q_{\theta_2'}$ and $\pi_{\phi'}$ with weights 
+% $\theta_1' \leftarrow \theta_1$, $\theta_2' \leftarrow \theta_2$, and $\phi' \leftarrow \phi$ \\
+% Initialise experience replay buffer $\mathcal{B}$ \\
+% \For{episode = 1, M}
+% {
+%     $t=0$ \\
+%     \While{not done}
+%     {
+%         Select an action with random exploration noise $a_t = [\text{path parameter}, v_d] \sim \pi_{\phi}(s) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma)$ \\
+%         Construct path using path parameter \\
+%         \For{n=0, control steps}
+%         {   
+%             Get $\delta_d$ from pure pursuit path tracker \\
+%             Get $a_{\text{long},d}$ from velocity controller \\
+%             Simulator executes [$\delta_d$, $a_{\text{long},d}$] \\
+%             Observe reward $r_{t,n}$ and done condition \\  
+%             Update reward: $r_t = r_t + r_{t,n}$ \\
+%         }
+%         Observe new state $s_{t+1}$ \\
+%         Store transition tuple $(s_t,a_t,r_t,s_{t+1})$ in $\mathcal{B}$ \\
+%         Sample mini-batch of $N$ transitions $(s_i,a_i,r_i,s_{i+1})$ from $\mathcal{B}$ \\
+%         Select target actions: \hspace{5cm}
+%         $\tilde{a} \leftarrow \pi_{\phi'}(s_{t+1}) + \epsilon$, $\epsilon \sim \text{clip}(\mathcal{N}(0,\tilde{\sigma}), -c,c)$ \\
+%         Set TD target: \hspace{5cm}
+%         $y \leftarrow r + \gamma \min_{i=1,2} Q_{\theta_i'}(s_{t+1}, \tilde{a})$ \\
+%         Update critics by minimising the loss: \hspace{5cm}
+%         $L_{\theta_i} \leftarrow  \frac{1}{N} \sum (y - Q_{\theta_i}(s,a))^{2} $ \\
+%         \If{$t \text{ mod } d$}
+%         {
+%             Update $\phi$ by the deterministic policy gradient:
+%             $\nabla_\phi J(\phi) = \frac{1}{N} \sum \nabla_a Q_{\theta_1} (s,a) | _{a=\theta_\phi(s)} \nabla_\phi \pi_\phi(s)$ \\
+%             Update target networks: \\
+%             $\theta_{i}' \leftarrow \tau \theta_i + (1 - \tau) \theta_{i}'$ \\
+%             $\phi' \leftarrow \tau \phi + (1 - \tau) \theta'$ \\
+%         }
+%         $t=t+1$ \\
+%     }
+% }
+% \end{algorithm}
+
+%----------------------------------------------------------------------------
+%\endinput
