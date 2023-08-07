@@ -12,6 +12,6 @@
 \contentsline {table}{\numberline {2.3}{\ignorespaces Evaluation results of agents with different collision penalties}}{22}{table.caption.33}%
 \contentsline {table}{\numberline {2.4}{\ignorespaces Evaluation results of end-to-end agents with varied learning rates}}{26}{table.caption.40}%
 \addvspace {10pt}
-\contentsline {table}{\numberline {A.1}{\ignorespaces Evalutation results and training time of end-to-end agents with varied target update rates}}{33}{table.caption.50}%
-\contentsline {table}{\numberline {A.2}{\ignorespaces Evaluation results and training time of end-to-end agents with varied exploration noise}}{34}{table.caption.52}%
-\contentsline {table}{\numberline {A.3}{\ignorespaces Evaluation results and training time of end-to-end agents with varied number of action samples between network updates}}{35}{table.caption.54}%
+\contentsline {table}{\numberline {A.1}{\ignorespaces Evalutation results and training time of end-to-end agents with varied target update rates}}{34}{table.caption.50}%
+\contentsline {table}{\numberline {A.2}{\ignorespaces Evaluation results and training time of end-to-end agents with varied exploration noise}}{35}{table.caption.52}%
+\contentsline {table}{\numberline {A.3}{\ignorespaces Evaluation results and training time of end-to-end agents with varied number of action samples between network updates}}{36}{table.caption.54}%

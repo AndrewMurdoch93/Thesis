@@ -161,13 +161,13 @@ Each agent completed $100$ laps under these evaluation conditions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
-\section{Empirical design and hyperparameter values}\label{sec:ete_empirical_design}
+\section{Empirical design and hyper-parameter values}\label{sec:ete_empirical_design}
 
 The previous section introduced the design of the end-to-end algorithm and the TD3 algorithm with symbolic hyper-parameter values. 
 The optimal values for these hyper-parameters cannot be derived, and require experimentation to be determined empirically. 
 Furthermore, hyper-parameters are sensitive to the track.
-The following five sections of this chapter detail the experiments that were undertaken to determine a locally optimal set of hyperparameters for agents racing on a relatively simply track named Porto.
-The selected hyperparameters are listed in Table \ref{tab:inital_values}.
+The following five sections of this chapter detail the experiments that were undertaken to determine a locally optimal set of hyper-parameters for agents racing on a relatively simply track named Porto.
+The selected hyper-parameters are listed in Table \ref{tab:inital_values}.
 Additionally, the average learning curve for $10$ agents racing on this track using this set of hyper-parameter is shown in Figure \ref{fig:MDP_steps_learning_curve}.
 
 \input{contents/chapt5/figs/test_procedure/initial_values.tex}
@@ -176,7 +176,7 @@ To select each hyper-parameter value listed in this Table, we repeatedly trained
 varied values of the hyper-parameter under consideration while keeping all other hyper-parameters fixed at the values listed in Table \ref{tab:inital_values}. 
 When evluating agents, we are particularly interested in the rate at which they successfully complete laps, as well as their lap time during and after training.
 Furthermore, to ensure consistency in the results, we trained and evaluated multiple agents for each set of hyper-parameters. 
-Specifically, we chose to train three agents for each hyperparameter set due to time constraints.
+Specifically, we chose to train three agents for each hyper-parameter set due to time constraints.
 
 
 
@@ -204,12 +204,12 @@ We performed experiments to determine values for the TD3 algorithm hyper-paramet
 These hyper-parameters were the number of MDP time steps $M$, agent sample rate $f_{\text{agent}}$, target update rate $\tau$, replay buffer size $\mathcal{B}$, replay batch size $B$, standard deviation of exploration noise $\sigma_{\text{action}}$, reward discount rate $\gamma$, and agent samples in-between DNN updates $d$.
 
 
-We first determined an appropriate number of time steps to train the agent for.
+We begin this section by discussing the experiment by which the appropriate number of time steps to train the agent for was determined.
 The objective for determining the length of the training time was to ensure that the agent would demonstrate satisfactory performance under evaluation conditions by racing quickly and consistently avoiding crashes. 
 Ending training too soon may result in poor agent performance, while training for too many time steps long may result in unnecessarily prolonged training times. 
 To achieve this, a set of three agents with the hyper-parameters listed in Table \ref{tab:inital_values} were trained.
-These agents were intermittently evaluated using Algorithm \ref{alg:end_to_end_deploy} at $100$ episode intervals during training.
-The percentage of failed laps and lap time under evaluation conditions are recorded as a function of training time, as depicted in Figure \ref{fig:MDP_steps}. 
+These agents were evaluated using Algorithm \ref{alg:end_to_end_deploy} at $100$ episode intervals during training.
+The percentage of failed laps and lap time under evaluation conditions are depicted as a function of training time in Figure \ref{fig:MDP_steps}. 
 
 \begin{figure}[htb!]
     \centering
@@ -218,7 +218,7 @@ The percentage of failed laps and lap time under evaluation conditions are recor
     \label{fig:MDP_steps}
 \end{figure}
 
-We observe that during the initial training, both lap time and success rate improved rapidly. 
+We observe that during the early stages of training, both lap time and success rate improved rapidly. 
 However, it takes a considerable amount of time before the agent consistently completes all of its laps under evaluation conditions. 
 Considering these results, we determined that $1.5\cdot10^{5}$ MDP time steps is an appropriate length for training an end-to-end agent.
 
@@ -227,11 +227,9 @@ Considering these results, we determined that $1.5\cdot10^{5}$ MDP time steps is
 % Agent sample rate
 The optimal value for the rate at which actions are sampled from the agent, denoted as $f_{\text{agent}}$, was then determined.
 % The maximum useful agent sampling rate is set by environment sampling rate of $100$ Hz.
-We investigated agent sample rates ranging from $3$ Hz and $50$ Hz, by training three agents with varying sample rates, and their remaining hyperparameters set
-equal to those listed in Table \ref{tab:inital_values}.
-% As with other hyper-parameters, our objective was to set $f_{\text{agent}}$ such that the agent races safely and efficiently under evaluation conditions. 
-Figure \ref{fig:f_agent} shows the training time and percentage of failed laps of agents racing under evaluation conditions as a function of $f_{\text{agent}}$.  
-Interestingly, there was a correlation between agent sampling rate and training time, as well as the rate at which end-to-end agents complete laps under evaluation conditions.
+We investigated agent sample rates in the range of $3$ Hz to $50$ Hz.
+For each sample rate investigated, three agents were trained with the remaining hyper-parameters set equal to those listed in Table \ref{tab:inital_values}.
+Figure \ref{fig:f_agent} shows the average failed laps and lap time of agents racing under evaluation conditions as a function of $f_{\text{agent}}$.  
 
 \begin{figure}[htb!]
     \centering
@@ -240,16 +238,16 @@ Interestingly, there was a correlation between agent sampling rate and training 
     \label{fig:f_agent}
 \end{figure}
 
-From this figure, we observed that agents trained with sampling rates higher than $5$ Hz tend to crash.
+From this figure, we observe that agents trained with sampling rates higher than $5$ Hz tend to crash, as well race slowly.
 This outcome may be attributed to the fact that when a higher sampling rate is used, the agent needs to learn longer action sequences to complete a lap, leading to a more complex learning problem. 
-We set the value of $f_{\text{agent}}$ to be $5$ Hz as it resulted in the minimum number of failed laps during testing, despite taking a relatively long $26.2$ minutes to train each agent.
-It is notable that $5$ Hz is a relatively slow sampling rate for compared to classical controllers.
+We set the value of $f_{\text{agent}}$ to be $5$ Hz as it resulted in the minimum number of failed laps during evaluation, despite taking a relatively long $26.2$ minutes to train each agent.
+It is notable that $5$ Hz is a relatively slow sampling rate compared to classical controllers.
 For instance, Li et al. \cite{Li2019} develop path tracking controllers with sampling rates up to $100$ Hz.
 
 
-We then experimentally determined the optimal value for the batch size $B$ by training agents with batch sizes of $50$, $100$, $150$, $200$, $400$, $600$ and $1000$ samples.
-Varying the batch size did influence lap time and failure rate during evaluation.
-The lap time and percentage of failed laps during evaluation are shown as a function of batch size in Figure \ref{fig:batch_size}.
+The optimal value for the batch size $B$ was determined by training and evaluating agents with batch sizes of $50$, $100$, $150$, $200$, $400$, $600$ and $1000$ samples.
+Three agents were trained for every batch size, while holding the remaining hyper-parameters constant at the values listed in Table \ref{tab:inital_values}.
+The average lap time and percentage of failed laps of agents under evaluation conditions are shown as a function of batch size in Figure \ref{fig:batch_size}.
 From this figure, we observe that lap time and failed laps under evaluation conditions are minimised when the batch size is set to $400$.
 Based on these results, we selected a batch size of $400$ samples for our agents.
 
@@ -261,8 +259,9 @@ Based on these results, we selected a batch size of $400$ samples for our agents
 \end{figure}
 
 
-We then conducted an experimental analysis to select the reward discount rate, denoted $\gamma$. 
-To determine the value for $\gamma$, we initially assessed the performance of agents with reward discount rates of $0.95$, $0.98$, $0.99$ and $1$ during training.
+An experimental analysis was then conducted to select the reward discount rate, denoted $\gamma$. 
+To determine the value for $\gamma$, we assessed the performance of agents with reward discount rates of $0.95$, $0.98$, $0.99$ and $1$ during training.
+For each of these reward discount rate values, three agents were trained with their remaining hyper-parameters set equal to those listed in Table \ref{tab:inital_values}.
 The percentage failed laps and lap times during training, was well as the learning curves for these agents are shown in Figure \ref{fig:gamma}.
 
 \begin{figure}[htb!]
@@ -273,22 +272,23 @@ The percentage failed laps and lap times during training, was well as the learni
 \end{figure}
 
 By only assessing the performance during training, these agents appear to be perform similarly.
-However, the TD3 algorithm has no mechanism for decreasing exploration noise with training time.
+However, the TD3 algorithm has no mechanism for decreasing the exploration noise added to every action with training time.
 Figure \ref{fig:gamma} is therefore an indicator of the performance of each agent with added exploration noise.
 As such, we also considered the performance of each agent under evaluation conditions where no exploration noise is present.
 The percentage failed laps and lap times for agents trained with each learning rate is shown in Table \ref{tab:gamma}.
 The table show that a discount rate of $0.99$ yields agents that successfully complete all of their laps. 
-Based on this finding, we have selected a discount rate of $0.99$ for our agents.
+Based on this finding, a discount rate of $0.99$ was selected for our agents.
 
 \input{contents/chapt5/figs/learning_method/gamma_table.tex}
 
-We repeated this tuning procedure for the hyper-parameters $\tau$, $\sigma_{\text{action}}$, and $d$. 
-For these parameters, we followed the same procedure as for $\gamma$, i.e., we varied one hyper-parameter while holding the others constant and selected the value based on performance during training and evaluation. 
-As such, the experiment results for these hyper-parameters are presented in Appendix \ref{appendix_A}. 
+Values for the hyper-parameters $\tau$, $\sigma_{\text{action}}$, and $d$ were determined by repeating the tuning procedure used for $\gamma$. 
+That is, one hyper-parameter was varied while holding the others constant.
+For each hyper-parameter set, three agents were trained, and the selected was based on the agents' average performance during training and evaluation. 
+For conciseness, the experimental results for these hyper-parameters are presented in Appendix \ref{appendix_A}. 
 Values of $5\cdot10^{-3}$ for $\tau$, $0.1$ for $\sigma_{\text{action}}$, and $2$ for $d$ yielded agents with the best performance.
 
 
-After determining the hyper-parameters for TD3, we compared the performance of our implementation of the TD3 algorithm to a standard implementation of the popular Deep Deterministic Policy Gradient (DDPG) algorithm  \cite{Ivanov2020, Capo2020, Niu2020}.
+After determining locally optimal hyper-parameters for TD3, we compared the performance of our implementation of the TD3 algorithm to a standard implementation of the popular Deep Deterministic Policy Gradient (DDPG) algorithm  \cite{Ivanov2020, Capo2020, Niu2020}.
 The percentage failed laps, lap time and learning curves of agents trained using both algorithms are depicted in Figure \ref{fig:learning_method}.
 The results reveal that TD3 outperforms DDPG by a substantial margin in terms of both crashes and lap time.
 Moreover, we have observed that the training stability of TD3 is superior to that of DDPG, as evidenced by the smoother learning curve of TD3 in contrast to the more erratic curve of DDPG.
@@ -310,17 +310,16 @@ Moreover, we have observed that the training stability of TD3 is superior to tha
 
 \section{Reward signal}
 
-Having experimentally determined optimal values for the TD3 hyper-parameters, we investigated the reward signal.
+Having experimentally determined locally optimal values for the TD3 hyper-parameters, we investigated the reward signal.
 Our objectives were to choose reward signal parameter values that yielded agents that (a) race safety while (b) minimising lap time.
 This was a challenging task, considering that these two objectives are in conflict with each other.
 Further complicating the task is that the lap time alone is too sparse a signal to allow the agent to learn effectively \cite{Perot2017, Jaritz2018}.
-
-
-The reward signal described in Equation \ref{eq:reward_signal} rewards the agent for the distance it travelled along the centerline between the current and previous time step, and penalises the agent a small amount on every time step \cite{Fuchs2021}. 
+The reward signal from Equation \ref{eq:reward_signal} was therefore designed to approximate a signal that minimises lap time, while also providing continuous rewards to the agent.
+Specifically, the reward signal described in Equation \ref{eq:reward_signal} rewards the agent for the distance it travelled along the centerline between the current and previous time step, and penalises the agent a small amount on every time step \cite{Fuchs2021}. 
 Additionally, the agent receives a large penalty for colliding with the track boundary. 
-We now present the tuning procedure for (a) the time step penalty $r_{\text{time}}$, (b) the distance reward $r_{\text{dist}}$ and (c) the collision penalty $r_{\text{collision}}$.
+% We now present the tuning procedure for (a) the time step penalty $r_{\text{time}}$, (b) the distance reward $r_{\text{dist}}$ and (c) the collision penalty $r_{\text{collision}}$.
 
-To motivate the use of a time step penalty $r_{\text{time}}$, we examine the total reward accumulated over a successful episode, 
+To motivate the use of a time step penalty $r_{\text{time}}$ and to prove that our reward signal approximates a minimisation of lap time, we examine the total reward accumulated over a successful episode, 
 \begin{equation}
         R_{\text{total}} =  \sum_{t=1}^{T} \left( r_{\text{dist}}(D_{t}-D_{t-1})+r_{\text{time}} \right),
 \label{eq:lap_success_reward}
@@ -336,34 +335,35 @@ Expanding the summation yields
     \end{split}
 \label{eq:lap_success_reward_1}
 \end{equation}
-To simplify the expression for total reward, $r_{\text{time}}$ was set equal to $-0.01$, which is the negative of the simulator time step $\Delta t$.
+To simplify the expression for total reward, $r_{\text{time}}$ was set equal to $-\Delta t$, or $-0.01$.
 Additionally, $T$ was substituted as
 \begin{equation}
 T=\frac{\text{lap time}}{\Delta t}.
 \label{eq:n}
 \end{equation}
-By substituting Equation \ref{eq:n} into Equation \ref{eq:lap_success_reward}, we get $R_{\text{total}}$ as
+By substituting Equation \ref{eq:n} into Equation \ref{eq:lap_success_reward_1}, we get $R_{\text{total}}$ as
 \begin{equation}\label{eq:reward_proof}
     R_{\text{total}} = r_{\text{dist}} D_T - \text{lap time}.
 \end{equation}
-This equation shows that the reward signal from Equation \ref{eq:reward_signal} approximates minimising lap time for sufficiently large reward discount factors.
-Because $D_T$ is a constant, it is clear that the agent must minimise lap time to maximise the total reward.
+From this equation, we can see that the agent must minimise lap time to maximise the total reward because $D_t$ is constant.
+Therefore, the reward signal from Equation \ref{eq:reward_signal} approximates a signal that minimises lap time for sufficiently large reward discount factors.
 Furthermore, if no time step penalty is applied, then every successful lap yields the same reward regardless of lap time.
 
-We then trained and evaluated agents with and without the time step penalty, while setting the reward signal components $r_{\text{dist}}$ and $r_{\text{collision}}$ to $0.25$ and $-10$, respectively.
-Setting $r_{\text{time}}$ to $-0.01$ improved the average evaluation lap time of agents from $9.26$ seconds to $6.07$ seconds, compared to agents that did not receive the penalty.
-% Furthermore, we tuned the other reward signal terms are relative to the $r_{\text{time}}$ value of $-0.01$.
+To experimintally confirm the result from Equation \ref{eq:reward_proof}, we trained and evaluated three agents with $r_{\text{time}}$ set to $-0.01$, then repeated the training procedure for three agents without the time step penalty.
+For each of these agents, the remaining reward signal components and hyper-parameters were set equal to the values listed in Table \ref{tab:inital_values}.
+Setting $r_{\text{time}}$ to $-0.01$ improves the average evaluation lap time of agents from $9.26$ seconds to $6.07$ seconds, compared to agents that did not receive the penalty.
+Furthermore, we tuned the other reward signal terms are relative to the $r_{\text{time}}$ value of $-0.01$.
 
 
-Next, we experimentally tuned the distance reward value relative to the $r_{\text{time}}$ value of $-0.01$.
+We now present the tuning procedure for the distance reward $r_{\text{dist}}$, as well as the collision penalty $r_{\text{collision}}$.
 We initially determined a plausible range of $r_{\text{dist}}$ values to train our agents with.
 Intuitively, a lower bound for $r_{\text{dist}}$ exists that results in a policy that completes laps.
 If $r_{\text{dist}}$ is set beneath this lower bound, the agent can only accumulate negative reward by continuing to race, and the optimal action is to crash immediately.
 We estimated this lower bound by considering that the agent should be able to achieve positive reward at every time step, such that
-\begin{equation}
+\begin{equation}\label{eq:r_dist_inequality}
     r_{\text{dist}}(D_{t} - D_{t-1}) + r_{\text{time}} > 0.
 \end{equation}
-Solving this inequality for $r_{\text{dist}}$ gives us
+Solving the inequality in Equation \ref{eq:r_dist_inequality} for $r_{\text{dist}}$ gives
 \begin{equation}
     r_{\text{dist}} > \frac{-r_{\text{time}}}{(D_t-D_{t-1})},
 \label{eq:min_r_dist}
@@ -373,7 +373,8 @@ To obtain the smallest value for $r_{\text{dist}}$, we estimate the largest valu
 \begin{equation}\label{eq:D_t}
     (D_t - D_{t-1}) = v_{\text{max}} \Delta t.
 \end{equation}
-After substituting this expression into Equation \ref{eq:min_r_dist} and setting $r_{\text{time}}$ equal to $\Delta_t$, the minimum value for $r_{\text{distance}}$ is found to be
+After substituting the expression from Equation \ref{eq:D_t} into Equation \ref{eq:min_r_dist} and setting $r_{\text{time}}$ equal to $-\Delta t$, 
+the minimum value for $r_{\text{distance}}$ is found to be
 \begin{equation}\label{eq:min_r_dist_v}
     r_{\text{dist}} > \frac{1}{v_{\text{max}}}.
 \end{equation}
@@ -381,15 +382,9 @@ Substituting the value for $v_{\text{max}}$ as $5$ m/s into Equation \ref{eq:min
 
 
 Using this value as a guide for the region in which to search for  $r_{\text{dist}}$, we trained agents with $r_{\text{dist}}$ values of $0.1$, $0.25$, $0.3$ and $1$. 
-The percentage failed laps and lap time of completed laps during training for these agents are shown in Figure \ref{fig:reward_signal_dist}.
+For each $r_{\text{dist}}$ value, three agents were trained with their remaining hyper-parameters equal to those listed in Table \ref{tab:inital_values}.
+The percentage failed laps and average lap time of completed laps during training for these agents are shown in Figure \ref{fig:reward_signal_dist}.
 Unsurprisingly, the agent with $r_{\text{dist}}$ set to $0.1$ (i.e., less than the estimated minimum) learns that terminating the episode immediately is the optimal behaviour, as its failure rate remains at $100$ percent.
-
-
-Figure \ref{fig:reward_signal_dist} also reveals that larger values of $r_{\text{dist}}$ result in worse performance in terms of failed laps and lap time.
-When $r_{\text{dist}}$ is set to a larger value, the time step penalty becomes less significant.
-As such, the agent is less incentivised to minimise lap time.
-Conversely, when $r_{\text{dist}}$ is set close to the estimated minimum value, the time step penalty becomes significant, and the agent must optimise lap time to receive positive rewards.
-The value for $r_{\text{dist}}$ was chosen as $0.25$, as agents that were trained with this value had the lowest crash rate while also achieving competitive lap times.
 
 \begin{figure}[htb!]
     \centering
@@ -399,7 +394,14 @@ The value for $r_{\text{dist}}$ was chosen as $0.25$, as agents that were traine
 \end{figure}
 
 
-The penalty imposed on the agent when it collides with the track boundary was then fine-tuned. 
+Figure \ref{fig:reward_signal_dist} also reveals that larger values of $r_{\text{dist}}$ result in worse performance in terms of failed laps and lap time.
+When $r_{\text{dist}}$ is set to a larger value, the time step penalty becomes less significant.
+As such, the agent is less incentivised to minimise lap time.
+Conversely, when $r_{\text{dist}}$ is set close to the estimated minimum value, the time step penalty becomes significant, and the agent must optimise lap time to receive positive rewards.
+The value for $r_{\text{dist}}$ was chosen as $0.25$, as agents that were trained with this value had the lowest crash rate while also achieving competitive lap times.
+
+
+After setting the value for $r_{\text{dist}}$, the penalty imposed on the agent when it collides with the track boundary was fine-tuned. 
 Initially, we investigated whether the agent could acquire the racing skills without facing any penalties for collisions. 
 However, agents trained with such a reward signal crashed on $4\%$ of their laps during evaluation. 
 Consequently, we conducted further experiments by considering negative $r_{\text{collision}}$ values.
@@ -407,14 +409,15 @@ Consequently, we conducted further experiments by considering negative $r_{\text
 To identify a suitable range within which we could conduct experimental searches for an optimal value, we operated on the premise that $r_{\text{collision}}$ should be substantial compared to the positive reward an agent can receive in an episode. 
 As shown in Figure \ref{fig:MDP_steps_learning_curve}, agents attain an average reward value of $2$ in episodes where crashes do not occur. 
 Consequently, we trained agents with collision penalties ranging from $-2$ to $-10$.
-The percentage failed laps and lap times of agents trained with these values for $r_{\text{collision}}$ are presented in Table \ref{tab:reward_collision}.
-We selected $r_{\text{collision}}$ as $-10$, as it is the only penalty that resulted in no failed laps.
+As before, three agents with hyper-parameter set equal to those listed in Table \ref{tab:inital_values} were trained for each $r_{\text{collision}}$ value.
+The percentage failed laps and average lap times of agents trained with these values for $r_{\text{collision}}$ are presented in Table \ref{tab:reward_collision}.
+We selected $r_{\text{collision}}$ as $-10$, as it is the only penalty that results in no failed laps.
 
 \input{contents/chapt5/figs/reward/reward_collision_table.tex}
 
 Interestingly, the effect of increasing the collision penalty can be seen in the path taken by agent.
 Figure \ref{fig:path_reward_collision} shows the paths taken by agents with $r_{\text{collision}}$ set to $-4$ and $-10$.
-The agent with the lower collision penalty races close to the inside of the track, while the agent that is penalised more heavily takes a much more conservative path by staying clear of the track boundaries, instead preferring to drive near the centerline of the track.
+The agent with the lower collision penalty races close to the edge of the track, while the agent that is penalised more heavily takes a much more conservative path by staying clear of the track boundaries, instead preferring to drive near the centerline of the track.
 
 \begin{figure}[htb!]
     \centering
@@ -436,24 +439,25 @@ The agent with the lower collision penalty races close to the inside of the trac
 
 \section{Observation space}\label{sec:obs_space}
 
-Next, we investigated the optimal hyper-parameters for the observation space.
-Initially, we determined which observation elements yield agents with the best performance.
+We also investigated the optimal the observation space vector.
+Initially, the observation vector components that yield agents with the best performance were determined
 % Approaches to designing observation spaces for autonomous racing generally fall into two categories: those that use only a front facing LiDAR or camera \cite{Perot2017, Jaritz2018}, and those that combine a front facing LiDAR scanner with the vehicle pose \cite{Song2021,  Fuchs2021, Ivanov2020}.
-We therefore trained agents that received (a) only the pose, (b) only a LiDAR scan and (c) a combination of vehicle pose and LiDAR scan.
-The performance of these agents during training, in terms of percentage failed laps, lap time and reward, is shown in Figure \ref{fig:obs_space}.
+, by training and evaluating agents that received (a) only the pose, (b) only a LiDAR scan and (c) a combination of vehicle pose and LiDAR scan.
+For each of these observation space combinations, three agents with hyper-parameters listed in Table \ref{tab:inital_values} were trained.
+The performance of these agents during training, in terms of percentage failed laps, average lap time and average reward, is shown in Figure \ref{fig:obs_space}.
 
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/observation/observation.pgf}
-    \caption[Learning curves of agents with different observation spaces]{(a) the percentage failed laps and (b) lap time of completed laps during training, was well as the (c) learning curves showing episode reward for end-to-end agents with different observation spaces.}
+    \caption[Learning curves of agents with different observation spaces]{(a) the percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves showing episode reward for end-to-end agents with different observation spaces.}
     \label{fig:obs_space}
 \end{figure}
 
 From this figure, agents utilising each of the observation spaces converge to a similar values for all three evaluation metrics.
 However, agents that receive a LiDAR scan train significantly faster than agents without a LiDAR scan in their observation.
 Specifically, the LiDAR scan allows the agent to learn to avoid track boundaries without needing to sample collision experiences at every point along the track boundary.
-This is clearly demonstrated in Figure \ref{fig:collision_distribution}, which shows all of the locations where an agent with only the pose, and an agent with both pose and LiDAR scan crashed during training.
-We found that agents without LiDAR scans crashed $5183$ times, whereas those with LiDAR scans crashed only $464$ times during the same training period.
+This is clearly demonstrated in Figure \ref{fig:collision_distribution}, which shows all of the locations where an agent observing only the pose, and an agent observing both pose and LiDAR scan crashed during training.
+Agents without LiDAR scans crashed $5183$ times, whereas agents observing LiDAR scans crashed only $464$ times during the same training period.
 
 \begin{figure}[htb!]
     \centering
@@ -469,34 +473,38 @@ We found that agents without LiDAR scans crashed $5183$ times, whereas those wit
         \caption{Pose and LiDAR}
     \end{subfigure}
     \hfill
-\caption[Locations of crashes during training]{The locations where an agent trained with (a) only the pose and (b) both the pose and LiDAR scan crashed during training.}
+\caption[Locations of crashes during training]{Crash locations of agents with (a) only the pose and (b) both the pose and LiDAR scan during training.}
 \label{fig:collision_distribution}
 \end{figure}
 
 After determining that including the LiDAR scan in the observation improves training performance, we assessed agents utilising each observation space under evaluation conditions.
-The agent that utilised both the LiDAR scan and pose in the observation did not crash during evaluation, whereas agents with either only a LiDAR scan or pose failed to complete $0.67\%$ and $6.00\%$ of the time, respectively.
-Based on these results, we chose an observation space that consisted of both a LiDAR scan and pose.
+The agent that utilised both the LiDAR scan and pose in the observation did not crash during evaluation, whereas agents with either only a LiDAR scan or pose failed to complete laps $0.67\%$ and $6.00\%$ of the time, respectively.
+Based on these results, we chose to include both a LiDAR scan and the vehicle pose into the observation.
 
 
-We then conducted further experiments to determine the number of beams that should be included in the LiDAR scan. 
-Figure \ref{fig:n_beams} 
+Another parameter to consider when choosing the observation space is the number of LiDAR beams.
+To determine the number of LiDAR beam that results in optimal performance, agents with LiDAR scans consisting of $5$, $10$, $20$ and $50$ were trained and tested.
+These beams are equally spaced, and have a field of view of $180^{\circ}$.
+As before, three agents with hyper-parameters from Table \ref{tab:inital_values} were trained for every value of $L$ LiDAR beams.
+Figure \ref{fig:n_beams} displays the percentage failed laps and lap times during training, as well as the learning curves of these agents.
+The results indicate that increasing the number of LiDAR beams above $20$ does not significantly impact the performance of agents in terms of any of the measured criteria. 
+We therefore chose to incorporate $20$ LiDAR into the observation space.
+
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/observation/observation_n_beams_1.pgf}
-    \caption[Learning curves of agents with different numbers of LiDAR beams during training]{(a) the percentage failed laps and (b) lap time of completed laps during training, was well as the (c) learning curves showing episode reward for end-to-end agents with different numbers of LiDAR beams during training.}
+    \caption[Learning curves of agents with different numbers of LiDAR beams during training]{(a) the percentage failed laps and (b) lap time of completed laps during training, as well as the (c) learning curves showing episode reward for end-to-end agents with different numbers of LiDAR beams during training.}
     \label{fig:n_beams}
 \end{figure}
-displays the percentage failed laps and lap times during training, as well as the learning curves of agents with LiDAR scans consisting of $5$, $10$, $20$ and $50$ equal-spaced beams and a field of view of $180^{\circ}$.
-Our results indicate that increasing the number of LiDAR beams above $20$ does not significantly impact the performance of agents in terms of any of the measured criteria. 
-We therefore chose to incorporate $20$ LiDAR into our observation space.
 
-
-We then conducted experiments to investigate whether incorporating observation noise during training provides any benefits. 
-Specifically, we trained two agents: one without any noise in the observation vector, and another with added Gaussian noise having standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for LiDAR scan.
+When racing under evaluation conditions, noise is added to the observation vector to increase the realism of the simulation.
+It is therefore important to determine whether adding noise to the observation elements during training benefits the performance of the agent under evaluation conditions.
+Specifically, we trained three agents without any noise in the observation vector, and another three with added Gaussian noise which had standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for LiDAR scan.
 
 The agents trained with noise achieved an average lap time of $6.77$ seconds while completing $98.67\%$ of the laps under evaluation conditions. 
 In comparison, agents trained without noise completed all laps with an average time of $6.09$ seconds.
-It is noteworthy that the agents trained with observation noise completed laps in a more erratic manner than agents trained without noise, as evidenced by the paths and velocity profiles of agents during evaluation, as shown in Figure \ref{fig:noise_lap}.
+It is noteworthy that the agents trained with observation noise completed laps in a more erratic manner than agents trained without noise.
+Examples of paths completed by agents trained with and without noise are shown in Figure \ref{fig:noise_lap}.
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/observation/noise_lap_2.pgf}
@@ -513,15 +521,16 @@ We therefore chose to train agents without observation noise.
 \section{Neural network hyper-parameters}
 
 Next, an investigation was conducted to determine the optimal DNN layer configuration.
-We therefore changed the layer configuration of each the actor and critics, so that they remained identical in structure.
-The input and hidden hidden layers of these DNNs were initially specified to be $400$ and $300$ units, respectively.
-In this experiment, agents were trained with input and hidden hidden layers that were $100$ units larger and smaller than the initial DNN configuration.
-The percentage failed laps, lap times learning curves for the training of these agents are depicted in Figure \ref{fig:layer_sizes}.
+The layer configuration of the actor and both critics were varied together, so that they remained identical in structure.
+The input and hidden layers of these DNNs were initially specified to be $400$ and $300$ units, respectively.
+In this experiment, three agents were trained with input and hidden layers that were $100$ units larger and smaller than the initial DNN configuration.
+The remaining hyperparmeters of these agents were set equal to those listed in Table \ref{tab:inital_values}.
+The percentage failed laps, lap times, and learning curves while training these agents are depicted in Figure \ref{fig:layer_sizes}.
 
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/neural_network/layer_sizes.pgf}
-    \caption[Learning curves for tuning the target update rate]{(a) the percentage failed laps and (b) lap time of completed laps during training, was well as the (c) learning curves showing episode reward for end-to-end agents with different DNN layer sizes.}
+    \caption[Learning curves for tuning the target update rate]{(a) the percentage failed laps and (b) lap time of completed laps during training, as well as the (c) learning curves showing episode reward for end-to-end agents with different DNN layer sizes.}
     \label{fig:layer_sizes}
 \end{figure}
 
@@ -530,9 +539,10 @@ The experimental results from Figure \ref{fig:layer_sizes} indicates that increa
 As a result, we have selected an input layer size of $400$ units and a hidden layer size of $300$ units for the actor and critic DNNs in our algorithm.
 
 
-We then conducted additional experiments to determine the optimal learning rate $\alpha$, using the same learning rate for the actor and critic DNNs.
-Specifically, we trained agents with learning rates of $10^{-4}$, $10^{-3}$ and $2\cdot10^{-3}$.
-Their performance under evaluation conditions in terms of percentage successful laps and lap time is shown in Table \ref{tab:learning_rate}.
+Additional experiments were conducted to determine the optimal learning rate $\alpha$.
+The same value for $\alpha$ was used for the actor and critic DNNs.
+During this experiment, we trained three agents with learning rates of $10^{-4}$, $10^{-3}$ and $2\cdot10^{-3}$, and remaining hyper-parameters set equal to Table \ref{tab:inital_values}.
+The performance of these agents under evaluation conditions in terms of percentage successful laps and lap time is shown in Table \ref{tab:learning_rate}.
 The percentage successful laps and lap time of agents were maximised and minimised, respectively, when the learning rate was set to $10^{-3}$.
 
 
@@ -542,14 +552,14 @@ The percentage successful laps and lap time of agents were maximised and minimis
 \small
 \begin{tabularx}{\textwidth}{RLLL} 
     \hline
-    \textbf{Learning rate, $\alpha$} & \textbf{Successful test laps [\%]} & \textbf{Average test lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
+    \textbf{Learning rate, $\alpha$} & \textbf{Successful evaluation laps [\%]} & \textbf{Average evaluation lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
     \hline
-    $10^{-4}$       &   $100$       & $6.09$    & $0.17$      \\     
-    $10^{-3}$       &   $100$        & $6.07$    & $0.20$     \\      
-    $2\cdot10^{-3}$ &   $98.67$     & $7.29$    & $0.53$      \\
+    $1 \cdot 10^{-4}$       &   $100$       & $6.09$    & $0.17$      \\     
+    $1 \cdot 10^{-3}$       &   $100$        & $6.07$    & $0.20$     \\      
+    $2 \cdot 10^{-3}$       &   $98.67$     & $7.29$    & $0.53$      \\
     \hline
 \end{tabularx}
-\caption[Evaluation results of end-to-end agents with varied learning rates]{Evaluation results of end-to-end agents with actor and critic DNN learning rates between $10^{-4}$ and  $2\cdot10^{-3}$.}
+\caption[Evaluation results of end-to-end agents with varied learning rates]{Evaluation results of end-to-end agents with actor and critic DNN learning rates between $1\cdot10^{-4}$ and  $2\cdot10^{-3}$.}
 \label{tab:learning_rate}
 \end{table}
 
@@ -561,7 +571,8 @@ The percentage successful laps and lap time of agents were maximised and minimis
 
 \section{Velocity constraint} \label{sec:velocity_constraint}
 
-In our final hyper-parameter tuning investigation, we conducted experiments to determine the minimum and maximum allowable velocities, which is a common technique to ensure safe operation of the vehicle.
+In our final hyper-parameter tuning investigation, we conduct experiments to determine the minimum and maximum allowable velocities.
+Limiting the velocity is a common technique to ensure safe operation of the vehicle.
 For example, Ivanov et al. \cite{Ivanov2020} restrict the torque applied to the vehicle's driving motors, thereby limiting its maximum speed to $2.4$ m/s. 
 Hsu et al. \cite{hsu2022} adopt less conservative bounds, enforcing minimum and maximum speed limits of $1.125$ and $9.3$ m/s, respectively.
 
@@ -578,14 +589,16 @@ Further exacerbating this effect is the slow rate at which actions can be sample
     \label{fig:vel_profile}
 \end{figure}
 
-We observed from Figure \ref{fig:vel_profile} that agents with a maximum velocity greater than $5$ m/s experienced slip angles larger than $0.2$ radians, which is considered both dangerous and unrealistic drifting behavior.
-Furthermore, the assumption that tire stiffness varies linearly with lateral force only being valid for slip angles below $0.2$ radians \cite{Vorotovic2013}. 
-Allowing the agent to select large velocities enables it to exploit the simulation unrealistically to achieve fast lap times.
+We observed from Figure \ref{fig:vel_profile} that agents with a maximum velocity greater than $5$ m/s experienced slip angles larger than $0.2$ radians, 
+which is considered both dangerous and unrealistic drifting behavior.
+Furthermore, the dynamic bicycle model from Chapter \ref{chp:modelling} makes assumption that tire stiffness varies linearly with lateral force.
+This assumption is only valid for slip angles below $0.2$ radians \cite{Vorotovic2013}. 
+Allowing the agent to select large velocities enables it to exploit the simulation in an unrealistic manner to achieve fast lap times.
 Therefore, the vehicle's maximum speed was set to $5$ m/s, which was the fastest velocity that did not result in the agent driving dangerously and exploiting the simulator by operating the car at large slip angles.
 
 
 We also observed that when there was no minimum velocity constraint in place, the agent would often choose to bring the car to a standstill during training, resulting in excessively long training times.
-We therefore set the minimum speed to $3$ m/s to prevent this behaviour.
+The minimum speed was therefore set to to $3$ m/s to prevent this behaviour.
 Importantly, we found that this constraint did not significantly affect the agent's performance.
 
 
@@ -596,10 +609,13 @@ Importantly, we found that this constraint did not significantly affect the agen
 
 \section{End-to-end racing without model uncertainty}
 
-Having determined a set of hyper-parameters that yield optimal performance in terms of both safety and lap time for the end-to-end agent racing on the Porto track, we proceeded to evaluate the agent using Algorithm \ref{alg:end_to_end_deploy}.
-Agents trained using the parameters listed in Table \ref{tab:inital_values} demonstrated better performance than any other hyper-parameter set we tested, successfully completing every evaluation lap with an average lap time of $6.03$ seconds. 
-Figure \ref{fig:ete_porto} provides a visualization of an agent's lap, highlighting the path taken with a color map representing the agent's velocity. 
-Notably, the agent maintained maximum velocity for the majority of the track.
+Having determined a set of hyper-parameters that yield optimal performance in terms of both safety and lap time for the end-to-end agent racing on the Porto track, we evaluate the agent using Algorithm \ref{alg:end_to_end_deploy}.
+Agents trained using the parameters listed in Table \ref{tab:inital_values} demonstrated better performance than any other hyper-parameter set we tested.
+In fact, varying any of the hyper-parameters resulted in decreased performance, showing that the selected hyper-parameter values are at least locally optimal.
+
+Ten agents trained with the hyper-parameters listed in Table \ref{tab:inital_values} successfully completed all of their evaluation laps with an average lap time of $6.03$ seconds. 
+Figure \ref{fig:ete_porto} provides a visualization of one of these agents' laps, highlighting the path taken with a color map representing the agent's velocity. 
+Notably, the agent maintained maximum velocity for the majority of the track length.
 Nevertheless, the trajectory is smooth and the agent successfully navigated around the Porto circuit.
 
 \begin{figure}[htb!]
@@ -610,15 +626,16 @@ Nevertheless, the trajectory is smooth and the agent successfully navigated arou
 \end{figure}
 
 
-So far, our focus has primarily been on the relatively simple Porto track. 
-However, we further expanded our analysis to encompass more realistic racing scenarios by training agents to navigate scaled versions of actual Formula 1 tracks. 
-Specifically, we selected the Circuit de Barcelona-Catalunya in Spain and the Circuit de Monaco in Monaco. 
-These chosen tracks are not only considerably larger, but also feature sharper corners and more complex geometries compared to the Porto track.
+So far, our focus has been on the relatively simple Porto track. 
+However, we further expanded the analysis to encompass more realistic racing scenarios by training agents to navigate scaled versions of actual Formula 1 tracks. 
+Specifically, Circuit de Barcelona-Catalunya in Spain and the Circuit de Monaco in Monaco were selected. 
+These tracks are not only considerably larger, but also feature sharper corners and more complex geometries compared to the Porto track.
 
-We utilized the hyper-parameters selected for the Porto track as an initial estimation when selecting hyperparameters for the larger tracks. Similar to the procedure used for Porto, we conducted a hyper-parameter tuning process on the Circuit de Barcelona-Catalunya, whereby we systematically adjusted one hyper-parameter while keeping the others constant. 
-To achieve satisfactory performance on the Circuit de Barcelona-Catalunya, the following adjustments were made to the hyper-parameters listed in Table \ref{tab:inital_values}: the number of MDP time steps ($M$) was increased to $3.5\cdot10^{5}$, agent sample rate ($f_{\text{agent}}$) was increased to $10$ Hz, and the reward signal values for $r_{\text{dist}}$ and  $r_{\text{collision}}$ were changed to $0.3$ and $-2$, respectively.
-These selected hyper-parameters were also applied to the Circuit de Monaco.
-The learning curves for agents trained on all three tracks using these hyper-parameters are shown in Figure \ref{fig:ete_reward}.
+
+When selecting hyper-parameters for the larger tracks, a tuning procedure similar to the one presented for the Porto track was utilised. 
+That is, the hyper-parameter were systematically varied one at a time, while keeping the other hyper-parameters constant. 
+This hyper-parameter tuning procedure resulted in the following adjustments to Table \ref{tab:inital_values} for agents racing on these longer tracks: the number of MDP time steps ($M$) was increased to $3.5\cdot10^{5}$, agent sample rate ($f_{\text{agent}}$) was increased to $10$ Hz, and the reward signal values for $r_{\text{dist}}$ and  $r_{\text{collision}}$ were changed to $0.3$ and $-2$, respectively.
+The learning curves for $10$ agents trained on all three tracks using the given hyper-parameters are shown in Figure \ref{fig:ete_reward}.
 Importantly, we observe that these agents maximise reward on each of their respective tracks.
 
 \begin{figure}[htb!]
@@ -629,11 +646,11 @@ Importantly, we observe that these agents maximise reward on each of their respe
 \end{figure}
 
 
-Agents completed the Circuit de Barcelona-Catalunya $79.0\%$ of the time and achieved an average lap time of $47.47$ seconds under evaluation conditions.
+Agents trained to race on Circuit de Barcelona-Catalunya completed their laps $79.0\%$ of the time, and achieved an average lap time of $47.47$ seconds under evaluation conditions.
 Figure \ref{fig:ete_esp} shows the path and velocity profile taken by an agent completing Circuit de Barcelona-Catalunya under evaluation conditions.
 Similar to the findings on the Porto track, agents racing on the Circuit de Barcelona-Catalunya selected maximum velocity for the majority of the track, even when navigating sharp corners. 
-However, an interesting phenomenon emerged on the Circuit de Barcelona-Catalunya that was not present on the shorter Porto track: agents tended to exhibit a slaloming behavior, which was characterized by a winding path. 
-This slaloming effect was quite severe, occurring at nearly every section of the track.
+Furthermore, an interesting phenomenon emerged on the Circuit de Barcelona-Catalunya that was not present on the shorter Porto track: agents tend to exhibit a slaloming behavior, which is characterized by a winding path. 
+This slaloming effect is quite severe, occurring at nearly every section of the track.
 
 
 \begin{figure}[htb!]
@@ -643,10 +660,9 @@ This slaloming effect was quite severe, occurring at nearly every section of the
     \label{fig:ete_esp}
 \end{figure}
 
-We proceeded to assess the performance of agents trained on the Circuit de Monaco. 
-These agents accomplished successful lap completions for $61.67\%$ of their attempts, achieving an average lap time of $35.48$ seconds. 
-Figure \ref{fig:ete_esp} depicts the path and velocity profile of an agent successfully completing the Circuit de Monaco under evaluation conditions. 
-Interestingly, the slaloming was also present on the Circuit de Monaco, indicating that slaloming tends to be a common issue for end-to-end agents navigating long tracks.
+When assessing agents trained to race on Circuit de Monaco, we found that agents successfully completed their laps on $61.67\%$ of their attempts, achieving an average lap time of $35.48$ seconds. 
+Figure \ref{fig:ete_esp} depicts one example of the path and velocity profile taken by an agent taht successfully completed the Circuit de Monaco under evaluation conditions. 
+Interestingly, the slaloming is also present on the Circuit de Monaco, indicating that slaloming tends to be a common issue for end-to-end agents navigating long tracks.
 
 \begin{figure}[htb!]
     \centering
@@ -658,22 +674,26 @@ Interestingly, the slaloming was also present on the Circuit de Monaco, indicati
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{End-to-end racing with model uncertainty}
 
 
 Up to now, results have been presented for end-to-end agents that were trained and evaluated in identical environments. 
-However, it is important to assess the performance of agents tasked with driving in situations where the vehicle model does not match the one utilised during training, commonly known as model mismatch.
-We introduced model mismatches by modifying the vehicle model parameters prior to executing the evaluation process outlined in Algorithm \ref{alg:end_to_end_deploy}. 
+However, it is important to assess the performance of agents tasked with driving in situations where the vehicle model does not match the one utilised during training.
+During this initial investigation, we introduced model mismatches by modifying the vehicle model parameters after training, but prior to executing the evaluation process outlined in Algorithm \ref{alg:end_to_end_deploy}. 
 This adjustment allows us to gain insights into how the agent performs in a more realistic setting where variations in the vehicle model are present.
 
 
-Our initial focus was on investigating the impact of altering the road surface friction coefficient.
-This parameter is influenced by various dynamic factors, including temperature and precipitation, making it challenging to predict accurately.
+Our initial focus was on investigating the impact of altering the road surface friction coefficient on the evaluation performance of trained agents.
+Friction is influenced by various dynamic factors, including temperature and precipitation, making it challenging to predict accurately.
 Consequently, it is likely that model mismatches in the road friction coefficient occur.
-Figure \ref{fig:mco_slip} presents a comparison between agents evaluated with a friction value of $0.6$, equivalent to wet asphalt conditions, and agents racing with the nominal friction value of $1.04$ on a section of the Monaco track. 
+Figure \ref{fig:mco_slip} presents a comparison of paths taken by agents evaluated with (a) the nominal friction value of $1.04$, and (b) a friction value of $0.6$ (equivalent to wet asphalt conditions) on a section of the Monaco track. 
 The slip angles of the agents are visualized by color-mapping them onto their respective paths. 
 When evaluated with the nominal friction value, the agents display slaloming behavior, resulting in maximum slip angles of approximately $0.2$ radians throughout most areas of the track. 
 In contrast, agents evaluated with decreased friction exhibit drifting behavior, characterized by slip angles exceeding $0.4$ radians. 
+The drastic increase in slip angle indicates that the learned policy of standard end-to-end agents becomes dangerous when model mismatches are present.
 
 \begin{figure}[htb!]
     \centering
@@ -707,15 +727,15 @@ The agent is then tasked with finding a single policy that performs optimally ac
 Previous autonomous racing studies have explored various approaches in this regard. 
 Chisari et al. \cite{Chisari2021} introduced Gaussian noise to the lateral force experienced by the tires at each time step, while Ghignone et al. \cite{Ghignone2022} initialized each episode by adding Gaussian noise with a standard deviation of $0.0375$ to the road surface friction coefficient, which remained constant throughout the episode.
 
-In this experiment, we adopted the approach of Ghignone et al. \cite{Ghignone2022} and trained agents with Gaussian noise added to the nominal friction coefficient of $1.0489$ at the start of each episode. 
-Agents were trained to race on Porto using this method with standard deviations of $0.01$ and $0.05$ respectively.
-These agents were then evaluated using the nominal friction coefficient.
+In this investigation, we adopted the approach of Ghignone et al. \cite{Ghignone2022}, and modified the training procedure by sampling the friction value used during every episode from a Gaussian distribution,
+This Gaussian distribution had a mean of $1.0489$ (the nominal friction value).
+Two agents were trained to race on the Porto track; one with a friction coefficient standard deviation of $0.01$ and another with a standard deviation of $0.05$.
+These agents were then tasked with completing $100$ laps under evaluation conditions, with the mean value of $1.0489$ used in every episode.
 
-While agents trained with standard deviation of $0.01$ successfully completed $51\%$ of their laps, agents trained with a standard deviation of $0.05$ completed only $34\%$ of their laps under evaluation conditions.
-These results indicate that domain randomisation has an adverse effect on the agents' performance.
+While agents trained with friction coefficient standard deviation of $0.01$ successfully completed $51\%$ of their laps, agents trained with a standard deviation of $0.05$ completed only $34\%$ of their laps under evaluation conditions.
+These results indicate that domain randomisation has an adverse effect on the agents' performance, even when the agent is only tasked with racing under conditions where the average friction value is present.
+Figure \ref{fig:porto_domain_random} illustrates the paths taken by these agents during evaluation, and clearly indicates their inability to learn smooth driving behavior. 
 
-Figure \ref{fig:porto_domain_random} illustrates the paths taken by these agents during evaluation, clearly indicating their inability to learn smooth driving behavior. 
-Instead, the agents exhibited a tendency to slalom, resulting in sub-optimal performance.
 
 \begin{figure}[htb!]
     \centering
@@ -742,4 +762,4 @@ The presence of slaloming is particularly concerning when considering scenarios 
 In fact, in a preliminary investigation into the effect of model mismatch on the performance of end-to-end agents, the vehicle experience a collision.
 This is indicative of the limitations of end-to-end algorithms under conditions where model mismatches are present, and emphasises the need for algorithms that exhibit robustness against modeling errors.
 
-In the upcoming chapter, we introduce our partial end-to-end solution, which aims to enhance robustness towards modeling errors and address the challenges posed by the sensitivity of the optimal policy to vehicle parameters.
+In the next chapter, we introduce our partial end-to-end solution, which aims to enhance robustness towards modeling errors and address the challenges posed by the sensitivity of the optimal policy to vehicle parameters.

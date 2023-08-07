@@ -17,21 +17,21 @@
 \contentsline {figure}{\numberline {2.7}{\ignorespaces Training time and lap time under evaluation conditions of end-to-end agents with various batch sizes}}{18}{figure.caption.28}%
 \contentsline {figure}{\numberline {2.8}{\ignorespaces Learning curves for tuning reward discount rate}}{18}{figure.caption.29}%
 \contentsline {figure}{\numberline {2.9}{\ignorespaces Learning curves showing for agents trained using TD3 and DDPG}}{19}{figure.caption.31}%
-\contentsline {figure}{\numberline {2.10}{\ignorespaces Learning curves of agents with different values for $r_{\text {dist}}$ during training}}{22}{figure.caption.32}%
-\contentsline {figure}{\numberline {2.11}{\ignorespaces Paths taken by agents trained with different collision penalties}}{22}{figure.caption.34}%
+\contentsline {figure}{\numberline {2.10}{\ignorespaces Learning curves of agents with different values for $r_{\text {dist}}$ during training}}{21}{figure.caption.32}%
+\contentsline {figure}{\numberline {2.11}{\ignorespaces Paths taken by agents trained with different collision penalties}}{23}{figure.caption.34}%
 \contentsline {figure}{\numberline {2.12}{\ignorespaces Learning curves of agents with different observation spaces}}{23}{figure.caption.35}%
-\contentsline {figure}{\numberline {2.13}{\ignorespaces Locations of crashes during training}}{23}{figure.caption.36}%
+\contentsline {figure}{\numberline {2.13}{\ignorespaces Locations of crashes during training}}{24}{figure.caption.36}%
 \contentsline {figure}{\numberline {2.14}{\ignorespaces Learning curves of agents with different numbers of LiDAR beams during training}}{24}{figure.caption.37}%
 \contentsline {figure}{\numberline {2.15}{\ignorespaces Path and velocity profiles of end-to-end agents that were trained with and without noise added to the observation vector}}{25}{figure.caption.38}%
-\contentsline {figure}{\numberline {2.16}{\ignorespaces Learning curves for tuning the target update rate}}{25}{figure.caption.39}%
+\contentsline {figure}{\numberline {2.16}{\ignorespaces Learning curves for tuning the target update rate}}{26}{figure.caption.39}%
 \contentsline {figure}{\numberline {2.17}{\ignorespaces The velocity profile and slip angle of agents with different maximum velocities during one test lap.\relax }}{27}{figure.caption.41}%
-\contentsline {figure}{\numberline {2.18}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Porto}}{27}{figure.caption.42}%
+\contentsline {figure}{\numberline {2.18}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Porto}}{28}{figure.caption.42}%
 \contentsline {figure}{\numberline {2.19}{\ignorespaces Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco}}{28}{figure.caption.43}%
 \contentsline {figure}{\numberline {2.20}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Barcelona-Catalunya}}{29}{figure.caption.44}%
-\contentsline {figure}{\numberline {2.21}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Monaco}}{29}{figure.caption.45}%
-\contentsline {figure}{\numberline {2.22}{\ignorespaces Trajectory and slip angle of an end-to-end agent racing on Circuit de Monaco}}{30}{figure.caption.46}%
+\contentsline {figure}{\numberline {2.21}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Monaco}}{30}{figure.caption.45}%
+\contentsline {figure}{\numberline {2.22}{\ignorespaces Trajectory and slip angle of an end-to-end agent racing on Circuit de Monaco}}{31}{figure.caption.46}%
 \contentsline {figure}{\numberline {2.23}{\ignorespaces Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions}}{31}{figure.caption.47}%
 \addvspace {10pt}
-\contentsline {figure}{\numberline {A.1}{\ignorespaces Learning curves for tuning the target update rate}}{33}{figure.caption.49}%
-\contentsline {figure}{\numberline {A.2}{\ignorespaces Learning curves for tuning the exploration noise}}{34}{figure.caption.51}%
-\contentsline {figure}{\numberline {A.3}{\ignorespaces Learning curves for tuning the network update interval}}{35}{figure.caption.53}%
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Learning curves for tuning the target update rate}}{34}{figure.caption.49}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Learning curves for tuning the exploration noise}}{35}{figure.caption.51}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Learning curves for tuning the network update interval}}{36}{figure.caption.53}%
