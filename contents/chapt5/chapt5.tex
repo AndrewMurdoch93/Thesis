@@ -18,7 +18,7 @@ domain randomisation as a technique to improve performance under these condition
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
-\section{End-to-end algorithm design}\label{sec:end-to-end_design}
+\section{End-to-end racing algorithm}\label{sec:end-to-end_design}
 
 Our end-to-end autonomous racing algorithm is composed of an RL agent and a velocity constraint.
 The agent maps an observation sampled from the simulator to desired longitudinal acceleration ($a_{\text{long},d}$) and steering angle ($\delta_d$) control commands.
@@ -497,7 +497,9 @@ We therefore chose to incorporate $20$ LiDAR into the observation space.
     \label{fig:n_beams}
 \end{figure}
 
-When racing under evaluation conditions, noise is added to the observation vector to increase the realism of the simulation.
+The simulation environment described in Section \ref{sec:simulation_environment} allows for the addition of noise to the observation vector.
+The tests conducted thus far have not included noise in the agents' observations.
+However, noise is added to the observation vector to increase the realism of the simulation when racing under evaluation conditions,.
 It is therefore important to determine whether adding noise to the observation elements during training benefits the performance of the agent under evaluation conditions.
 Specifically, we trained three agents without any noise in the observation vector, and another three with added Gaussian noise which had standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for LiDAR scan.
 
@@ -609,11 +611,9 @@ Importantly, we found that this constraint did not significantly affect the agen
 
 \section{End-to-end racing without model uncertainty}
 
-Having determined a set of hyper-parameters that yield optimal performance in terms of both safety and lap time for the end-to-end agent racing on the Porto track, we evaluate the agent using Algorithm \ref{alg:end_to_end_deploy}.
-Agents trained using the parameters listed in Table \ref{tab:inital_values} demonstrated better performance than any other hyper-parameter set we tested.
+Having determined a set of hyper-parameters that yield optimal performance in terms of both safety and lap time for the end-to-end agent racing on the Porto track in Table \ref{tab:inital_values}, we trained and evaluated ten agents with these hyper-parameters.
+These agents completed $98.9\%$ of evaluation laps with an average lap time of $6.05$ seconds, achieving better performance than any other hyper-parameter set we tested.
 In fact, varying any of the hyper-parameters resulted in decreased performance, showing that the selected hyper-parameter values are at least locally optimal.
-
-Ten agents trained with the hyper-parameters listed in Table \ref{tab:inital_values} successfully completed all of their evaluation laps with an average lap time of $6.03$ seconds. 
 Figure \ref{fig:ete_porto} provides a visualization of one of these agents' laps, highlighting the path taken with a color map representing the agent's velocity. 
 Notably, the agent maintained maximum velocity for the majority of the track length.
 Nevertheless, the trajectory is smooth and the agent successfully navigated around the Porto circuit.
@@ -699,14 +699,16 @@ The drastic increase in slip angle indicates that the learned policy of standard
     \centering
     \begin{subfigure}[htb!]{0.45\textwidth}
         \centering
-        \includegraphics[height=0.85\linewidth]{contents/chapt5/figs/uncertainty/mco_no_error_lap.png}
+        % \includegraphics[height=0.85\linewidth]{contents/chapt5/figs/uncertainty/mco_no_error_lap.png}
+        \input{contents/chapt5/figs/uncertainty/mco_lap_1.pgf}
         \caption{}
         \label{fig:no_error}
     \end{subfigure}
     \hfill
     \begin{subfigure}[htb!]{0.45\textwidth}
         \centering
-        \includegraphics[height=0.85\linewidth]{contents/chapt5/figs/uncertainty/mco_lap.png}
+        % \includegraphics[height=0.85\linewidth]{contents/chapt5/figs/uncertainty/mco_lap.png}
+        \input{contents/chapt5/figs/uncertainty/mco_lap_erro_1.pgf}
         \caption{}
         \label{fig:error}
     \end{subfigure}
@@ -727,7 +729,7 @@ The agent is then tasked with finding a single policy that performs optimally ac
 Previous autonomous racing studies have explored various approaches in this regard. 
 Chisari et al. \cite{Chisari2021} introduced Gaussian noise to the lateral force experienced by the tires at each time step, while Ghignone et al. \cite{Ghignone2022} initialized each episode by adding Gaussian noise with a standard deviation of $0.0375$ to the road surface friction coefficient, which remained constant throughout the episode.
 
-In this investigation, we adopted the approach of Ghignone et al. \cite{Ghignone2022}, and modified the training procedure by sampling the friction value used during every episode from a Gaussian distribution,
+In this investigation, we adopted the approach of Ghignone et al. \cite{Ghignone2022}, and modified the training procedure by sampling the friction value used during every episode from a Gaussian distribution.
 This Gaussian distribution had a mean of $1.0489$ (the nominal friction value).
 Two agents were trained to race on the Porto track; one with a friction coefficient standard deviation of $0.01$ and another with a standard deviation of $0.05$.
 These agents were then tasked with completing $100$ laps under evaluation conditions, with the mean value of $1.0489$ used in every episode.
@@ -739,8 +741,9 @@ Figure \ref{fig:porto_domain_random} illustrates the paths taken by these agents
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=11cm]{contents/chapt5/figs/domain_random/porto_domain_random.png}
-    \caption[Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions]{Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions. The friction coefficient was set to the nominal value of $1.0489$ during evaluation.}
+    % \includegraphics[width=11cm]{contents/chapt5/figs/domain_random/porto_domain_random.png}
+    \input{contents/chapt5/figs/domain_random/porto_domain_random_2.pgf}
+    \caption[Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions]{Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions. During this evaluation lap, the friction coefficient was set to the nominal value of $1.0489$.}
     \label{fig:porto_domain_random}
 \end{figure}
 

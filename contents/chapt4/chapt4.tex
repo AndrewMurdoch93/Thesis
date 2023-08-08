@@ -230,7 +230,7 @@ This method allows us to incrementally update the state by adding the product of
 We chose $\Delta t$ as $0.01$ seconds.
 
 
-\section{Simulation environment}
+\section{Simulation environment}\label{sec:simulation_environment}
 
 We will now discuss the design of a simulator that accurately represents the F1tenth autonomous racing problem. 
 This involves simulating the vehicle using the single-track bicycle model, as well as creating a track environment that adheres to the rules specified in Section \ref{sec:f1tenth_requirements}. 
@@ -281,7 +281,7 @@ The observation is therefore denoted as a vector
 \begin{equation}
     o_k = [\underbrace{s_{x}, s_{y}, {\delta}, {\upsilon}, \psi}_{\text{Pose}}, \underbrace{l_0, l_1, l_2, \cdots L}_{\text{LiDAR scan}}].
 \end{equation}
-Before outputting the observation, a small amount of noise with a zero mean is added to each element in the observation vector.
+Before outputting the observation, a small amount of noise with a zero mean can be added to each element in the observation vector.
 The standard deviation of noise added is discussed in the following chapters.
 
 \input{contents/chapt4/figs/simulator_step.tex}
