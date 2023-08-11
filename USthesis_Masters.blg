@@ -8,7 +8,7 @@ A level-1 auxiliary file: contents/chapt6/chapt6.aux
 A level-1 auxiliary file: contents/appendix/App1.aux
 Database file #1: backmatter/library_1.bib
 Warning--I'm ignoring keefer2022's extra "title" field
---line 4601 of file backmatter/library_1.bib
+--line 9201 of file backmatter/library_1.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 You've used 13 entries,

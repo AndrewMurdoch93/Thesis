@@ -9,7 +9,7 @@ The chapter begins with a detailed description of the partial end-to-end algorit
 Subsequently, we outline the implementation of the TD3 algorithm to train the agent effectively.
 Next, we show the process of determining the optimal hyper-parameters for the partial end-to-end algorithm to ensure the system operates at its peak performance. 
 The performance of the partial end-to-end algorithm is then assessed in scenarios where no modeling errors are present, allowing us to gauge the algorithms performance under ideal conditions. 
-Additionally, we conducted a comparative analysis, contrasting our chosen partial end-to-end architecture with alternative variations. 
+Additionally, we conducted a comparative analysis, contrasting our chosen partial end-to-end architecture with alternative variations of the partial end-to-end architecture. 
 These variations include architectures with either solely a velocity controller or a steering controller. 
 
 
@@ -28,25 +28,26 @@ a steering and a velocity controller, as well as a velocity constraint, as depic
 
 
 Given that the simulator provides a LiDAR scan and the vehicle's pose, the need for a perception algorithm to map the environment and localize the vehicle is eliminated. 
-The output from the simulator is therefore given directly to the agent.
+The output from the simulator is therefore passed directly to the agent.
 Applying the findings from Section \ref{sec:obs_space}, the observation space of our partial end-to-end agents consist of a LiDAR scan with $20$ beams and vehicle pose.
-The agent maps this observation to a path represented by a series of $x$ and $y$ coordinates, and desired velocity, denoted as $v_{\text{d}}$, at a rate of $f_{\text{agent}}$. 
+The agent maps this observation to an action space which comprises a path (represented by a series of $x$ and $y$ coordinates), and desired velocity (denoted as $v_{d}$) at a rate of $f_{\text{agent}}$ Hz. 
+
 
 A steering controller is used to generate steering commands that track the path.
 Meanwhile, a velocity controller generates desired acceleration commands, denoted $a_{\text{long},d}$, to ensure the vehicle maintains the desired velocity.
 Furthermore, the velocity constraint component, as introduced in Equation \ref{eq:speed_limit}, limits the desired acceleration so that the vehicle operates within safe speed limits. 
-The steering and velocity controllers, as well as velocity constraint operate at $100$ Hz.
+The steering and velocity controllers, as well as velocity constraint operate at the $100$ Hz sample rate of the simulator introduced in Section \ref{sec:simulation_environment}.
 Furthermore, it is important to note that these components are treated as part of the environment to conform to the definition of the MDP. 
 
 \subsection{Planner agent}
 
-In Figure \ref{fig:steer_vel_agent}, we present the partial end-to-end planner agent, which is built using a DNN. 
+The partial end-to-end planner agent, which is built using a DNN, is presented in Figure \ref{fig:steer_vel_agent}. 
 Similar to the end-to-end agent, the observation vector is normalized within the range of $[0,1]$.
 The neural network consists of three fully connected layers. The input layer has $m_1$ neurons, followed by a hidden layer with $m_2$ neurons. Finally, the output layer has $2$ neurons. 
-The activation function ReLU is applied to the first two layers, while the output layer is activated using a hyperbolic tangent function. 
-This activation function ensures that the output of the neural network is normalized within the range of $(-1, 1)$.
-One output of the DNN, denoted as $v_{\text{norm}}$, is then scaled to the desired longitudinal velocity range $(v_{\text{min}}, v_{\text{max}})$, yielding the desired longitudinal velocity $v_{d}$. 
-Additionally, the other output, denoted as $p$, is utilized to construct the path that the vehicle will follow.
+The ReLU activation function is applied to the first two layers, while the output layer is activated using a hyperbolic tangent function. 
+The use of a hyperbolic tangent function ensures that the outputs of the neural network are normalized within the range of $(-1, 1)$.
+One output of the DNN, denoted as $v_{\text{norm}}$, is scaled to the desired longitudinal velocity range $(v_{\text{min}}, v_{\text{max}})$ to yield the desired longitudinal velocity $v_{d}$. 
+The other output, denoted as $p$, is utilized to construct the path that the vehicle will follow.
 
 
 \begin{figure}[htb!]
