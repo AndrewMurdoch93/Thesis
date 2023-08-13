@@ -129,7 +129,7 @@ Figure \ref{fig:polynomial_path_generation} illustrates this process, where the 
 A steering controller takes a desired path and vehicle pose as input, and outputs steering commands such that the vehicle tracks a planned path. 
 The pure pursuit steering controller is popular amongst partial end-to-end methods \cite{Evans2021b, Weiss2020}.
 The popularity of this controller, combined with the fact that it does not require a vehicle dynamics model guided our decision to implement it as the path tracker.
-Our implementation of pure pursuit is based on Sakai et al. \cite{Sakai2018}.
+Our implementation of pure pursuit is based on the work by Sakai et al. \cite{Sakai2018}.
 
 
 This controller facilitates the steering of the vehicle towards a designated \emph{target point} on the planned path, as depicted in Figure \ref{fig:pure_pursuit}. 
@@ -224,7 +224,7 @@ The incorporation of the steering and velocity controllers into the for loop is 
 
 Having made these modifications to the TD3 algorithm, we developed the remaining components required to implement the algorithm, namely, a critic and a reward signal.
 We adopted the same critic DNN architecture as the one used for the end-to-end agent, as described in Section \ref{sec:td3_end_to_end}. 
-The critic accepts a normalized observation and action as input, and is composed of three fully connected layers: an input layer with 400 neurons, a hidden layer with 300 neurons, and an output layer with a single neuron. The first two layers utilize the ReLU activation function, while the final layer employs a linear activation function to produce the output. 
+The critic accepts a normalized observation and action as input, and is composed of three fully connected layers: an input layer with $m_1$ neurons, a hidden layer with $m_2$ neurons, and an output layer with a single neuron. The first two layers utilize the ReLU activation function, while the final layer employs a linear activation function to produce the output. 
 
 Lastly, we adopted the same reward signal as used for the end-to-end agent, as described by Equation \ref{eq:reward_signal}. 
 This reward signal incentivizes the agent for making progress along the centerline, while penalizing the agent on each time step as well as for collisions.
