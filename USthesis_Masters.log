@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.30)  8 AUG 2023 16:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.30)  14 AUG 2023 08:43
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -1186,7 +1186,7 @@ Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
 \rotFPbot=\skip294
 \rot@float@box=\box94
 \rot@mess@toks=\toks56
-) (./USthesis_Masters.aux (./frontmatter/Chap-Front.aux) (./frontmatter/Nomencl.aux) (./contents/chapt6/chapt6.aux) (./contents/appendix/App1.aux))
+) (./USthesis_Masters.aux (./frontmatter/Chap-Front.aux) (./frontmatter/Nomencl.aux) (./contents/chapt5/chapt5.aux) (./contents/appendix/App1.aux))
 \openout1 = `USthesis_Masters.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 139.
@@ -1286,7 +1286,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 145.
  (c:/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<UScrest-WM.jpg, id=79, 49.8663pt x 69.3792pt>
+<UScrest-WM.jpg, id=95, 49.8663pt x 69.3792pt>
 File: UScrest-WM.jpg Graphic file (type jpg)
 <use UScrest-WM.jpg>
 Package pdftex.def Info: UScrest-WM.jpg  used on input line 145.
@@ -1442,14 +1442,18 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 
 
 ]
-\openout2 = `contents/chapt6/chapt6.aux'.
+\openout2 = `contents/chapt5/chapt5.aux'.
 
- (./contents/chapt6/chapt6.tex (./contents/chapt6/figs/both/steer_vel_architecture.tex)
+ (./contents/chapt5/chapt5.tex
 
-LaTeX Warning: Reference `sec:obs_space' on page 1 undefined on input line 32.
+LaTeX Warning: Reference `chp:modelling' on page 1 undefined on input line 26.
 
 
-LaTeX Warning: Reference `eq:speed_limit' on page 1 undefined on input line 37.
+LaTeX Warning: Reference `sec:mdps' on page 1 undefined on input line 29.
+
+(./contents/chapt5/figs/architecture/end_to_end_architecture.tex)
+
+LaTeX Warning: Reference `tab:constraint_parameters' on page 1 undefined on input line 47.
 
 
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
@@ -1467,23 +1471,17 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 
 
 
-] (./contents/chapt6/figs/both/agent.tex)
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
+] (./contents/chapt5/figs/neural_network/actor.tex)
+
+LaTeX Warning: Reference `tab:constraint_parameters' on page 2 undefined on input line 52.
 
 
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
+LaTeX Warning: Reference `tab:constraint_parameters' on page 2 undefined on input line 52.
 
-[2] (./contents/chapt6/figs/both/frenet_frame.pgf
-<contents/chapt6/figs/both/frenet_frame-img0.png, id=247, interpolate=true, 215.80624pt x 80.3pt>
-File: contents/chapt6/figs/both/frenet_frame-img0.png Graphic file (type png)
-<use contents/chapt6/figs/both/frenet_frame-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/both/frenet_frame-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 155.38367pt x 57.81717pt.
-)
+
+LaTeX Warning: Reference `sec:td3' on page 2 undefined on input line 75.
+
+
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1493,49 +1491,14 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[3 <./contents/chapt6/figs/both/frenet_frame-img0.png>] (./contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=263, page=1, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 1>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page1 used on input line 56.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=264, page=2, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 2>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page2 used on input line 58.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=265, page=3, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 3>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page3 used on input line 60.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=266, page=4, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 4>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page4 used on input line 63.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=267, page=5, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 5>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page5 used on input line 65.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-<contents/chapt6/figs/steer/polynomial_path_tex.pdf, id=268, page=6, 361.35pt x 210.7875pt>
-File: contents/chapt6/figs/steer/polynomial_path_tex.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/polynomial_path_tex.pdf, page 6>
-Package pdftex.def Info: contents/chapt6/figs/steer/polynomial_path_tex.pdf , page6 used on input line 84.
-(pdftex.def)             Requested size: 361.34999pt x 210.79019pt.
-) (./contents/chapt6/figs/steer/pure_pursuit.pdf_tex
-<contents/chapt6/figs/steer/pure_pursuit.pdf, id=274, page=1, 289.99352pt x 192.14134pt>
-File: contents/chapt6/figs/steer/pure_pursuit.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/pure_pursuit.pdf, page 1>
-Package pdftex.def Info: contents/chapt6/figs/steer/pure_pursuit.pdf , page1 used on input line 56.
-(pdftex.def)             Requested size: 289.99348pt x 192.15552pt.
-<contents/chapt6/figs/steer/pure_pursuit.pdf, id=275, page=2, 289.99352pt x 192.14134pt>
-File: contents/chapt6/figs/steer/pure_pursuit.pdf Graphic file (type pdf)
-<use contents/chapt6/figs/steer/pure_pursuit.pdf, page 2>
-Package pdftex.def Info: contents/chapt6/figs/steer/pure_pursuit.pdf , page2 used on input line 61.
-(pdftex.def)             Requested size: 289.99348pt x 192.15552pt.
-)
+[2] (./contents/chapt5/figs/learning_method/td3_modified.tex)
+
+LaTeX Warning: Reference `chp:modelling' on page 3 undefined on input line 84.
+
+
+LaTeX Warning: Reference `chp:rl' on page 3 undefined on input line 85.
+
+
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1545,55 +1508,12 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[4]
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
+[3] (./contents/chapt5/figs/neural_network/critic.tex)
+
+LaTeX Warning: Reference `alg:td3' on page 4 undefined on input line 114.
 
 
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
-
-[5 <./contents/chapt6/figs/steer/polynomial_path_tex.pdf> <./contents/chapt6/figs/steer/polynomial_path_tex.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/polynomial_path_tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/polynomial_path_tex.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/polynomial_path_tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/polynomial_path_tex.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/polynomial_path_tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/polynomial_path_tex.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/polynomial_path_tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/polynomial_path_tex.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/polynomial_path_tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/pure_pursuit.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/pure_pursuit.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./contents/chapt6/figs/steer/pure_pursuit.pdf
-
-pdfTeX warning: pdflatex.exe (file ./contents/chapt6/figs/steer/pure_pursuit.pdf): PDF inclusion: multiple pdfs with page group included in a single page
->]
-
-LaTeX Warning: Reference `sec:td3' on page 6 undefined on input line 196.
-
-
-LaTeX Warning: Reference `sec:td3_end_to_end' on page 6 undefined on input line 197.
-
-
-LaTeX Warning: Reference `alg:td3_mod' on page 6 undefined on input line 198.
-
-
-LaTeX Warning: Reference `alg:td3_mod' on page 6 undefined on input line 201.
-
-
-LaTeX Warning: Reference `alg:td3_mod' on page 6 undefined on input line 209.
-
-
-LaTeX Warning: Reference `eq:N' on page 6 undefined on input line 210.
+LaTeX Warning: Reference `sec:mdps' on page 4 undefined on input line 115.
 
 
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
@@ -1605,29 +1525,16 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[6]
+[4]
 
-LaTeX Warning: Reference `sec:td3_end_to_end' on page 7 undefined on input line 225.
+LaTeX Warning: Reference `alg:td3' on page 5 undefined on input line 144.
 
-
-LaTeX Warning: Reference `eq:reward_signal' on page 7 undefined on input line 228.
-
-
-LaTeX Warning: Reference `alg:end_to_end_deploy' on page 7 undefined on input line 232.
-
-
-LaTeX Warning: Reference `alg:td3_mod' on page 7 undefined on input line 257.
-
-(./contents/chapt6/figs/empirical_design/empirical_design.tex
-Underfull \hbox (badness 10000) in alignment at lines 44--44
+(./contents/chapt5/figs/test_procedure/test_procedure.tex) (./contents/chapt5/figs/test_procedure/initial_values.tex
+Overfull \hbox (35.99998pt too wide) in alignment at lines 39--39
 [][][] 
  []
 
 )
-
-LaTeX Warning: Reference `chp:end_to_end_autonomous_racing' on page 7 undefined on input line 264.
-
-
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1637,7 +1544,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[7] (./contents/chapt6/figs/algorithm/f_agent_curves.pgf)
+[5]
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1647,7 +1554,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[8] (./contents/chapt6/figs/steer/pure_pursuit_lfc_1.pgf)
+[6] (./contents/chapt5/figs/algorithm/learning_curve_1.pgf) (./contents/chapt5/figs/algorithm/MDP_time_steps.pgf) (./contents/chapt5/figs/algorithm/f_agent.pgf)
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1657,13 +1564,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[9] (./contents/chapt6/figs/steer_control/lc_train.pgf) (./contents/chapt6/figs/steer_control/planned_paths.pgf
-<contents/chapt6/figs/steer_control/planned_paths-img0.png, id=399, interpolate=true, 258.9675pt x 174.6525pt>
-File: contents/chapt6/figs/steer_control/planned_paths-img0.png Graphic file (type png)
-<use contents/chapt6/figs/steer_control/planned_paths-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/steer_control/planned_paths-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 186.46434pt x 125.75237pt.
-)
+[7] (./contents/chapt5/figs/algorithm/batch_size.pgf)
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1673,25 +1574,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[10 <./contents/chapt6/figs/steer_control/planned_paths-img0.png>] (./contents/chapt6/figs/velocity_control/velocity_gain_table.tex
-
-Package array Warning: Column L is already defined on input line 1.
-
-
-Package array Warning: Column R is already defined on input line 3.
-
-
-Underfull \hbox (badness 10000) in alignment at lines 17--17
-[][][] 
- []
-
-) (./contents/chapt6/figs/velocity_control/kv_paths.pgf
-<contents/chapt6/figs/velocity_control/kv_paths-img0.png, id=408, interpolate=true, 142.5325pt x 201.75375pt>
-File: contents/chapt6/figs/velocity_control/kv_paths-img0.png Graphic file (type png)
-<use contents/chapt6/figs/velocity_control/kv_paths-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/velocity_control/kv_paths-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 102.6233pt x 145.26257pt.
-) (./contents/chapt6/figs/racing/all_tracks_train.pgf)
+[8] (./contents/chapt5/figs/learning_method/gamma.pgf)
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1701,54 +1584,168 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[11] (./contents/chapt6/figs/racing/crashes.pgf
-<contents/chapt6/figs/racing/crashes-img0.png, id=415, interpolate=true, 311.1625pt x 117.43875pt>
-File: contents/chapt6/figs/racing/crashes-img0.png Graphic file (type png)
-<use contents/chapt6/figs/racing/crashes-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/crashes-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 224.03683pt x 84.55582pt.
-)
-
-LaTeX Warning: Reference `sec:td3_end_to_end' on page 12 undefined on input line 402.
-
-
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
-
-
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
-
-[12 <./contents/chapt6/figs/velocity_control/kv_paths-img0.png>] (./contents/chapt6/figs/racing/evaluation.tex
+[9] (./contents/chapt5/figs/learning_method/gamma_table.tex
 
 Package array Warning: Column R is already defined on input line 1.
 
 
-Package array Warning: Column C is already defined on input line 2.
+Package array Warning: Column L is already defined on input line 2.
 
 
-Underfull \hbox (badness 10000) in alignment at lines 21--21
-[][][][][] 
+Underfull \hbox (badness 10000) in alignment at lines 16--16
+[][][][] 
  []
 
-) (./contents/chapt6/figs/racing/esp.pgf
-<contents/chapt6/figs/racing/esp-img0.png, id=425, interpolate=true, 417.56pt x 157.58875pt>
-File: contents/chapt6/figs/racing/esp-img0.png Graphic file (type png)
-<use contents/chapt6/figs/racing/esp-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/esp-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 300.66206pt x 113.46379pt.
-<contents/chapt6/figs/racing/esp-img1.png, id=426, interpolate=true, 10.0375pt x 206.7725pt>
-File: contents/chapt6/figs/racing/esp-img1.png Graphic file (type png)
-<use contents/chapt6/figs/racing/esp-img1.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/esp-img1.png  used on input line 65599.
+) (./contents/chapt5/figs/learning_method/rl_method.pgf)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[10]
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[11] (./contents/chapt5/figs/reward/distance_reward.pgf)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[12] (./contents/chapt5/figs/reward/reward_collision_table.tex
+
+Package array Warning: Column R is already defined on input line 1.
+
+
+Package array Warning: Column L is already defined on input line 2.
+
+
+Underfull \hbox (badness 10000) in alignment at lines 17--17
+[][][][] 
+ []
+
+) (./contents/chapt5/figs/reward/path_collision_penalty.pgf
+<contents/chapt5/figs/reward/path_collision_penalty-img0.png, id=460, interpolate=true, 283.0575pt x 105.39375pt>
+File: contents/chapt5/figs/reward/path_collision_penalty-img0.png Graphic file (type png)
+<use contents/chapt5/figs/reward/path_collision_penalty-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/reward/path_collision_penalty-img0.png  used on input line 50.
+(pdftex.def)             Requested size: 203.80554pt x 75.88504pt.
+) (./contents/chapt5/figs/observation/observation.pgf)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[13]
+<contents/chapt5/figs/observation/collision_distributions/crash_location_pose.png, id=470, 289.08pt x 144.54pt>
+File: contents/chapt5/figs/observation/collision_distributions/crash_location_pose.png Graphic file (type png)
+<use contents/chapt5/figs/observation/collision_distributions/crash_location_pose.png>
+Package pdftex.def Info: contents/chapt5/figs/observation/collision_distributions/crash_location_pose.png  used on input line 466.
+(pdftex.def)             Requested size: 229.43814pt x 114.72023pt.
+
+Overfull \hbox (24.57968pt too wide) in paragraph at lines 466--467
+ [][] 
+ []
+
+<contents/chapt5/figs/observation/collision_distributions/crash_location_both.png, id=471, 289.08pt x 144.54pt>
+File: contents/chapt5/figs/observation/collision_distributions/crash_location_both.png Graphic file (type png)
+<use contents/chapt5/figs/observation/collision_distributions/crash_location_both.png>
+Package pdftex.def Info: contents/chapt5/figs/observation/collision_distributions/crash_location_both.png  used on input line 472.
+(pdftex.def)             Requested size: 229.43814pt x 114.72023pt.
+
+Overfull \hbox (24.57968pt too wide) in paragraph at lines 472--473
+ [][] 
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[14 <./contents/chapt5/figs/reward/path_collision_penalty-img0.png>] (./contents/chapt5/figs/observation/observation_n_beams_1.pgf)
+
+LaTeX Warning: Reference `sec:simulation_environment' on page 15 undefined on input line 500.
+
+(./contents/chapt5/figs/observation/noise_lap_2.pgf
+<contents/chapt5/figs/observation/noise_lap_2-img0.png, id=480, interpolate=true, 304.13625pt x 112.42pt>
+File: contents/chapt5/figs/observation/noise_lap_2-img0.png Graphic file (type png)
+<use contents/chapt5/figs/observation/noise_lap_2-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/observation/noise_lap_2-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 218.98256pt x 80.94576pt.
+)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[15 <./contents/chapt5/figs/observation/collision_distributions/crash_location_pose.png> <./contents/chapt5/figs/observation/collision_distributions/crash_location_both.png>] (./contents/chapt5/figs/neural_network/layer_sizes.pgf)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[16 <./contents/chapt5/figs/observation/noise_lap_2-img0.png>]
+Underfull \hbox (badness 10000) in alignment at lines 563--563
+[][][][] 
+ []
+
+(./contents/chapt5/figs/control/velocity_slip_profile.pgf)
+
+LaTeX Warning: Reference `chp:modelling' on page 17 undefined on input line 596.
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[17] (./contents/chapt5/figs/racing/porto.pgf
+<contents/chapt5/figs/racing/porto-img0.png, id=509, interpolate=true, 375.4025pt x 139.52126pt>
+File: contents/chapt5/figs/racing/porto-img0.png Graphic file (type png)
+<use contents/chapt5/figs/racing/porto-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/porto-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 270.30678pt x 100.45734pt.
+<contents/chapt5/figs/racing/porto-img1.png, id=510, interpolate=true, 10.0375pt x 206.7725pt>
+File: contents/chapt5/figs/racing/porto-img1.png Graphic file (type png)
+<use contents/chapt5/figs/racing/porto-img1.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/porto-img1.png  used on input line 8249.
 (pdftex.def)             Requested size: 7.22758pt x 148.87923pt.
 )
-
-LaTeX Warning: Reference `chp:end_to_end_autonomous_racing' on page 13 undefined on input line 429.
-
-
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1758,17 +1755,38 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[13 <./contents/chapt6/figs/racing/crashes-img0.png>] (./contents/chapt6/figs/racing/mco.pgf
-<contents/chapt6/figs/racing/mco-img0.png, id=433, interpolate=true, 333.245pt x 313.17pt>
-File: contents/chapt6/figs/racing/mco-img0.png Graphic file (type png)
-<use contents/chapt6/figs/racing/mco-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/mco-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 239.94128pt x 225.48698pt.
-<contents/chapt6/figs/racing/mco-img1.png, id=434, interpolate=true, 15.05624pt x 312.16624pt>
-File: contents/chapt6/figs/racing/mco-img1.png Graphic file (type png)
-<use contents/chapt6/figs/racing/mco-img1.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/mco-img1.png  used on input line 49970.
-(pdftex.def)             Requested size: 10.84024pt x 224.76428pt.
+[18] (./contents/chapt5/figs/racing/reward.pgf)
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[19 <./contents/chapt5/figs/racing/porto-img0.png> <./contents/chapt5/figs/racing/porto-img1.png>] (./contents/chapt5/figs/racing/esp.pgf
+<contents/chapt5/figs/racing/esp-img0.png, id=525, interpolate=true, 417.56pt x 157.58875pt>
+File: contents/chapt5/figs/racing/esp-img0.png Graphic file (type png)
+<use contents/chapt5/figs/racing/esp-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/esp-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 300.66206pt x 113.46379pt.
+<contents/chapt5/figs/racing/esp-img1.png, id=526, interpolate=true, 10.0375pt x 206.7725pt>
+File: contents/chapt5/figs/racing/esp-img1.png Graphic file (type png)
+<use contents/chapt5/figs/racing/esp-img1.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/esp-img1.png  used on input line 67161.
+(pdftex.def)             Requested size: 7.22758pt x 148.87923pt.
+) (./contents/chapt5/figs/racing/mco.pgf
+<contents/chapt5/figs/racing/mco-img0.png, id=528, interpolate=true, 327.2225pt x 307.1475pt>
+File: contents/chapt5/figs/racing/mco-img0.png Graphic file (type png)
+<use contents/chapt5/figs/racing/mco-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/mco-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 235.6pt x 221.14603pt.
+<contents/chapt5/figs/racing/mco-img1.png, id=529, interpolate=true, 16.06pt x 307.1475pt>
+File: contents/chapt5/figs/racing/mco-img1.png Graphic file (type png)
+<use contents/chapt5/figs/racing/mco-img1.png>
+Package pdftex.def Info: contents/chapt5/figs/racing/mco-img1.png  used on input line 49521.
+(pdftex.def)             Requested size: 11.56367pt x 221.14603pt.
 )
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
@@ -1779,27 +1797,44 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[14 <./contents/chapt6/figs/racing/esp-img0.png> <./contents/chapt6/figs/racing/esp-img1.png> <./contents/chapt6/figs/racing/mco-img0.png> <./contents/chapt6/figs/racing/mco-img1.png>] (./contents/chapt6/figs/racing/slip_angle_1.pgf
-<contents/chapt6/figs/racing/slip_angle_1-img0.png, id=443, interpolate=true, 108.405pt x 135.50626pt>
-File: contents/chapt6/figs/racing/slip_angle_1-img0.png Graphic file (type png)
-<use contents/chapt6/figs/racing/slip_angle_1-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/racing/slip_angle_1-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 78.05484pt x 97.56854pt.
+[20 <./contents/chapt5/figs/racing/esp-img0.png> <./contents/chapt5/figs/racing/esp-img1.png>] (./contents/chapt5/figs/uncertainty/mco_lap_1.pgf
+<contents/chapt5/figs/uncertainty/mco_lap_1-img0.png, id=538, interpolate=true, 134.5025pt x 206.7725pt>
+File: contents/chapt5/figs/uncertainty/mco_lap_1-img0.png Graphic file (type png)
+<use contents/chapt5/figs/uncertainty/mco_lap_1-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/uncertainty/mco_lap_1-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 96.8417pt x 148.87923pt.
+<contents/chapt5/figs/uncertainty/mco_lap_1-img1.png, id=539, interpolate=true, 10.0375pt x 206.7725pt>
+File: contents/chapt5/figs/uncertainty/mco_lap_1-img1.png Graphic file (type png)
+<use contents/chapt5/figs/uncertainty/mco_lap_1-img1.png>
+Package pdftex.def Info: contents/chapt5/figs/uncertainty/mco_lap_1-img1.png  used on input line 21823.
+(pdftex.def)             Requested size: 7.22758pt x 148.87923pt.
+) (./contents/chapt5/figs/uncertainty/mco_lap_erro_1.pgf
+<contents/chapt5/figs/uncertainty/mco_lap_erro_1-img0.png, id=540, interpolate=true, 134.5025pt x 206.7725pt>
+File: contents/chapt5/figs/uncertainty/mco_lap_erro_1-img0.png Graphic file (type png)
+<use contents/chapt5/figs/uncertainty/mco_lap_erro_1-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/uncertainty/mco_lap_erro_1-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 96.8417pt x 148.87923pt.
+<contents/chapt5/figs/uncertainty/mco_lap_erro_1-img1.png, id=541, interpolate=true, 10.0375pt x 206.7725pt>
+File: contents/chapt5/figs/uncertainty/mco_lap_erro_1-img1.png Graphic file (type png)
+<use contents/chapt5/figs/uncertainty/mco_lap_erro_1-img1.png>
+Package pdftex.def Info: contents/chapt5/figs/uncertainty/mco_lap_erro_1-img1.png  used on input line 43081.
+(pdftex.def)             Requested size: 7.22758pt x 148.87923pt.
 )
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
 
-LaTeX Warning: Reference `sec:ete_empirical_design' on page 15 undefined on input line 464.
 
-(./contents/chapt6/figs/architecture/architecture_train.pgf) (./contents/chapt6/figs/architecture/architecture_esp.pgf
-<contents/chapt6/figs/architecture/architecture_esp-img0.png, id=446, interpolate=true, 253.94875pt x 253.94875pt>
-File: contents/chapt6/figs/architecture/architecture_esp-img0.png Graphic file (type png)
-<use contents/chapt6/figs/architecture/architecture_esp-img0.png>
-Package pdftex.def Info: contents/chapt6/figs/architecture/architecture_esp-img0.png  used on input line 53.
-(pdftex.def)             Requested size: 182.84682pt x 182.84682pt.
-<contents/chapt6/figs/architecture/architecture_esp-img1.png, id=447, interpolate=true, 253.94875pt x 253.94875pt>
-File: contents/chapt6/figs/architecture/architecture_esp-img1.png Graphic file (type png)
-<use contents/chapt6/figs/architecture/architecture_esp-img1.png>
-Package pdftex.def Info: contents/chapt6/figs/architecture/architecture_esp-img1.png  used on input line 634.
-(pdftex.def)             Requested size: 182.84682pt x 182.84682pt.
+Overfull \hbox (72.24411pt too wide) has occurred while \output is active
+[]
+ []
+
+[21 <./contents/chapt5/figs/racing/mco-img0.png> <./contents/chapt5/figs/racing/mco-img1.png> <./contents/chapt5/figs/uncertainty/mco_lap_1-img0.png> <./contents/chapt5/figs/uncertainty/mco_lap_1-img1.png> <./contents/chapt5/figs/uncertainty/mco_lap_erro_1-img0.png> <./contents/chapt5/figs/uncertainty/mco_lap_erro_1-img1.png>] (./contents/chapt5/figs/domain_random/porto_domain_random_2.pgf
+<contents/chapt5/figs/domain_random/porto_domain_random_2-img0.png, id=558, interpolate=true, 247.92625pt x 92.345pt>
+File: contents/chapt5/figs/domain_random/porto_domain_random_2-img0.png Graphic file (type png)
+<use contents/chapt5/figs/domain_random/porto_domain_random_2-img0.png>
+Package pdftex.def Info: contents/chapt5/figs/domain_random/porto_domain_random_2-img0.png  used on input line 53.
+(pdftex.def)             Requested size: 178.50676pt x 66.48833pt.
 )
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
@@ -1810,7 +1845,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[15 <./contents/chapt6/figs/racing/slip_angle_1-img0.png>]
+[22 <./contents/chapt5/figs/domain_random/porto_domain_random_2-img0.png>])
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1820,7 +1855,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[16 <./contents/chapt6/figs/architecture/architecture_esp-img0.png> <./contents/chapt6/figs/architecture/architecture_esp-img1.png>])
+[23]
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1830,17 +1865,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[17]
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
-
-
-Overfull \hbox (72.24411pt too wide) has occurred while \output is active
-[]
- []
-
-[18
+[24
 
 
 
@@ -1869,7 +1894,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[19
+[25
 
 
 ] (./contents/appendix/figs/exploration_noise.pgf)
@@ -1887,7 +1912,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[20] (./contents/appendix/figs/update_interval.pgf)
+[26] (./contents/appendix/figs/update_interval.pgf)
 Underfull \hbox (badness 10000) in alignment at lines 82--82
 [][][][] 
  []
@@ -1902,7 +1927,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[21] (./USthesis_Masters.bbl (c:/texlive/2023/texmf-dist/tex/latex/stellenbosch/usbib.eng)
+[27] (./USthesis_Masters.bbl (c:/texlive/2023/texmf-dist/tex/latex/stellenbosch/usbib.eng)
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 25.
  (c:/texlive/2023/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2022/07/10 v2.5l Standard LaTeX font definitions
@@ -1916,12 +1941,17 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[22
+[28
 
 
 
 
-])
+]
+Underfull \hbox (badness 10000) in paragraph at lines 88--91
+\T1/cmr/m/n/10.95 Available at: []$\T1/cmtt/m/n/10.95 https : / / www . mas . bg . ac . rs / _media / istrazivanje / fme / vol41 / 1 / 08 _
+ []
+
+)
 Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
@@ -1931,7 +1961,7 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 []
  []
 
-[23]
+[29]
 \tf@toc=\write6
 \openout6 = `USthesis_Masters.toc'.
 
@@ -1944,26 +1974,26 @@ Overfull \hbox (72.24411pt too wide) has occurred while \output is active
 \tf@lot=\write9
 \openout9 = `USthesis_Masters.lot'.
 
- (./USthesis_Masters.aux (./frontmatter/Chap-Front.aux) (./frontmatter/Nomencl.aux) (./contents/chapt6/chapt6.aux) (./contents/appendix/App1.aux))
+ (./USthesis_Masters.aux (./frontmatter/Chap-Front.aux) (./frontmatter/Nomencl.aux) (./contents/chapt5/chapt5.aux) (./contents/appendix/App1.aux))
 
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `USthesis_Masters.out' has not changed.
-(rerunfilecheck)             Checksum: 3EB334C82DB33EA7FEA7E303E3D3AF94;3160.
+(rerunfilecheck)             Checksum: DCF39187B381C39462B1AF0351B54CA9;3657.
  ) 
 Here is how much of TeX's memory you used:
- 34537 strings out of 476037
- 642470 string characters out of 5794152
- 2906476 words of memory out of 5000000
- 54083 multiletter control sequences out of 15000+600000
- 544391 words of font info for 115 fonts, out of 8000000 for 9000
+ 34656 strings out of 476037
+ 646028 string characters out of 5794152
+ 2866145 words of memory out of 5000000
+ 54121 multiletter control sequences out of 15000+600000
+ 544392 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 94i,18n,131p,618b,1084s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfsl1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfsl1440.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on USthesis_Masters.pdf (32 pages, 1081531 bytes).
+ 94i,19n,131p,548b,1099s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx0800.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfsl1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfsl1440.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on USthesis_Masters.pdf (38 pages, 1154309 bytes).
 PDF statistics:
- 660 PDF objects out of 1000 (max. 8388607)
- 511 compressed objects within 6 object streams
- 113 named destinations out of 1000 (max. 500000)
- 257 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 804 PDF objects out of 1000 (max. 8388607)
+ 655 compressed objects within 7 object streams
+ 164 named destinations out of 1000 (max. 500000)
+ 269 words of extra memory for PDF output out of 10000 (max. 10000000)
 

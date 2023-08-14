@@ -189,7 +189,7 @@ Specifically, we chose to train three agents for each hyper-parameter set due to
 
 \begin{figure}[htb!]
     \centering
-    \input{contents/chapt5/figs/algorithm/learning_curve.pgf}
+    \input{contents/chapt5/figs/algorithm/learning_curve_1.pgf}
     \caption[Learning curve for end-to-end agents]{Average learning curve for $10$ end-to-end agents trained on the simple Porto track.}
     \label{fig:MDP_steps_learning_curve}
 \end{figure}
@@ -234,7 +234,7 @@ Figure \ref{fig:f_agent} shows the average failed laps and lap time of agents ra
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/algorithm/f_agent.pgf}
-    \caption[Training time and percentage failed laps under evaluation conditions of end-to-end agents with various sampling rates]{Training time (left vertical axis) and percentage failed laps (right vertical axis) of trained end-to-end agents racing under evalution conditions on the Porto track, with sampling rates ranging from $3$ Hz to $50$ Hz.}
+    \caption[Training time and percentage failed laps under evaluation conditions of end-to-end agents with various sampling rates]{Training time (left vertical axis) and percentage failed laps (right vertical axis) of three trained end-to-end agents racing under evalution conditions on the Porto track, with sampling rates ranging from $3$ Hz to $50$ Hz.}
     \label{fig:f_agent}
 \end{figure}
 
@@ -267,7 +267,7 @@ The percentage failed laps and lap times during training, was well as the learni
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/learning_method/gamma.pgf}
-    \caption[Learning curves for tuning reward discount rate]{(a) The percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves of end-to-end agents with reward discount rates ranging from $0.9$ to $1$.}
+    \caption[Learning curves for tuning reward discount rate]{(a) The percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves of three end-to-end agents with reward discount rates ranging from $0.9$ to $1$.}
     \label{fig:gamma}
 \end{figure}
 
@@ -296,7 +296,7 @@ Moreover, we have observed that the training stability of TD3 is superior to tha
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/learning_method/rl_method.pgf}
-    \caption[Learning curves showing for agents trained using TD3 and DDPG]{(a) The percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves of end-to-end agents that were trained using TD3 and DDPG.}
+    \caption[Learning curves showing for agents trained using TD3 and DDPG]{(a) The percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves of three end-to-end agents that were trained using TD3 and DDPG.}
     \label{fig:learning_method}
 \end{figure}
 
