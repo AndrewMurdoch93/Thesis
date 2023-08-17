@@ -27,20 +27,25 @@ Accordingly, we investigated the types and magnitudes of practical modeling erro
 Our investigations encompass practical modeling errors stemming from three sources:
 
 \begin{enumerate}
-\item Vehicle mass and mass distribution,
-\item Tire cornering stiffness coefficient, and
-\item Road surface friction coefficient.
+\item vehicle mass and mass distribution,
+\item tire cornering stiffness coefficient, and
+\item road surface friction coefficient.
 \end{enumerate}
 
 
 It is important to note that our notion of model mismatch refers to a discrepancy between the vehicle model used during training, and the actual vehicle.
 Therefore, although online estimation of vehicle model parameters is possible, model mismatch will persist unless the updated vehicle model can be utilized to either retrain the agent online, or replace it with another agent that was trained with a set of vehicle parameters more similar to the real vehicle.
 These approaches may be prohibitively expensive for complex policies, such as those required by road-going vehicles.
-
 Furthermore, while model mismatching is a phenomenon that takes place when deploying agents in the real-world, our analysis is restricted to simulation to prevent unnecessary damage to physical vehicle hardware.
-To simulate model-mismatch scenarios, we introduced variations in the vehicle model between the training and evaluation phases.
-Algorithm \ref{alg:end_to_end_deploy} was then employed to evaluate the agents' performance when racing with the modified vehicle model.
+
+To simulate model-mismatch scenarios, we introduced variations in the vehicle model between the training and evaluation.
+Algorithm \ref{alg:end_to_end_deploy} was then employed to evaluate the agent's performance when racing with the modified vehicle model.
 This approach is similar to the ones taken by Fuchs et al. \cite{Fuchs2021} and Ghignone et al. \cite{Ghignone2022}.
+It is important to note that these experiments were conducted on a single agent for each algorithm architecture.
+The selected agents were representative of the median performance of each framework.
+
+
+
 % Furthermore, the majority of our investigations were performed on Porto because the difference in performance between the partial and fully end-to-end agents under nominal (i.e., no model mismtach) conditions were minimal on this track.
 
 
@@ -49,30 +54,29 @@ This approach is similar to the ones taken by Fuchs et al. \cite{Fuchs2021} and 
 A vehicle's occupants and cargo change its total mass ($m$), center of gravity relative to the front axle ($l_f$) and moment of inertia ($I_z$).
 The parameters $m$, $I_z$ and $l_f$ appear in the heading rate and slip angle terms of the dynamic bicycle model described by Equation \ref{eq:single_track_dynamic_equations}.
 However, only $l_f$ appears in the slip angle term for the kinematic bicycle model in Equation \ref{eq:single_track_kinematic_equations}.
-This indicates that a dynamic mass has a greater effect on the vehicle dynamics at high speeds, where the motion of the vehicle is accurately represented by Equation \ref{eq:single_track_dynamic_equations}.
+This indicates that a dynamic mass has a greater effect on the vehicle dynamics at higher speeds, where the motion of the vehicle is accurately represented by Equation \ref{eq:single_track_dynamic_equations}.
 
 
-To investigate the effect of a model mismatch in vehicle mass, we simulated the addition of a constant $0.374$ kg mass along the longitudinal axis of the vehicle after the agents were trained.
-This mass corresponds to one-tenth of the vehicle's weight. 
-Subsequently, the performance of both partial and fully end-to-end agents was evaluated using Algorithm \ref{alg:end_to_end_deploy}. 
-This procedure was repeated with the mass placed all along the length of the vehicle.
-The percentage of successful laps achieved by the agents is plotted as a function of the position of the mass along the length of the vehicle in Figure \ref{fig:unknown_mass}.
+To investigate the effect of a model mismatch in vehicle mass, we simulated the addition of various masses, ranging from $0.3$ kg to $1.5$ kg, along the longitudinal axis of the vehicle.
+Subsequently, the performance of both a partial and fully end-to-end agent was evaluated using Algorithm \ref{alg:end_to_end_deploy}. 
+The percentage of successful laps achieved by the agents is plotted as a function of the position of the masses along the length of the vehicle in Figure \ref{fig:unknown_mass}.
+Furthermore, we chose to perform this experiment on the Porto track, because the difference in performance between the partial and fully end-to-end agents under nominal 
+(i.e., no model mismatch) conditions were minimal on this track.
+
 \begin{figure}[htb!]
     \centering
-    \input{contents/chapt7/figs/mass/mass_success.pgf}
-    \caption[Percentage successful laps under evaluation conditions for agents with a mass placed along the longitudinal axis of the vehicle]{The percentage successful laps under evaluation conditions for agents with a mass placed along the longitudinal axis of the vehicle. The front and rear axles are indicated by black dashed lines.}
+    \input{contents/chapt7/figs/mass/mass_success_2.pgf}
+    \caption[Percentage successful laps under evaluation conditions for agents with masses placed along the longitudinal axis of the vehicle]{The percentage successful laps under evaluation conditions for agents with a masses placed along the longitudinal axis of the vehicle. The front and rear axles are indicated by black dashed lines.}
     \label{fig:unknown_mass}
 \end{figure}
-Furthermore, we chose to perform this experiment on Porto, because the difference in performance between the partial and fully end-to-end agents under nominal (i.e., no model mismatch) conditions were minimal on this track.
 
-
-Our findings indicate that the end-to-end agent exhibited sensitivity to an unaccounted-for mass on the vehicle, particularly when the mass was positioned towards the front. 
-This observation is supported by the significant decrease in lap completion rate when the mass is placed closer to the front axle. 
-Interestingly, the end-to-end agent displayed some resilience towards a mass located at the rear of the vehicle. 
+Our findings indicate that the end-to-end agent exhibited sensitivity to an unaccounted-for mass on the vehicle, particularly when the mass was positioned towards the back. 
+This observation is supported by the significant decrease in lap completion rate when the mass is placed closer to the rear axle. 
+Interestingly, the end-to-end agent displayed some resilience towards a mass located at the front of the vehicle. 
 In contrast, the partial end-to-end algorithm demonstrated a higher level of robustness against modeling errors stemming from unaccounted-for masses. 
-Regardless of the position of the mass placement on the vehicle, the partial end-to-end agent successfully completed all evaluation laps.
+Regardless of the position of the mass placement on the vehicle, the partial end-to-end agent successfully completed a large percentage of it's evaluation laps.
 
-In addition to observing the failure rates of agents with an added mass on the vehicle, we also qualitatively evaluated the behaviour of each agent with a mass placed directly above the front axle over one lap of the Porto track.
+In addition to observing the failure rates of agents with an added mass on the vehicle, we also qualitatively evaluated the behaviour of each agent with a $0.3$ kg mass placed directly above the front axle over one lap of the Porto track.
 Figure \ref{fig:unknown_mass_trajs_2} shows sample trajectories of fully and partial end-to-end agents under nominal conditions, as well as with model-mismatch over one lap.
 
 \begin{figure}[htb!]
@@ -90,7 +94,7 @@ However, even after the slip angle returns to the normal range, the agent contin
 Thus, in addition to the fact that end-to-end agents crash on $5\%$ of the evaluation laps, their behaviour is still dangerous on laps that are completed.
 
 In contrast, the partial end-to-end agent did not deviate from the nominal trajectory in any of the evaluation laps.
-Thus, decoupling path planning from control provides stability and robustness to modeling errors in the total vehicle mass for RL approaches.
+Decoupling path planning from control therefore provides stability and robustness to modeling errors in the total vehicle mass for RL approaches.
 
 
 \section{Uncertain cornering stiffness}
@@ -98,7 +102,6 @@ Thus, decoupling path planning from control provides stability and robustness to
 Another practical model mismatch that vehicles encounter is a discrepancy in the cornering stiffness terms ($C_{S,r}, C_{S,f}$) which characterises their tires.
 The cornering stiffness is commonly defined as the ratio between the lateral force acting on a tire and its slip angle. 
 Tire construction and dimensions, the type and quality of the tread, and inflation pressure are significant factors when determining cornering stiffness \cite{Vorotovic2013}.
-
 Once again, the effect of a cornering stiffness model mismatch on the vehicle dynamics is more pronounced at higher speeds, as evident from the absence of tire stiffness terms in the kinematic model applicable at low speeds, and their inclusion in the dynamic model described by Equation \ref{eq:single_track_dynamic_equations}.
 
 
@@ -109,12 +112,12 @@ The percentage of successful laps of agents racing with these mismatched corneri
 
 \begin{figure}[htb!]
     \centering
-    \input{contents/chapt7/figs/c_s/c_s.pgf}
+    \input{contents/chapt7/figs/c_s/c_s_1.pgf}
     \caption[Success rate of agents under evaluation conditions with mismatched tire cornering stiffness]{Success rates under evaluation conditions of agents with mismatched tire cornering stiffness. Subplot (a) shows the effect of varying only the front tire stiffness, (b) the effect of varying only rear tire stiffness, and (c) the effect of varying both front and rear tire stiffness together.}
     \label{fig:c_s}
 \end{figure}
 
-As evident from Figure \ref{fig:c_s}, the end-to-end agent is sensitive to an increase in the front cornering stiffness coefficient, while also being sensitive to a decrease in the rear cornering stiffness coefficient.
+As is evident from Figure \ref{fig:c_s}, the end-to-end agent is sensitive to an increase in the front cornering stiffness coefficient, while also being sensitive to a decrease in the rear cornering stiffness coefficient.
 In addition, when both the front and rear cornering stiffness coefficients are altered simultaneously, the end-to-end agent tends to experience crashes. 
 In contrast, the partial end-to-end agent demonstrates resilience to changes in either front or rear tires.
 Although it does experience failures when both the front and rear cornering stiffness coefficients are decreased together by $20\%$, the failure rate is comparatively lower than end-to-end agents.
@@ -161,7 +164,7 @@ Under nominal conditions, the end-to-end agents achieved success rates of $100\%
 \begin{figure}[htb!]
     \centering
     % \includegraphics[width=\textwidth]{contents/chapt7/figs/mu/mu.png}
-    \input{contents/chapt7/figs/mu/mu_1.pgf}
+    \input{contents/chapt7/figs/mu/mu_2.pgf}
     \caption[Success rate of agents under evaluation conditions with mismatched road surface friction coefficient]{Success rates under evaluation conditions of agents racing with decreased road surface friction values. Results for the end-to-end agent racing on all three tracks are shown in the left subplot, while results for the corresponding results for partial end-to-end agents are shown on the right. The values of friction corresponding to the nominal training value, dry and wet asphalt are marked with a black dashed line.}
     \label{fig:mu}
 \end{figure}
@@ -172,8 +175,26 @@ The success rate of partial end-to-end agents racing on Porto decreased to $88\%
 Thus, partial end-to-end agents consistently outperformed the end-to-end agents regardless of the road surface conditions.
 Furthermore, the results under model mismatch conditions are consistent across all the tracks that were used in this investigation.
 
-The trajectories of agents racing with a modified road surface friction coefficient on Barcelona-Catalunya were then observed. 
-Figure \ref{fig:mu_lap} shows the paths taken by partial and fully end-to-end agents racing clockwise on the right section this track using the nominal friction value, a friction value of $0.7$ (corresponding to dry asphalt), as well as $0.5$ (corresponding to wet asphalt) \cite{Novikov2018}.
+Interestingly, when viewing the locations where agents crashed while racing on a wet asphalt surface on the Monaco circuit, as depicted in Figure \ref{fig:mu_crash_locations}, 
+we see that the majority partial end-to-end agents failed at one of two corners.
+Conversely, end-to-end agents crashed at various parts of the track while racing with a mismatched friction coefficient.
+
+
+\begin{figure}[htb!]
+    \centering
+    % \includegraphics[width=\textwidth]{contents/chapt7/figs/mu/mu.png}
+    \input{contents/chapt7/figs/mu/mu_crash_locations.pgf}
+    \caption[Locations where agents crashed while racing on a wet asphalt surface]{Locations where agents crashed while racing on a surface with a friction coefficient of $0.5$ (corresponding to wet asphalt).}
+    \label{fig:mu_crash_locations}
+\end{figure}
+
+The fact that partial end-to-end agents fail at only two locations on Circuit de Monaco when racing with a mismatched friction coefficient shows the consistency with
+which they execute trajectories.
+To illustruate, an example of trajectories executed by both partial and fully end-to-end agents is shown in Figure \ref{fig:mu_lap}.
+The figure shows the trajectories executed by agents under nominal conditions, as well as conditions with decreased surface friction.
+Note that the trajectories executed by the partial end-to-end agent remain similar when mismatches are introduced.
+The most notable difference between trajectories executed by the partial end-to-end agent on the nominal and slippier surfaces, is that the trajectories executed on the slippier surfaces exhibit reduced curvature, resulting in wider paths being followed by the agents.
+In contrast, the trajectories by the end-to-end agent are always erratic.
 
 \begin{figure}[htb!]
     \centering
@@ -182,16 +203,6 @@ Figure \ref{fig:mu_lap} shows the paths taken by partial and fully end-to-end ag
     \caption[Trajectories of agents racing with a decreased road surface friction coefficient]{Trajectories of agents racing on a section of Barcelona-Catalunya under nominal conditions, as well as with road surface friction values corresponding to dry asphalt, as well as wet asphalt. The trajectories of agents racing with and without model mismatch are superimposed for comparison.}
     \label{fig:mu_lap}
 \end{figure}
-
-
-Figure \ref{fig:mu_lap} shows that the end-to-end agent slaloms even under nominal conditions.
-When required to race with a decreased road surface friction coefficient, the trajectory executed by the end-to-end agent differs significantly to its nominal trajectory.
-End-to-end agents racing on dry asphalt continued to slalom, whereas the agent required to race on wet asphalt crashed in this instance.
-
-In contrast, the partial end-to-end agents consistently execute smooth trajectories, both under nominal conditions and on slippier road surfaces. 
-Regardless of the road surface conditions, the trajectories taken by the partial end-to-end agents remain similar. 
-The most notable difference between trajectories executed by the partial end-to-end agent on the nominal and slippier surfaces, is that the trajectories executed on the slippier surfaces exhibit reduced curvature, resulting in wider paths being followed by the agents.
-
 
 \section{Summary}
 

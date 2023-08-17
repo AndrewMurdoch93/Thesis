@@ -6,7 +6,7 @@
 % In this chapter, we evaluate the development of this project according to the problem definition and objectives outlined in Chapter \ref{chp:introduction}
 
 
-Existing learning-based solutions for autonomous racing often fail to integrate insights from classical approaches, resulting in algorithms that are not robust against practical model mismatches. 
+Existing learning-based solutions to autonomous racing often fail to integrate insights from classical approaches, resulting in algorithms that are not robust against practical model mismatches. 
 Consequently, the performance of many learning-based approaches deteriorates when faced with such scenarios.
 
 This thesis considered the design and implementation of a learning-based autonomous racing algorithm that demonstrates robustness towards practical model mismatches by incorporating insights from classical approaches.
@@ -60,12 +60,16 @@ This would contribute to building a stronger argument for the practical implemen
 
 
 Although our experiments focused on racing, the results have implications for addressing the broader road-going autonomous driving problem.
-Future work should therefore encompass investigating the application of partial end-to-end algorithms to road-driving scenarios.
+Future work should therefore investigate the application of partial end-to-end algorithms to road-driving scenarios.
 For example, when considering the road-going autonomous driving task, decoupling planning from control may provide additional benefits, as it allows the planner and controller to be developed independently of each other.
 This approach facilitates the use of a single generic planning agent that can be applied to similar car models, while specific controllers are developed for each car model.
 Consequently, it may lead to consistent planning behavior across a fleet of vehicles, as well as enable easier algorithm development.
 
-In closing, partial end-to-end represents a promising solution for designing learning-based algorithms that are flexible, easily trainable, safe, and robust towards practical model mismatches.
 
+In closing, learning-based algorithms are gaining popularity in road-going production cars due to their scalability.
+It is therefore critical to ensure that learning-based driving algorithms handle the sim-to-real gap as best as possible.
+As part of the sim-to-real gap, these algorithms should be robust towards practical model mismatches.
+In this thesis, we have found that the partial end-to-end framework represents a promising solution for designing learning-based algorithms that are robust towards practical model mismatches.
+Furthermore, the proposed solution trains quickly and executes safe trajectories with very few crashes compared to the baseline end-to-end agent.
 
 

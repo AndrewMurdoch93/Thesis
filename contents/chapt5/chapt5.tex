@@ -85,22 +85,25 @@ This notation conforms to the notation used for the output of the simulator in C
 However, we use the notation for time steps in Chapter \ref{chp:rl}, denoting a time step as $t$, rather than $k$.
 
 
+
 In line 1 of Algorithm \ref{alg:td3_mod}, the actor ($\pi_{\bm{\phi}}$) and critics ($Q_{\bm{\theta}_1}$ and $Q_{\bm{\theta}_2}$) are initialised.
 The end-to-end agent shown in Figure \ref{fig:actor_architecture} is the actor $\pi_{\bm{\phi}}$.
 The design of the critics $Q_{\bm{\theta}_1}$ and $Q_{\bm{\theta}_2}$ are now described.
 For simplicity, our critics have an identical structure which is analogous to that of the actor.
 We therefore describe the details of only one critic, which is depicted in Figure \ref{fig:critic_architecture}.
+The critic DNN receives a vector input comprised of observation and control actions normalised to the range $(-1,1)$. 
+It comprises three fully connected layers.
+The input and hidden layers are identical to the actor, having $m_1$ and $m_2$ neurons with ReLU activation functions, respectively
+The output layer comprises a single neuron with a linear activation function.
+The output of this layer is the action-value, and is denoted $Q_{\bm{\theta}}(o,a)$.
+Additionally, the target networks are initialised identically to their counterparts.
+
 \begin{figure}[htb!]
     \centering
     \input contents/chapt5/figs/neural_network/critic.tex
     \caption[The critic DNN]{The critic DNN. Its input is a vector containing a normalised observation and action pair, and its output is an action-value.}
     \label{fig:critic_architecture}
 \end{figure}
-The critic DNN receives a vector input comprised of observation and control actions normalised to the range $(-1,1)$. 
-It comprises three fully connected layers: an input layer with $m_1$ neurons, a hidden layer with $m_2$ neurons, and an output layer with a single neuron.
-The output of this neuron is the action-value, denoted $Q_{\bm{\theta}}(o,a)$.
-The first two layers utilize the Rectified Linear Unit (ReLU) activation function, while the final layer uses a linear activation function.
-Additionally, the target networks are initialised identically to their counterparts.
 
 After initializing the replay buffer in line 3, the TD3 algorithm enters a while loop which executes a number of episodes (lines 5-22). 
 However, rather than limiting the number of episodes, we set a limit on the number of MDP time steps, denoted as $M$, as it is a more accurate indicator of the training time and the number of actor and critic updates. 
@@ -148,13 +151,14 @@ To ensure the stability of the learning process, we update the actor and the tar
 Additionally, the target networks are updated via a soft update which is controlled by the target update rate parameter $\tau$. 
 
 After the training procedure is completed, we utilise Algorithm \ref{alg:end_to_end_deploy} to evaluate the trained agents.
+\input{contents/chapt5/figs/test_procedure/test_procedure.tex}
 Under evaluation conditions, learning was halted and the weights of the DNNs were not updated.
 Furthermore, no exploration noise was added to the agents selected actions. 
 However, Gaussian noise was added to the observation vector to mimic practical sensor data in simulation. 
 This added Gaussian noise had standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for LiDAR scan. 
 Each agent completed $100$ laps under these evaluation conditions.
 
-\input{contents/chapt5/figs/test_procedure/test_procedure.tex}
+
 
 
 
@@ -163,8 +167,8 @@ Each agent completed $100$ laps under these evaluation conditions.
 
 \section{Empirical design and hyper-parameter values}\label{sec:ete_empirical_design}
 
-The previous section introduced the design of the end-to-end algorithm and the TD3 algorithm with symbolic hyper-parameter values. 
-The optimal values for these hyper-parameters cannot be derived, and require experimentation to be determined empirically. 
+The optimal values for the hyper-parameters introduced in Sections \ref{sec:end-to-end_design} and \ref{sec:td3_end_to_end} cannot be derived, 
+and require experimentation to be determined empirically. 
 Furthermore, hyper-parameters are sensitive to the track.
 The following five sections of this chapter detail the experiments that were undertaken to determine a locally optimal set of hyper-parameters for agents racing on a relatively simply track named Porto.
 The selected hyper-parameters are listed in Table \ref{tab:inital_values}.
@@ -552,7 +556,7 @@ The percentage successful laps and lap time of agents were maximised and minimis
 \centering
 \renewcommand{\arraystretch}{1.2}
 \small
-\begin{tabularx}{\textwidth}{RLLL} 
+\begin{tabularx}{0.8\textwidth}{RLLL} 
     \hline
     \textbf{Learning rate, $\alpha$} & \textbf{Successful evaluation laps [\%]} & \textbf{Average evaluation lap time [s]} & \textbf{Standard deviation of test lap time [s]}\\ 
     \hline
@@ -634,19 +638,19 @@ These tracks are not only considerably larger, but also feature sharper corners 
 
 When selecting hyper-parameters for the larger tracks, a tuning procedure similar to the one presented for the Porto track was utilised. 
 That is, the hyper-parameter were systematically varied one at a time, while keeping the other hyper-parameters constant. 
-This hyper-parameter tuning procedure resulted in the following adjustments to Table \ref{tab:inital_values} for agents racing on these longer tracks: the number of MDP time steps ($M$) was increased to $3.5\cdot10^{5}$, agent sample rate ($f_{\text{agent}}$) was increased to $10$ Hz, and the reward signal values for $r_{\text{dist}}$ and  $r_{\text{collision}}$ were changed to $0.3$ and $-2$, respectively.
-The learning curves for $10$ agents trained on all three tracks using the given hyper-parameters are shown in Figure \ref{fig:ete_reward}.
+This hyper-parameter tuning procedure resulted in the following adjustments to Table \ref{tab:inital_values} for agents racing on these longer tracks: the number of MDP time steps ($M$) was increased to $2.5\cdot10^{5}$, agent sample rate ($f_{\text{agent}}$) was increased to $10$ Hz, and the reward signal values for $r_{\text{dist}}$ and  $r_{\text{collision}}$ were changed to $0.3$ and $-2$, respectively.
+The average learning curves for $10$ agents trained to race on each of the tracks using the given hyper-parameters are shown in Figure \ref{fig:ete_reward}.
 Importantly, we observe that these agents maximise reward on each of their respective tracks.
 
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt5/figs/racing/reward.pgf}
-    \caption[Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco]{Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco.}
+    \caption[Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco]{Learning curves for end-to-end agents trained on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco.}
     \label{fig:ete_reward}
 \end{figure}
 
 
-Agents trained to race on Circuit de Barcelona-Catalunya completed their laps $79.0\%$ of the time, and achieved an average lap time of $47.47$ seconds under evaluation conditions.
+Agents trained to race on Circuit de Barcelona-Catalunya completed their laps $56.30\%$ of the time, and achieved an average lap time of $47.39$ seconds under evaluation conditions.
 Figure \ref{fig:ete_esp} shows the path and velocity profile taken by an agent completing Circuit de Barcelona-Catalunya under evaluation conditions.
 Similar to the findings on the Porto track, agents racing on the Circuit de Barcelona-Catalunya selected maximum velocity for the majority of the track, even when navigating sharp corners. 
 Furthermore, an interesting phenomenon emerged on the Circuit de Barcelona-Catalunya that was not present on the shorter Porto track: agents tend to exhibit a slaloming behavior, which is characterized by a winding path. 
@@ -660,7 +664,7 @@ This slaloming effect is quite severe, occurring at nearly every section of the 
     \label{fig:ete_esp}
 \end{figure}
 
-When assessing agents trained to race on Circuit de Monaco, we found that agents successfully completed their laps on $61.67\%$ of their attempts, achieving an average lap time of $35.48$ seconds. 
+When assessing agents trained to race on Circuit de Monaco, we found that agents successfully completed their laps on $56.20\%$ of their attempts, achieving an average lap time of $47.39$ seconds. 
 Figure \ref{fig:ete_esp} depicts one example of the path and velocity profile taken by an agent taht successfully completed the Circuit de Monaco under evaluation conditions. 
 Interestingly, the slaloming is also present on the Circuit de Monaco, indicating that slaloming tends to be a common issue for end-to-end agents navigating long tracks.
 

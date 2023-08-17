@@ -3,30 +3,15 @@
 \addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {1.1}{\ignorespaces The end-to-end driving architecture}}{2}{figure.caption.10}%
-\contentsline {figure}{\numberline {1.2}{\ignorespaces The end-to-end agent}}{2}{figure.caption.11}%
-\contentsline {figure}{\numberline {1.3}{\ignorespaces The critic DNN}}{4}{figure.caption.13}%
-\contentsline {figure}{\numberline {1.4}{\ignorespaces Learning curve for end-to-end agents}}{7}{figure.caption.16}%
-\contentsline {figure}{\numberline {1.5}{\ignorespaces Percentage failed laps and lap time of an end-to-end agent during training}}{8}{figure.caption.17}%
-\contentsline {figure}{\numberline {1.6}{\ignorespaces Training time and percentage failed laps under evaluation conditions of end-to-end agents with various sampling rates}}{8}{figure.caption.18}%
-\contentsline {figure}{\numberline {1.7}{\ignorespaces Training time and lap time under evaluation conditions of end-to-end agents with various batch sizes}}{9}{figure.caption.19}%
-\contentsline {figure}{\numberline {1.8}{\ignorespaces Learning curves for tuning reward discount rate}}{9}{figure.caption.20}%
-\contentsline {figure}{\numberline {1.9}{\ignorespaces Learning curves showing for agents trained using TD3 and DDPG}}{10}{figure.caption.22}%
-\contentsline {figure}{\numberline {1.10}{\ignorespaces Learning curves of agents with different values for $r_{\text {dist}}$ during training}}{12}{figure.caption.23}%
-\contentsline {figure}{\numberline {1.11}{\ignorespaces Paths taken by agents trained with different collision penalties}}{14}{figure.caption.25}%
-\contentsline {figure}{\numberline {1.12}{\ignorespaces Learning curves of agents with different observation spaces}}{14}{figure.caption.26}%
-\contentsline {figure}{\numberline {1.13}{\ignorespaces Locations of crashes during training}}{15}{figure.caption.27}%
-\contentsline {figure}{\numberline {1.14}{\ignorespaces Learning curves of agents with different numbers of LiDAR beams during training}}{15}{figure.caption.28}%
-\contentsline {figure}{\numberline {1.15}{\ignorespaces Path and velocity profiles of end-to-end agents that were trained with and without noise added to the observation vector}}{16}{figure.caption.29}%
-\contentsline {figure}{\numberline {1.16}{\ignorespaces Learning curves for tuning the target update rate}}{17}{figure.caption.30}%
-\contentsline {figure}{\numberline {1.17}{\ignorespaces The velocity profile and slip angle of agents with different maximum velocities during one test lap.\relax }}{18}{figure.caption.32}%
-\contentsline {figure}{\numberline {1.18}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Porto}}{19}{figure.caption.33}%
-\contentsline {figure}{\numberline {1.19}{\ignorespaces Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco}}{19}{figure.caption.34}%
-\contentsline {figure}{\numberline {1.20}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Barcelona-Catalunya}}{20}{figure.caption.35}%
-\contentsline {figure}{\numberline {1.21}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Monaco}}{21}{figure.caption.36}%
-\contentsline {figure}{\numberline {1.22}{\ignorespaces Trajectory and slip angle of an end-to-end agent racing on Circuit de Monaco}}{21}{figure.caption.37}%
-\contentsline {figure}{\numberline {1.23}{\ignorespaces Paths taken by agents trained with randomised road-surface friction coefficients on the Porto track under evaluation conditions}}{22}{figure.caption.38}%
 \addvspace {10pt}
-\contentsline {figure}{\numberline {A.1}{\ignorespaces Learning curves for tuning the target update rate}}{25}{figure.caption.40}%
-\contentsline {figure}{\numberline {A.2}{\ignorespaces Learning curves for tuning the exploration noise}}{26}{figure.caption.42}%
-\contentsline {figure}{\numberline {A.3}{\ignorespaces Learning curves for tuning the network update interval}}{27}{figure.caption.44}%
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Percentage successful laps under evaluation conditions for agents with masses placed along the longitudinal axis of the vehicle}}{2}{figure.caption.11}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Trajectories of agents racing with and without an accounted for mass placed above the front axle}}{3}{figure.caption.12}%
+\contentsline {figure}{\numberline {1.3}{\ignorespaces Success rate of agents under evaluation conditions with mismatched tire cornering stiffness}}{4}{figure.caption.13}%
+\contentsline {figure}{\numberline {1.4}{\ignorespaces Trajectories of agents racing with and without a decreased rear cornering stiffness coefficient}}{5}{figure.caption.14}%
+\contentsline {figure}{\numberline {1.5}{\ignorespaces Success rate of agents under evaluation conditions with mismatched road surface friction coefficient}}{6}{figure.caption.15}%
+\contentsline {figure}{\numberline {1.6}{\ignorespaces Locations where agents crashed while racing on a wet asphalt surface}}{7}{figure.caption.16}%
+\contentsline {figure}{\numberline {1.7}{\ignorespaces Trajectories of agents racing with a decreased road surface friction coefficient}}{8}{figure.caption.17}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Learning curves for tuning the target update rate}}{10}{figure.caption.19}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Learning curves for tuning the exploration noise}}{11}{figure.caption.21}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Learning curves for tuning the network update interval}}{12}{figure.caption.23}%

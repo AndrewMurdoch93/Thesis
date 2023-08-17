@@ -2,7 +2,7 @@
 \label{chp:partial_end_to_end_autonomous_racing}
 
 Having designed the baseline end-to-end agent and motivated the need for driving algorithms that are robust towards modelling errors, we now introduce our partial end-to-end algorithm.
-This approach separates the planning and control tasks, enabling the agent to generate a desired trajectory which is tracked using a set of steering and velocity controllers.
+This approach separates the planning and control tasks, enabling the agent to generate a desired trajectory, which is then tracked using a set of steering and velocity controllers.
 By decoupling the planning and control aspects, our algorithm aims to enhance robustness against modelling errors that commonly arise during the transfer from simulation to real-world environments.
 
 The chapter begins with a detailed description of the partial end-to-end algorithm.
@@ -33,8 +33,8 @@ Applying the findings from Section \ref{sec:obs_space}, the observation space of
 The agent maps this observation to an action space which comprises a path (represented by a series of $x$ and $y$ coordinates), and desired velocity (denoted as $v_{d}$) at a rate of $f_{\text{agent}}$ Hz. 
 
 
-A steering controller is used to generate steering commands that track the path.
-Meanwhile, a velocity controller generates desired acceleration commands, denoted $a_{\text{long},d}$, to ensure the vehicle maintains the desired velocity.
+A pure pursuit steering controller is used to generate desired steering commands (denoted as $\delta_{d}$) that track the path.
+Meanwhile, a proportional feedback velocity controller generates desired acceleration commands, denoted $a_{\text{long},d}$, to ensure the vehicle maintains the desired velocity.
 Furthermore, the velocity constraint component, as introduced in Equation \ref{eq:speed_limit}, limits the desired acceleration so that the vehicle operates within safe speed limits. 
 The steering and velocity controllers, as well as velocity constraint operate at the $100$ Hz sample rate of the simulator introduced in Section \ref{sec:simulation_environment}.
 Furthermore, it is important to note that these components are treated as part of the environment to conform to the definition of the MDP. 
@@ -43,7 +43,7 @@ Furthermore, it is important to note that these components are treated as part o
 
 The partial end-to-end planner agent, which is built using a DNN, is presented in Figure \ref{fig:steer_vel_agent}. 
 Similar to the end-to-end agent, the observation vector is normalized within the range of $[0,1]$.
-The neural network consists of three fully connected layers. The input layer has $m_1$ neurons, followed by a hidden layer with $m_2$ neurons. Finally, the output layer has $2$ neurons. 
+The DNN consists of three fully connected layers. The input layer has $m_1$ neurons, followed by a hidden layer with $m_2$ neurons. Finally, the output layer has $2$ neurons. 
 The ReLU activation function is applied to the first two layers, while the output layer is activated using a hyperbolic tangent function. 
 The use of a hyperbolic tangent function ensures that the outputs of the neural network are normalized within the range of $(-1, 1)$.
 One output of the DNN, denoted as $v_{\text{norm}}$, is scaled to the desired longitudinal velocity range $(v_{\text{min}}, v_{\text{max}})$ to yield the desired longitudinal velocity $v_{d}$. 
@@ -77,23 +77,29 @@ Additionally, the vertical axis represents the perpendicular distance from the c
 We define the origin of the Frenet frame to coincide with the starting line.
 
 
-An example trajectory of an agent racing around the Porto track is illustrated in Figure \ref{fig:frenet_frame}. 
-The trajectory is presented in both Cartesian coordinates and Frenet coordinates. 
-It is worth noting that within the Frenet frame, navigating around the track is equivalent to traveling along the horizontal axis. 
-Additionally, the track boundaries are conveniently expressed as vertical distances from the centerline. 
-As a result, in Frenet coordinates, it becomes easier to create paths that avoid intersecting with the track boundaries compared to Cartesian coordinates. 
-This advantage proves valuable because crashes can be prevented by constraining the action space to exclude trajectories that intersect with the track boundaries.
-
-\begin{figure}[htb!]
+To illustrate the Frenet frame, Figure \ref{fig:frenet_frame} shows an example trajectory of an agent racing anti-clockwise around the Porto track. 
+\begin{figure}[b]
     \centering
     \input{contents/chapt6/figs/both/frenet_frame.pgf}
-    \caption[An example of a trajectory in Cartestian and Frenet coordinates]{An example of a trajectory in (a) Cartesian coordinates, and (b) the equivalent trajectory in Frenet coordinates.}
+    \caption[An example of a trajectory in Cartestian and Frenet coordinates]{An example trajectory of an agent racing anti-clockwise around Porto, in (a) Cartesian coordinates, and (b) Frenet coordinates.}
     \label{fig:frenet_frame}
 \end{figure}
+This figure presents the agent's trajectory in both Cartesian coordinates and Frenet coordinates. 
+It is worth noting that within the Frenet frame, navigating around the track is equivalent to traveling along the horizontal axis. 
+Additionally, the track boundaries are conveniently expressed as vertical distances from the centerline. 
+As a result, it is easier to create paths that avoid the track boundaries in Frenet coordinates compared to Cartesian coordinates. 
+This advantage proves valuable because crashes can be prevented by constraining the action space to exclude trajectories that intersect with the track boundaries.
 
 
 Our approach to generating paths involves solving a predefined third order polynomial function with specific constraints inside the Frenet coordinate system.
 Figure \ref{fig:polynomial_path_generation} illustrates this process, where the steps are as follows: 
+
+\begin{figure}[b]
+    \centering
+    \input{contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex}
+    \caption[Generating the path in the Frenet frame]{An illustration of the process of generating the polynomial path in the Frenet frame. (a) The vehicle coordinates are converted into the Frenet frame, then (b) a path is constructed within the Frenet frame, after which (c) the path is converted into Cartesian coordinates.}
+    \label{fig:polynomial_path_generation}
+\end{figure}
 
 \begin{enumerate}
     \item Convert the vehicle coordinates and heading into the Frenet frame, denoting the distance along the centerline as $s_0$ and the perpendicular distance from the centerline as $n_0$.
@@ -116,17 +122,10 @@ Figure \ref{fig:polynomial_path_generation} illustrates this process, where the 
 \end{enumerate}
 
 
-\begin{figure}[htb!]
-    \centering
-    \input{contents/chapt6/figs/steer/polynomial_path_tex.pdf_tex}
-    \caption[Generating the path in the Frenet frame]{An illustration of the process of generating the polynomial path in the Frenet frame. (a) The vehicle coordinates are converted into the Frenet frame, then (b) a path is constructed within the Frenet frame, after which (c) the path is converted into Cartesian coordinates.}
-    \label{fig:polynomial_path_generation}
-\end{figure}
-
 
 \subsection{Steering controller design}
 
-A steering controller takes a desired path and vehicle pose as input, and outputs steering commands such that the vehicle tracks a planned path. 
+% A steering controller takes a desired path and vehicle pose as input, and outputs steering commands such that the vehicle tracks a planned path. 
 The pure pursuit steering controller is popular amongst partial end-to-end methods \cite{Evans2021b, Weiss2020}.
 The popularity of this controller, combined with the fact that it does not require a vehicle dynamics model guided our decision to implement it as the path tracker.
 Our implementation of pure pursuit is based on the work by Sakai et al. \cite{Sakai2018}.
@@ -139,7 +138,7 @@ The target point is determined by a specified \emph{look-ahead} distance, denote
 \end{equation}
 where $k_s$ is the look-ahead gain, $L_{c}$ is a constant distance and $v$ is the longitudinal velocity of the vehicle in m/s. 
 The look-ahead distance is adjusted according to the velocity based on the finding by Patnaik et al. \cite{Patnaik2020} that larger look-ahead distances are required for higher velocities to maintain stability.
-Furthermore, both $l_d$ and $L_c$ are measured from the center of the rear axle.
+Furthermore, $l_d$ is measured from the center of the rear axle.
 
 \begin{figure}[htb!]
     \centering
@@ -153,7 +152,7 @@ The desired steering angle $\delta_d$ is then computed as
     \delta_d = \tan^{-1} \left( \frac{2L\sin(\alpha)}{l_d} \right),
 \end{equation}
 where $L$ is the wheelbase of the vehicle, and $\alpha$ is the angle between vehicle's heading and look-ahead distance vector.
-This ensures that the rear wheel travels in a circular arc to the target point, assuming no slipping occurs. 
+This ensures that the rear wheel travels in a circular arc to the target point, under the assumption that no slipping occurs. 
 The target point and steering angle is recomputed using Equations \ref{eq:l_d} and \ref{eq:delta_d} at a rate of $100$ Hz.
 
 
@@ -192,50 +191,40 @@ Furthermore, the velocity controller is sampled at a rate of $100$ Hz.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Applying TD3 to partial end-to-end racing}
+\section{Applying TD3 to partial end-to-end racing}\label{sec:TD3_pete}
 
-Having described the components of the partial end-to-end framework, we now discuss how the TD3 algorithm from Section \ref{sec:td3} was applied to train the agent to race.
-To enable training of the partial end-to-end agent using TD3, we followed the steps as for the end-to-end agent detailed in Section \ref{sec:td3_end_to_end}. 
-Specifically, we worked from Algorithm \ref{alg:td3_mod} which was applied to the end-to-end agent, and incorporated the following modifications:
-
-
-In line $7$ of Algorithm \ref{alg:td3_mod}, an action is sampled.
-In the case of the end-to-end agent, this action comprised a longitudinal acceleration $a_{\text{long},d}$ and steering angle $\delta_d$.
-However, the action sampled from the partial end-to-end planner agent is comprised of a desired velocity and path.
-Line $7$ was therefore changed to
+To enable training of the partial end-to-end agent using TD3, we followed similar steps as for the end-to-end agent, which are detailed in Section \ref{sec:td3_end_to_end}. 
+Specifically, we incorporated the following modifications to Algorithm \ref{alg:td3_mod}:
+Line $7$, in which an action is sampled form the agent, is changed to
 \begin{equation}\label{eq:pete_agent_sample}
     a_{t} = [v_d, \text{path}] \leftarrow \text{scale}( \pi_{\phi}(o_t+\epsilon) ), \hspace{0.5cm} \epsilon \sim \mathcal{N}(0, \sigma_{\text{action}}).
 \end{equation}
-
-In Algorithm \ref{alg:td3_mod}, the difference in sample rate between the agent and environment components are addressed by performing $N$ environment samples for every MDP time step. 
-The value of $N$ is determined by Equation \ref{eq:N}. 
-To implement this, a for loop from lines $8$ to $14$ is employed.
-
-For the partial end-to-end agent, the steering and velocity controllers are included in the definition of the environment in addition to the velocity constraint and simulator.
-We therefore sample an acceleration action from the velocity controller between lines $8$ and $9$ of the for loop, based on  the current observation $o_t$ and the desired velocity $v_d$:
-\begin{equation}\label{eq:pete_vel_sample}
-    a_{\text{long},d} \leftarrow \text{velocityControl}(o_t, v_d).
-\end{equation}
-Additionally, the pure pursuit steering controller is sampled to produce a steering angle, utilizing the observation $o_t$ and path selected by the agent:
-\begin{equation}\label{eq:pete_steer_sample}
-    \delta_d \leftarrow \text{steeringControl}(o_t, \text{path}).
-\end{equation}
-The incorporation of the steering and velocity controllers into the for loop is facilitated by the fact that they are sampled at the same rate as the other components of the environment.
-
-Having made these modifications to the TD3 algorithm, we developed the remaining components required to implement the algorithm, namely, a critic and a reward signal.
-We adopted the same critic DNN architecture as the one used for the end-to-end agent, as described in Section \ref{sec:td3_end_to_end}. 
-The critic accepts a normalized observation and action as input, and is composed of three fully connected layers: an input layer with $m_1$ neurons, a hidden layer with $m_2$ neurons, and an output layer with a single neuron. The first two layers utilize the ReLU activation function, while the final layer employs a linear activation function to produce the output. 
-
-Lastly, we adopted the same reward signal as used for the end-to-end agent, as described by Equation \ref{eq:reward_signal}. 
-This reward signal incentivizes the agent for making progress along the centerline, while penalizing the agent on each time step as well as for collisions.
+to account for the fact that the partial end-to-end agent outputs a velocity and path, rather than an acceleration and steering angle.
 
 
-After implementing these changes to the TD3 algorithm, we adapted Algorithm \ref{alg:end_to_end_deploy}, which is used to evaluate trained end-to-end agents, for compatibility with partial end-to-end agents.
-To allow the algorithm to be used to evaluate partial end-to-end agents, we substituted Equation \ref{eq:pete_agent_sample} into line $4$.
-Additionally, Equations \ref{eq:pete_vel_sample} and \ref{eq:pete_steer_sample}, which are used to sample control actions, were added in-between lines $2$ and $3$.
-By incorporating these adjustments, we were able to evaluate both end-to-end and partial end-to-end agents under identical conditions. 
+
+Lines $8$ to $14$ of Algorithm \ref{alg:td3_mod} employ a for loop that performs $N$ environment samples for every MDP time step.
+Since the steering and velocity controller, as well as the velocity constraint are included in the definition of the environment for the partial end-to-end agent, 
+these components execute at line $8$.
+Specifically, the desired steering angle ($\delta_d$), and desired longitudinal acceleration $a_{\text{long},d}$) is sampled using Equations \ref{eq:delta_d} and \ref{eq:vel_control}, respectively.
+The velocity contstraint component then limits the velocity using Equation \ref{eq:speed_limit}.
+
+
+The remaining components required to implement the algorithm are a critic and a reward signal.
+The architecture adopted for the critic DNN is analogous to that of the actor.
+It accepts a normalized observation and action as input, and outputs the action-value.
+It comprises three layers, the first two of which are identical to the actor (i.e., the input and hidden layers comprise $m_1$ and $m_2$ neurons with ReLU activation functions, respectively).
+Furthermore, the output layer has a single neuron with a linear activation.
+Lastly, the reward signal from Equation \ref{eq:reward_signal}, which was used for the end-to-end agent, was adopted for use with the partial end-to-end agent. 
+
+
+
+After implementing these changes to the TD3 algorithm, Algorithm \ref{alg:end_to_end_deploy} was adapted to evaluate partial end-to-end agents.
+This was done by substituting Equation \ref{eq:pete_agent_sample} into line $4$, which samples an action from the agent. 
+Additionally, Equations \ref{eq:pete_vel_sample} and \ref{eq:pete_steer_sample} were added in-between lines $2$ and $3$ to sample control actions.
+By incorporating these adjustments, both end-to-end and partial end-to-end agents were evaluated under identical conditions. 
 Specifically, no exploration noise was added to the actions, while Gaussian noise was introduced to the observation.
-As with the end-to-end agnet, this Gaussian noise had standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for each element of the LiDAR scan. 
+As with the end-to-end agent, this Gaussian noise had standard deviations of $0.025$ m for $x$ and $y$ coordinates, $0.05$ rads for heading, $0.1$ m/s for velocity, and $0.01$ m for each element of the LiDAR scan. 
 
 
 
@@ -252,48 +241,47 @@ As with the end-to-end agnet, this Gaussian noise had standard deviations of $0.
 
 \section{Empirical design and hyper-parameter values}
 
-We have introduced the partial end-to-end algorithm and modifications to TD3 with symbolic hyper-parameter values.
+The partial end-to-end algorithm, as well as modifications to TD3 have now been introduced with symbolic hyper-parameter values.
 As with the end-to-end algorithm, these values were tuned experimentally for optimal performance.
-We followed the same procedure as with the end-to-end agent to select hyper-parameter values, with the addition of hyper-parameters associated with the steering and velocity controllers.
-This procedure involved repeatedly training agents using Algorithm \ref{alg:td3_mod} with specific values of the hyper-parameter under consideration while keeping all other hyper-parameters fixed.
-Furthermore, three agents were trained for every hyper-parameter set to ensure consistency in the results.
-The values that were experimentally determined as optimal for all three tracks are listed in Table \ref{tab:pete_values}.
+The values that were determined as locally optimal for all three tracks (i.e., Porto, Barcelona-Catalunya, and Monaco) are listed in Table \ref{tab:pete_values}.
 
 \input{contents/chapt6/figs/empirical_design/empirical_design}
 
+To determine these hyperparameters, the same procedure as with the end-to-end agent was followed, 
+with the addition of hyper-parameters associated with the velocity and steering controller.
+This procedure involved repeatedly training agents using the algorithm described in Section \ref{sec:TD3_pete}
+with various values of the hyper-parameter under consideration, while keeping all of the other hyper-parameters fixed at the values listed in Table \ref{tab:pete_values}.
+Furthermore, three agents were trained for every hyper-parameter set to ensure consistency in the results.
+Since the hyper-parameter tuning procedure was discussed in detail for end-to-end agents in Chapter \ref{chp:end_to_end_autonomous_racing}, the complete hyper-parameter tuing procedure for parameters that were already shown will not be presented in this chapter. 
+However, the process of tuning the agent sampling rate ($f_{\text{agent}}$) is demonstrated as a representative sample of the hyper-parameter tuning procedure.
 
-Since the hyper-parameter tuning procedure for the end-to-end agent was discussed in detail in Chapter \ref{chp:end_to_end_autonomous_racing}, we will not present the complete procedure for parameters that were already shown. 
-However, we do demonstrate the process of tuning the agent sampling rate ($f_{\text{agent}}$) as a representative sample of the hyper-parameter tuning procedure.
 
-Figure \ref{fig:f_agent_pete} illustrates the results obtained during training from agents racing on the Barcelona-Catalunya track with sampling rates ranging from $2$ Hz to $20$ Hz. 
+Figure \ref{fig:f_agent_pete} illustrates the results obtained while training agents on the Barcelona-Catalunya track with sampling rates ranging from $2$ Hz to $20$ Hz. 
 The figure shows the percentage of failed laps, lap time, and reward achieved by these agents. 
 It is worth noting that all agents achieved a $0\%$ failure rate within the first $50$ training episodes.
 Furthermore, with the exception of agents utilizing a $5$ Hz agent sampling rate, the lap time of all other agents convergence to approximately $47.3$ seconds. 
 Similarly, the reward of all agents, except those using a $5$ Hz agent sampling rate, converged to a value of $22.5$.
 These results indicate that our partial end-to-end algorithm design is more robust towards hyper-parameter changes than the end-to-end agent.
-The agent sampling rate was conservatively chosen as $10$ Hz.
+The agent sampling rate was chosen conservatively as $10$ Hz.
 
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt6/figs/algorithm/f_agent_curves.pgf}
-    \caption[Learning curves for partial end-to-end agents trained with different agent sampling rates]{(a) The percentage failed laps and (b) lap time of completed laps during training, as well as (c) the learning curves of partial end-to-end agents utilising agent sampling rate ($f_{\text{agent}}$) values ranging from $2$ Hz to $20$ Hz.}
+    \caption[Learning curves for partial end-to-end agents trained with different agent sampling rates]{(a) The percentage failed laps and (b) average lap time of completed laps during training, as well as (c) the average learning curves of three partial end-to-end agents utilising agent sampling rate ($f_{\text{agent}}$) values ranging from $2$ Hz to $20$ Hz.}
     \label{fig:f_agent_pete}
 \end{figure}
 
-We now present the hyper-parameter tuning procedure for components that are unique to the partial end-to-end agent.
-These are the steering and velocity controllers.
 
 
 
 
 \section{Steering controller tuning}
 
-To determine the optimal values for the pure pursuit steering controller's look-ahead gain ($k_s$) and constant ($L_c$), we conducted a series of experimental evaluations. 
-Initially, we focused on assessing the impact of varying $L_c$ while keeping $k_s$ constant on the tracking capabilities of the pure pursuit controller.
-
-During the first experiment, the path was predefined as a straight line, and actions were exclusively sampled from the pure pursuit controller. 
+To determine optimal values for the pure pursuit steering controller's look-ahead gain ($k_s$) and look-ahead constant ($L_c$) (as in Equation \ref{eq:l_d}), a series of experimental evaluations was conducted. 
+Initially, the focus of these evaluations was on assessing the impact of varying $L_c$ while keeping $k_s$ constant on the tracking capabilities of the pure pursuit controller.
+During the first experiment, the vehicle was tasked with following a straight line, while exclusively sampling actions from the pure pursuit controller. 
 A constant speed of $3$ m/s was assigned to the vehicle.
-Furthermore, the look-ahead gain $k_s$ was set to a small value of $0.1$ based on the finding by Patnaik et al. \cite{Patnaik2020} that it should not be the dominant term in determining the look-ahead distance.
+Furthermore, the look-ahead gain $k_s$ was set to a small value of $0.1$, based on the finding by Patnaik et al. \cite{Patnaik2020} that it should not be the dominant term in determining the look-ahead distance.
 The vehicle was initially positioned parallel to the path, with a distance of $0.5$ m separating them. 
 The experiment was repeated for $L_c$ values between $0.2$ and $2$ meters.
 
@@ -309,8 +297,8 @@ While an $L_c$ value of $0.2$ m produced extreme oscillations, controllers with 
     \label{fig:lfc}
 \end{figure}
 
-Based on these findings, we trained agents with  look-ahead constants of $0.5$, $1$ and $1.5$ meters, while setting the look-ahead gain to $0.1$.
-The lap time, percentage failed laps and cumulative episode reward during training of these agents are shown in Figure \ref{fig:lfc_curves}.
+Based on these findings, agents were trained with look-ahead constants of $0.5$, $1$ and $1.5$ meters, while setting the remaining hyper-parameters equal to those listed in Table \ref{tab:pete_values}.
+The average lap time, percentage failed laps and average cumulative episode reward during training for three agents trained with each look-ahead distance are in Figure \ref{fig:lfc_curves}.
 
 \begin{figure}[htb!]
     \centering
@@ -319,41 +307,42 @@ The lap time, percentage failed laps and cumulative episode reward during traini
     \label{fig:lfc_curves}
 \end{figure}
 
-From Figure \ref{fig:lfc_curves}, partial end-to-end agents trained with look-ahead constant greater than $1$ meter did not effectively learn to reduce their failure rate to $0\%$, whereas agents trained with  look-ahead constants of $0.5$ and $1$ do.
-Comparing the agents trained with look-ahead constants of $0.5$ and $1$ meters, it is worth noting that the agents trained with an $L_c$ of $1$ meter achieve a slightly faster average lap time. 
-In terms of overall performance, the agents trained with a look-ahead constant of $1$ meter outperform the other agents, achieving the highest reward.
-We therefore selected the value for the look-ahead constant $L_c$ as $1$.
+From Figure \ref{fig:lfc_curves}, partial end-to-end agents trained with look-ahead constant greater than $1$ meter did not effectively learn to reduce their failure rate to $0\%$, whereas agents trained with  look-ahead constants of $0.5$ and $1$ meters do.
+When comparing the agents trained with look-ahead constants of $0.5$ and $1$ meters, it is worth noting that the agents trained with an $L_c$ of $1$ meter achieve a slightly faster average lap time. 
+In terms of overall performance, the agents trained with a look-ahead constant of $1$ meter outperform the other agents and achieve the highest reward.
+The look-ahead constant $L_c$ was therefore selected as $1$ meter.
+
+We then compared the paths driven by agents with a look-ahead distance of one meter, to the paths that were selected by the RL agent.
+A comparison of these two paths is illustrated in Figure \ref{fig:lfc_paths}, which shows that
+although partial end-to-end agents utilising a pure pursuit controller may complete laps quickly, 
+the tracking performance of this controller in high speed conditions is poor.
+Interestingly, the agent outputs a path that approaches the track's edge, leading to a driven path that remains close to the center.
+Thus, the planner agent appears to be `compensating' for the controller tracking performance.
+This is attributed to the fact that the agent is trained with the controllers in place.
 
 
-The paths driven by a partial end-to-end agent trained on Barcelona-Catalunya with its look-ahead constant set to $1$ is shown in Figure \ref{fig:lfc_paths}, 
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt6/figs/steer_control/planned_paths.pgf}
     \caption[The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya]{The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya, along with planned paths sampled from the agent.}
     \label{fig:lfc_paths}
 \end{figure}
-along with the planned paths sampled from the agent.
-The figure shows that although partial end-to-end agents utilising a pure pursuit controller may complete laps quickly, the tracking performance of this controller in high speed conditions is poor.
-Interestingly, the agent outputs a path that approaches the track's edge, leading to a driven path that remains close to the center.
-Thus, the planner agent appears to be `compensating' for the controller tracking performance.
-This is attributed to the fact that the agent is trained with the controllers in place.
-
 
 
 \section{Velocity controller tuning}
 
-Next, the velocity controller gain $k_v$ was tuned experimentally.
+Next, the velocity controller gain $k_v$ (found in Equation \ref{eq:vel_control}) was tuned experimentally.
 Agents with $k_v$ values of $0.5$, $1$ and $2$ were trained to race on Barcelona-Catalunya.
-The percentage successful laps and lap time that these agents achieved under evaluation conditions are given in Table \ref{tab:velocity_controller_gain}.
-From this table, we observe that all of the agents completed all of their laps under evaluation conditions, and that the differences in lap time are minimal.
+The percentage successful laps and average lap time that three agents achieved while utilising each of the $k_v$ values and racing under evaluation conditions are given in Table \ref{tab:velocity_controller_gain}.
+From this table, we observe that each agents completed all of its laps, and that the differences in lap time between agents are minimal.
 
 \input{contents/chapt6/figs/velocity_control/velocity_gain_table.tex}
 
-Therefore, we conducted a qualitative evaluation of the trajectories taken by agents utilising each velocity controller gain.
+A qualitative evaluation of the trajectories taken by agents utilising each velocity controller gain was therefore conducted.
 The paths followed by agents employing different controller gains on the final section of Barcelona-Catalunya is shown in Figure \ref{fig:kv_paths}.
 Agents utilizing controller gains of $0.5$ and $1$ exhibit similar trajectories, while those using a controller gain of $2$ tend to take wider turns. 
 This behavior is evident at the final corner, where the agent with a controller gain of $2$ approaches the outer edge of the track. 
-As a result, we opt for a conservative controller gain of $0.5$ to prioritize vehicle safety.
+As a result, we opt for a controller gain of $1$ to balance vehicle safety and performance.
 
 \begin{figure}[htb!]
     \centering
@@ -369,30 +358,29 @@ As a result, we opt for a conservative controller gain of $0.5$ to prioritize ve
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \section{Racing without model uncertainties}
 
-Having determined a locally optimal hyper-parameter set for the partial end-to-end algorithm, we proceeded to assess its performance in comparison to the end-to-end baseline under conditions without model-mismatches on the Barcelona-Catalunya and Monaco tracks. 
-We compared the training performance of both algorithms before assessing the performance of both agents under the specified evaluation conditions.
+Having determined a locally optimal hyper-parameter set for the partial end-to-end algorithm, we proceeded to assess its performance in comparison to the end-to-end baseline under conditions without model-mismatches. 
+Figure \ref{fig:all_tracks_train} presents the average training performance, in terms of failed laps and lap time, of $10$ partial end-to-end, as well as $10$ fully end-to-end agents trained on the Barcelona-Catalunya and Monaco tracks. 
+A trend is observed across both tracks: the partial end-to-end agents achieve a near $0\%$ failure rate early in training, while the end-to-end agents continue to experience crashes throughout the training process.
+However, it is worth noting that both the partial and fully end-to-end agents achieve similar lap times for the laps that are successfully completed. 
 
-
-Figure \ref{fig:all_tracks_train} presents the training performance of both the partial and fully end-to-end algorithms on the Barcelona-Catalunya and Monaco tracks. 
 \begin{figure}[htb!]
     \centering
-    \input{contents/chapt6/figs/racing/all_tracks_train.pgf}
+    \input{contents/chapt6/figs/racing/all_tracks_train_1.pgf}
     \caption[Learning curves of partial and fully end-to-end agents trained to race on the Porto and Monaco tracks]{(a) Percentage failed laps and (b) lap time of partial and fully end-to-end agents during training. Dashed lines indicate agents trained to race on Barcelona-Catalunya, while solid lines indicate agents trained to race on Monaco.}
     \label{fig:all_tracks_train}
 \end{figure}
-The performance is evaluated in terms of the percentage of failed laps and lap time.
-A consistent trend is observed across all tested tracks: the partial end-to-end agents achieve either a $0\%$ failure rate or come close to it, while the end-to-end agents continue to experience crashes throughout the training process.
-Furthermore, partial end-to-end agents train faster on average than end-to-end agents.
-However, it is worth noting that both the partial and fully end-to-end agents achieve similar lap times for the laps that are successfully completed. 
 
+Based on these results, utilising a trajectory planning approach coupled with a controller offers distinct advantages over end-to-end methods during training.
+In particular, many collisions can be avoided by constraining the generated paths such that they do not intersect with the track boundary. 
+This is exemplified in Figure \ref{fig:esp_crashes}, which depicts the locations where an end-to-end, as well as a partial end-to-end agent crashed during one training run.
+Whereas the end-to-end agent experienced 726 crashes in 1170 training episodes, the partial end-to-end agent encountered only 11 crashes in 113 training episodes.
+Moreover, the crashes experienced by the partial end-to-end agent were as result of poor tracking performance of the pure pursuit controller at high speeds.
 
-Based on these findings, utilising a trajectory planning approach that avoids track boundaries and executing it using a set of feedback controllers offers distinct advantages over end-to-end methods during training.
-In particular, by constraining the paths to prevent intersections with track boundaries, many collisions can be avoided. This is exemplified in Figure \ref{fig:esp_crashes}, which depicts the locations where end-to-end and partial end-to-end agents crashed during training.
-Whereas the end-to-end agent experienced 726 crashes in 1170 training episodes, the partial end-to-end agent encountered 11 crashes in 113 training episodes.
-Moreover, these crashes were as result of poor tracking performance of the pure pursuit controller at high speeds.
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt6/figs/racing/crashes.pgf}
@@ -400,48 +388,80 @@ Moreover, these crashes were as result of poor tracking performance of the pure 
     \label{fig:esp_crashes}
 \end{figure}
 
-Having determined that partial end-to-end have an advantage over end-to-end agents during training, we assessed the performance of end-to-end and partial end-to-end agents under the evaluation conditions specified in Section \ref{sec:td3_end_to_end}.
-The percentage successful laps and lap time of both end-to-end and partial end-to-end agents racing on every track is presented in Table \ref{tab:peteevaluation}.
-We observe similar trends during evaluation as in training.
+
+The toal percentage of successful laps and average lap time for $10$ end-to-end and partial end-to-end agents racing under evaluation conditions on every track is presented in Table \ref{tab:peteevaluation}.
+From this table, we observe that while end-to-end agents successfully complete nearly all of their evaluation laps on the simple Porto track, they experience crashes on the more complex tracks, namely Barcelona-Catalunya and Monaco.
+On the other hand, partial end-to-end agents experience a low percentage of crashes on each of the the tracks.
+Furthermore, partial and fully end-to-end agents execute similar lap times on the Porto and Barcelona-Catalunya tracks.
+However, Partial end-to-end agents race slower on average on the Monaco track.
+This is due to an outlier agent that learned to continuously select the slowest speed.
+Excluding this outlier, partial end-to-end agents achieve an average lap time of $35.73$, which is competitive with end-to-end agents. 
 
 \input{contents/chapt6/figs/racing/evaluation.tex}
 
-While end-to-end agents do successfully complete all their evaluation laps on the Porto track, they experience crashes on the more complex tracks, namely Barcelona-Catalunya and Monaco.
-Notably, end-to-end agents race faster than partial end-to-end agents on these more complex tracks, at the cost of safety.
-On the other hand, partial end-to-end agents experience a relatively low percentage of crashes on the Monaco track, while successfully completing all their laps on the remaining tracks.
+While Table \ref{tab:peteevaluation} provides the average results across a set of $10$ agents, 
+a more comprehensive depiction of the distribution of agents' performances is presented in Figure \ref{fig:eval_dists}. 
+This figure illustrates a histogram detailing the distribution of successfully completed laps under evaluation conditions.
+Each of the partial end-to-end agents completed all of their laps in their respective scenarios, 
+except for one instance on the Barcelona-Catalunya track, where 99 out of 100 laps were successfully completed. 
+In contrast, only a single end-to-end agent out of the 10 managed to accomplish more than 90 out of 100 laps, when considering both the Barcelona-Catalunya and Monaco tracks.
+Furthermore, the range of evaluation outcomes for the end-to-end agents is large, with certain agents achieving less than 10 percent completion of their laps. 
+Thus, the partial end-to-end framework allows agents to train and execute laps more consistently than an end-to-end framework.
 
 
-Figures \ref{fig:esp_eval} and \ref{fig:mco_eval} illustrate the paths executed by partial end-to-end agents under evaluation conditions on the Barcelona-Catalunya and Monaco tracks respectively.
+\begin{figure}[htb!]
+    \centering
+    \input{contents/chapt6/figs/racing/evaluation_distribution.pgf}
+    \caption[Distribution of percentage successful laps completed by agents under evaluation conditions]{Distribution of percentage successful laps completed by agents under evaluation conditions for the Barcelona-Catalunya and Monaco tracks.}
+    \label{fig:eval_dists}
+\end{figure}
+
+
+Figures \ref{fig:esp_eval} and \ref{fig:mco_eval} illustrate the paths executed by partial end-to-end agents while racing under evaluation conditions on the Barcelona-Catalunya and Monaco tracks, respectively.
 The velocities of these agents are color-mapped onto their paths.
 Furthermore, the paths taken by end-to-end agents racing on the same track is shown as a light blue dashed line.
-We observe from these figures that paths taken by partial end-to-end agents are smooth compared to end-to-end agents.
-Notably, no slaloming was observed from any partial end-to-end agent.
-Furthermore, the partial end-to-end agents demonstrated the ability to appropriately decelerate when navigating some sharp corners.
-These observations were consistent across both the Barcelona-Catalunya and Monaco tracks.
-
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt6/figs/racing/esp.pgf}
     \caption[The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya]{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya. For comparison, the path of an end-to-end agent racing on the same track is depicted with a dashed light blue line.}
     \label{fig:esp_eval}
 \end{figure}
-
-
-In the Chapter \ref{chp:end_to_end_autonomous_racing}, we observed that end-to-ends agent exhibited dangerous slaloming behavior associated with high slip angles. 
-This behavior was particularly problematic when model-mismatches were present, leading to frequent crashes.
-Therefore, the absence of slaloming behavior in the partial end-to-end agents is a promising indication that may offer improvements over the performance of end-to-end agents  when model-mismatches are present. 
-To ascertain whether the absence of slaloming behaviour has resulted in a reduction in slip angles, we observe the paths and slip angles of agents racing on a section of Circuit de Monaco, as depicted in Figure \ref{fig:pete:slip}.
-
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt6/figs/racing/mco.pgf}
     \caption[The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco]{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco. For comparison, the path of an end-to-end agent racing on the same track is depicted with a dashed light blue line.}
     \label{fig:mco_eval}
 \end{figure}
+We observe from these figures that paths taken by partial end-to-end agents are smooth compared to end-to-end agents.
+Notably, no slaloming was observed from any partial end-to-end agent.
+Furthermore, the partial end-to-end agents demonstrated the ability to appropriately decelerate when navigating some sharp corners.
+% These observations were consistent across both the Barcelona-Catalunya and Monaco tracks.
 
-Although the peak slip angle of the partial end-to-end agent is $0.26$ radians when rounding the second-to-last corner, which is similar to the end-to-end agent, the slip angles of the partial end-to-end agents are generally close to $0$ radians. 
-In contrast, end-to-end agents experience large slip angles throughout the track due to slaloming.
-Therefore, although the absence of slaloming has not reduced the peak slip angle, it has resulted in a reduction in the average slip angle across the track.
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/racing/esp.pgf}
+%     \caption[The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya]{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya. For comparison, the path of an end-to-end agent racing on the same track is depicted with a dashed light blue line.}
+%     \label{fig:esp_eval}
+% \end{figure}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \input{contents/chapt6/figs/racing/mco.pgf}
+%     \caption[The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco]{The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco. For comparison, the path of an end-to-end agent racing on the same track is depicted with a dashed light blue line.}
+%     \label{fig:mco_eval}
+% \end{figure}
+
+
+
+In Chapter \ref{chp:end_to_end_autonomous_racing}, end-to-end agents that exhibited dangerous slaloming behavior associated with high slip angles were observed. 
+This behavior was particularly problematic when model-mismatches were present, leading to frequent crashes.
+To ascertain whether the absence of slaloming behaviour resulted in a reduction in slip angles for partial end-to-end agents, we recorded
+the slip angles experienced by agents racing on a section of Circuit de Monaco.
+The path and slip angles of both partial and fully end-to-end agents are plotted in Figure \ref{fig:pete:slip}.
+From this figure, partial end-to-end agents experience a slightly smaller peak slip angle than end-to-end agents.
+Additonally, the slaloming behaviour exhibited by end-to-end agents causes large oscillation in the slip angle throughout the lap.
+In contrast, the average slip angle exhibited by partial end-to-end agents is smaller than that of the end-to-end agent.
+The absence of slaloming behavior displayed by the partial end-to-end agents is a promising indication that our technique may offer improvements over the performance of end-to-end agents  when model-mismatches are present. 
 
 \begin{figure}[htb!]
     \centering
@@ -454,70 +474,53 @@ Therefore, although the absence of slaloming has not reduced the peak slip angle
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Evaluating alternative partial end-to-end algorithm architectures}
+\section{Evaluation of alternative partial end-to-end algorithm architectures}
 
-After having determined that partial end-to-end agents have and advantage over end-to-end agents in terms of training performance and learned behaviour, an ablation study was conducted to assess the impact of each individual controller on the algorithm's behavior. 
-In this study, we trained agents to race on the Barcelona-Catalunya track with either solely a steering controller or solely a velocity controller.
-To ensure consistency, these partial end-to-end agents with one controller removed were trained using the same hyper-parameters as the partial end-to-end agents with both controllers. 
-Additionally, we followed the same training procedure as described in Section \ref{sec:ete_empirical_design} for the end-to-end agents.
+An ablation study was conducted to assess the impact of each individual controller on the algorithm's behavior. 
+In this study, agents were trained to race on the Barcelona-Catalunya track with either solely a steering controller or solely a velocity controller.
 
-
-Figure \ref{fig:architecture_train} presents the percentage of failed laps, lap time, and learning curves for each algorithm, including the end-to-end approach, during the training process.
-There is a clear distinction between agents with and without a steering controller when observing the percentage failed laps.
-Whereas the failure rate of agents utilising a steering controller quickly decreases to $0\%$, agents without a steering controller (i.e., end-to-end agents, and partial end-to-end agents with solely a velocity controller) continue to crash throughout training.
+To ensure consistency, these partial end-to-end agents were trained using the hyper-parameters listed in Table \ref{tab:pete_values}.
+Furthermore, three agents were trained utilising each proposed architecture.
+Figure \ref{fig:architecture_train} presents the percentage of failed laps and average lap time during training, as well as the learning curves for agents utilising each architecture.
+From this figure, there is a clear distinction between agents with and without a steering controller when observing the percentage failed laps.
+Whereas the failure rate of agents utilising a steering controller quickly decreases to $0\%$, agents without a steering controller (i.e., end-to-end agents and partial end-to-end agents with solely a velocity controller) continue to crash throughout training.
 Interestingly, the lap time for all agents, except for those with only a steering controller, converged to a similar value of approximately $48$ seconds. 
-Agents relying solely on a steering controller exhibited a tendency to choose the slowest possible speed.
+This is because agents relying solely on a steering controller exhibited a tendency to choose the slowest possible speed.
 In terms of overall performance, the partial end-to-end algorithm employing both controllers achieved a higher reward per episode compared to other agents. 
-This is attributed to its ability to minimize both the percentage of failed laps and lap time simultaneously.
 
-
-\begin{figure}[htb!]
+\begin{figure}[t]
     \centering
     \input{contents/chapt6/figs/architecture/architecture_train.pgf}
-    \caption[Learning curves for agents utilising each algorithm structure]{(a) The percentage failed laps, (b) lap time and (c) learning curve during training for agents utilising each algorithm structure.}
+    \caption[Learning curves for agents utilising each algorithm structure]{(a) The percentage failed laps and (b) lap time during training, as well as (c) the learning curves for agents utilising each algorithm structure.}
     \label{fig:architecture_train}
 \end{figure}
 
-As part of the ablation study, we qualitatively evaluated the trajectories executed by each algorithm on Barcelona-Catalunya.
-Figure \ref{fig:architecture_esp} displays the paths taken by agents using different algorithms.
 \begin{figure}[b]
     \centering
     \input{contents/chapt6/figs/architecture/architecture_esp.pgf}
     \caption[Paths taken by agents utilising each algorithm architecture]{The paths taken by agents utilising each algorithm architecture. Paths taken by agents without a steering controller are depicted on the right, whereas the paths taken by agents utilising a steering controller are depicted on the left.}
     \label{fig:architecture_esp}
 \end{figure}
+
+As part of the ablation study, we qualitatively evaluated the trajectories executed by each proposed architecture on Barcelona-Catalunya.
+Figure \ref{fig:architecture_esp} displays the paths taken by agents using the different architectures.
 The paths taken by agents without a steering controller are depicted on the left, whereas the paths taken by agents utilising a steering controller are depicted on the right.
 It is evident that partial end-to-end agents without a steering controller exhibit slaloming, similar to that of the end-to-end agent. 
 Additionally, the behavior of both agents utilizing a steering controller are similar.
 We therefore determine that the steering controller is the dominant component in improving the performance of partial end-to-end agents over end-to-end agents. 
 Furthermore, the best component configuration for partial end-to-end algorithms includes both steering and velocity control.
 
-
-% \begin{figure}[htb!]
-%     \centering
-%     \input{contents/chapt6/figs/architecture/architecture_esp.pgf}
-%     \caption[Paths taken by agents utilising each algorithm architecture]{The paths taken by agents utilising each algorithm architecture. Paths taken by agents without a steering controller are depicted on the right, whereas the paths taken by agents utilising a steering controller are depicted on the left.}
-%     \label{fig:architecture_esp}
-% \end{figure}
-
-
 \section{Summary}
 
 In this chapter, we have detailed the design of our partial end-to-end algorithm, which is comprised of an RL planner, a pure pursuit steering controller and a proportional velocity controller.
 The RL planner agent utilises the Frenet frame to output paths that do not intersect with the track boundary.
 
-We observed that by constraining the path using the Frenet frame, agents are able to train with a significantly reduced number of crashes.
-This allows them to train much faster than end-to-end agents.
-Partial end-to-end agents exhibited improved performance over end-to-end agents under evaluation conditions in terms of success rate.
-Furthermore, partial end-to-end agents exhibited smooth trajectories, resulting in lower slip angles than end-to-end agents throughout most sections of the tracks tested.
-
-
-These evaluations were conducted under conditions where no model mismatches were present.
-However, the motivation for developing a partial end-to-end algorithm is that it may offer performance advantages in settings where model mismatches are present.
-In the next chapter, we will assess the performance of the partial end-to-end agents under conditions where model mismatches are introduced intentionally. 
-This assessment aims to determine whether the partial end-to-end agents offer any advantages over the end-to-end baseline agents in such scenarios.
+By constraining the path using the Frenet frame, partial end-to-end agents are able to significantly reduce the number of crashes during training and evaluation, compared to end-to-end agents.
+In addition to a significant reduction in crashes, partial end-to-end agents are able to train significantly faster (in fewer than one-sixth the number of training steps) than end-to-end agents.
+They also exhibit improved performance over end-to-end agents under evaluation conditions, executing smooth trajectories which result in lower slip angles.
+This is a promising indicator that the partial end-to-end framework may offer offer further performance advantages in settings where model mismatches are present.
+Therefore, in the next chapter, we will assess the performance of the partial end-to-end agents under conditions where model mismatches are introduced intentionally. 
 
 

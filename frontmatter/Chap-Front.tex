@@ -18,6 +18,25 @@ Thus, by leveraging the robustness of a classical controller, our partial end-to
 
 
 
+\chapter{Uittreksel}%===================================================
+
+Die toenemende gewildheid van selfbesturende motors het aanleiding gegee tot die opkomende veld van outonome wedrenne.
+In hierdie domein, het algoritmes die taak om sensordata te verwerk om beheeropdragte (bv., stuur en versneller) te genereer wat 'n voertuig veilig en in die kortste moontlike tyd om 'n baan beweeg.
+
+Hierdie studie spreek die beduidende kwessie van praktiese \emph{model-wanverhouding} in leergebaseerde oplossings aan, veral in versterkingsleer (RL), vir outonome wedrenne.
+Model-wanpassing vind plaas wanneer die voertuigdinamika-model wat vir simulasie gebruik word nie die werklike dinamika van die voertuig akkuraat voorstel nie, wat lei tot 'n afname in algoritme-werkverrigting.
+Dit is 'n algemene probleem wat teegekom word wanneer werklike implementerings oorweeg word.
+
+Om hierdie uitdaging aan te spreek, stel ons 'n gedeeltelike- `end-to-end'-algoritme voor wat die beplanning- en beheertake ontkoppel.
+Binne hierdie raamwerk genereer 'n versterkingsleer (RL) agent 'n trajek wat 'n pad en snelheid bevat, wat vervolgens nagespoor word deur gebruik te maak van 'n suiwer agtervolgstuurbeheerder en 'n proporsionele snelheidsbeheerder, onderskeidelik.
+Daarteenoor gebruik baie leergebaseerde algoritmes 'n `end-to-end'-benadering, waardeur 'n diep neurale netwerk direk (DNN) vanaf sensordata karteer om opdragte te beheer.
+
+Ons evalueer die gedeeltelike- `end-to-end'-algoritme breedvoerig in 'n pasgemaakte `F1tenth'-simulasie, onder toestande waar model-wanverhoudings in voertuigmassa, draai styfheidskoeffisient en padoppervlakwrywingskoeffisient teenwoordig is.
+In elk van hierdie scenario's het die werkverrigting van die gedeeltelike- `end-to-end'-agente dieselfde gebly onder beide nominale en model-wanpastoestande, wat 'n vermoe demonstreer om komplekse spore betroubaar te navigeer sonder om te verongeluk.
+Deur dus die robuustheid van 'n klassieke kontroleerder te benut, toon ons gedeeltelike- `end-to-end'- bestuursalgoritme beter robuustheid teenoor model-wanpassings as 'n `end-to-end'- basislynalgoritme.
+
+
+
 
 \chapter{Acknowledgements}%==================================================
 This thesis appears in its current form due to the assistance and guidance of several people. 

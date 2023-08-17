@@ -4,53 +4,49 @@ The top-level auxiliary file: USthesis_Masters.aux
 The style file: usmeg-n.bst
 A level-1 auxiliary file: frontmatter/Chap-Front.aux
 A level-1 auxiliary file: frontmatter/Nomencl.aux
-A level-1 auxiliary file: contents/chapt5/chapt5.aux
+A level-1 auxiliary file: contents/chapt7/chapt7.aux
 A level-1 auxiliary file: contents/appendix/App1.aux
 Database file #1: backmatter/library_1.bib
-Warning--I'm ignoring Chisari2021's extra "url" field
---line 2364 of file backmatter/library_1.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Warning--empty journal in brunnbauer2021
-You've used 16 entries,
+You've used 4 entries,
             3338 wiz_defined-function locations,
-            784 strings with 10054 characters,
-and the built_in function-call counts, 16822 in all, are:
-= -- 1209
-> -- 482
-< -- 19
-+ -- 187
-- -- 155
-* -- 1905
-:= -- 1880
-add.period$ -- 36
-call.type$ -- 16
-change.case$ -- 80
-chr.to.int$ -- 16
-cite$ -- 17
-duplicate$ -- 1778
-empty$ -- 1587
-format.name$ -- 364
-if$ -- 3417
+            696 strings with 6410 characters,
+and the built_in function-call counts, 3960 in all, are:
+= -- 284
+> -- 94
+< -- 7
++ -- 38
+- -- 30
+* -- 423
+:= -- 444
+add.period$ -- 10
+call.type$ -- 4
+change.case$ -- 20
+chr.to.int$ -- 4
+cite$ -- 4
+duplicate$ -- 410
+empty$ -- 377
+format.name$ -- 72
+if$ -- 807
 int.to.chr$ -- 1
-int.to.str$ -- 17
-missing$ -- 203
-newline$ -- 103
-num.names$ -- 50
-pop$ -- 420
+int.to.str$ -- 5
+missing$ -- 50
+newline$ -- 43
+num.names$ -- 12
+pop$ -- 100
 preamble$ -- 1
-purify$ -- 64
+purify$ -- 16
 quote$ -- 0
-skip$ -- 407
+skip$ -- 110
 stack$ -- 0
-substring$ -- 1022
-swap$ -- 893
-text.length$ -- 18
+substring$ -- 240
+swap$ -- 215
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 96
-warning$ -- 1
-while$ -- 155
+type$ -- 24
+warning$ -- 0
+while$ -- 34
 width$ -- 0
-write$ -- 223
-(There were 2 warnings)
+write$ -- 74
