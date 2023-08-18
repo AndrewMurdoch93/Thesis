@@ -1,4 +1,4 @@
-\begin{thebibliography}{4}
+\begin{thebibliography}{13}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \expandafter\ifx\csname bibnamefont\endcsname\relax
   \def\bibnamefont#1{#1}\fi
@@ -19,25 +19,69 @@
 \newcommand{\capitalize}[1]{\expandafter\Capitalize#1}
 \providecommand{\eprint}[2][]{\url{#2}}
 
-\bibitem[{\citenamefont{Fuchs} \emph{\bbletal{}}(2021)\citenamefont{Fuchs}, \citenamefont{Song}, \citenamefont{Kaufmann}, \citenamefont{Scaramuzza} \protect\BIBand{} \citenamefont{Durr}}]{Fuchs2021}
-\bibnamefont{Fuchs}, \bibfnamefont{F.}, \bibnamefont{Song}, \bibfnamefont{Y.}, \bibnamefont{Kaufmann}, \bibfnamefont{E.}, \bibnamefont{Scaramuzza}, \bibfnamefont{D.} \protect\BIBand{} \bibnamefont{Durr}, \bibfnamefont{P.}: {Super-Human Performance in Gran Turismo Sport Using Deep Reinforcement Learning}.
-\newblock \emph{IEEE Robotics and Automation Letters}, \bblvol{}~6, \bblno{}~3, \bblpp{} 4257--4264, 2021.
-\newline\bblurlpre\url{http://doi.org/10.1109/LRA.2021.3064284}
+\bibitem[{\citenamefont{Weiss} \protect\BIBand{} \citenamefont{Behl}(2020{\natexlab{\emph{a}}})}]{Weiss2020a}
+\bibnamefont{Weiss}, \bibfnamefont{T.} \protect\BIBand{} \bibnamefont{Behl}, \bibfnamefont{M.}: Deepracing: Parameterized trajectories for autonomous racing.
+\newblock 2020{\natexlab{\emph{a}}}.
+\newline\bblurlpre\url{https://doi.org/10.48550/arXiv.2005.05178}
 
-\bibitem[{\citenamefont{Ghignone} \emph{\bbletal{}}(2022)\citenamefont{Ghignone}, \citenamefont{Baumann}, \citenamefont{Boss} \protect\BIBand{} \citenamefont{Magno}}]{Ghignone2022}
-\bibnamefont{Ghignone}, \bibfnamefont{E.}, \bibnamefont{Baumann}, \bibfnamefont{N.}, \bibnamefont{Boss}, \bibfnamefont{M.} \protect\BIBand{} \bibnamefont{Magno}, \bibfnamefont{M.}: {TC-Driver: Trajectory Conditioned Driving for Robust Autonomous Racing - A Reinforcement Learning Approach}.
-\newblock \capitalize\bblin{}: \emph{International conference on robotics and automation}. 2022.
-\newblock \eprint{2205.09370}.
-\newline\bblurlpre\url{http://arxiv.org/abs/2205.09370}
+\bibitem[{\citenamefont{Capo} \protect\BIBand{} \citenamefont{Loiacono}(2020)}]{Capo2020}
+\bibnamefont{Capo}, \bibfnamefont{E.} \protect\BIBand{} \bibnamefont{Loiacono}, \bibfnamefont{D.}: {Short-Term Trajectory Planning in TORCS using Deep Reinforcement Learning}.
+\newblock \emph{2020 IEEE Symposium Series on Computational Intelligence, SSCI 2020}, \bblpp{} 2327--2334, 2020.
+\newline\bblurlpre\url{https://doi.org/10.1109/SSCI47803.2020.9308138}
 
-\bibitem[{\citenamefont{Vorotic} \emph{\bbletal{}}(2013)\citenamefont{Vorotic}, \citenamefont{Rakicevic} \protect\BIBand{} \citenamefont{Mitic}}]{Vorotovic2013}
-\bibnamefont{Vorotic}, \bibfnamefont{G.}, \bibnamefont{Rakicevic}, \bibfnamefont{B.} \protect\BIBand{} \bibnamefont{Mitic}, \bibfnamefont{Sasa~Stamenkovic, D.}: Determination of cornering stiffness through integration of a mathematical model and real vehicle exploitation parameters.
-\newblock \emph{FME Transactions}, \bblvol{}~41, \bblpp{} 66--71, 2013.
-\newline\bblurlpre\url{https://www.mas.bg.ac.rs/_media/istrazivanje/fme/vol41/1/08_gvorotovic.pdf}
+\bibitem[{\citenamefont{Keefer} \emph{\bbletal{}}(2022)\citenamefont{Keefer}, \citenamefont{Bryan} \protect\BIBand{} \citenamefont{Bevly}}]{keefer2022}
+\bibnamefont{Keefer}, \bibfnamefont{E.}, \bibnamefont{Bryan}, \bibfnamefont{W.} \protect\BIBand{} \bibnamefont{Bevly}, \bibfnamefont{D.}: International conference for robotics and automation.
+\newblock 2022.
 
-\bibitem[{\citenamefont{Novikov} \emph{\bbletal{}}(2018)\citenamefont{Novikov}, \citenamefont{Novikov} \protect\BIBand{} \citenamefont{Shevtsova}}]{Novikov2018}
-\bibnamefont{Novikov}, \bibfnamefont{A.}, \bibnamefont{Novikov}, \bibfnamefont{I.} \protect\BIBand{} \bibnamefont{Shevtsova}, \bibfnamefont{A.}: Study of the impact of type and condition of the road surface on parameters of signalized intersection.
-\newblock \emph{Transportation Research Procedia}, \bblvol{}~36, \bblpp{} 548--555, January 2018.
-\newline\bblurlpre\url{https://doi.org/10.1016/j.trpro.2018.12.154}
+\bibitem[{\citenamefont{Liniger} \protect\BIBand{} \citenamefont{Lygeros}(2015)}]{Liniger2015a}
+\bibnamefont{Liniger}, \bibfnamefont{A.} \protect\BIBand{} \bibnamefont{Lygeros}, \bibfnamefont{J.}: {A viability approach for fast recursive feasible finite horizon path planning of autonomous RC cars}.
+\newblock \emph{Proceedings of the 18th International Conference on Hybrid Systems: Computation and Control, HSCC 2015}, \bblpp{} 1--10, 2015.
+\newline\bblurlpre\url{https://doi.org/10.1145/2728606.2728620}
+
+\bibitem[{\citenamefont{Wang} \emph{\bbletal{}}(2021)\citenamefont{Wang}, \citenamefont{Han} \protect\BIBand{} \citenamefont{Vaidya}}]{Wang2021}
+\bibnamefont{Wang}, \bibfnamefont{R.}, \bibnamefont{Han}, \bibfnamefont{Y.} \protect\BIBand{} \bibnamefont{Vaidya}, \bibfnamefont{U.}: Deep koopman data-driven optimal control framework for autonomous racing deep koopman data-driven optimal control framework for autonomous racing.
+\newblock \emph{Early access}, \bblpp{} 1--6, 2021.
+\newline\bblurlpre\url{https://linklab-uva.github.io/icra-autonomous-racing/contributed_papers/paper12.pdf}
+
+\bibitem[{\citenamefont{Stahl} \emph{\bbletal{}}(2019)\citenamefont{Stahl}, \citenamefont{Wischnewski}, \citenamefont{Betz} \protect\BIBand{} \citenamefont{Lienkamp}}]{Stahl2019}
+\bibnamefont{Stahl}, \bibfnamefont{T.}, \bibnamefont{Wischnewski}, \bibfnamefont{A.}, \bibnamefont{Betz}, \bibfnamefont{J.} \protect\BIBand{} \bibnamefont{Lienkamp}, \bibfnamefont{M.}: Multilayer graph-based trajectory planning for race vehicles in dynamic scenarios.
+\newblock \capitalize\bblin{}: \emph{IEEE Intelligent Transportation Systems Conference (ITSC)}, \bblpp{} 3149--3154. 2019.
+\newline\bblurlpre\url{https://doi.org/10.1109/ITSC.2019.8917032}
+
+\bibitem[{\citenamefont{Evans} \emph{\bbletal{}}(2021)\citenamefont{Evans}, \citenamefont{Jordaan} \protect\BIBand{} \citenamefont{Engelbrecht}}]{Evans2021b}
+\bibnamefont{Evans}, \bibfnamefont{B.}, \bibnamefont{Jordaan}, \bibfnamefont{H.W.} \protect\BIBand{} \bibnamefont{Engelbrecht}, \bibfnamefont{H.A.}: Learning the subsystem of local planning for autonomous racing.
+\newblock 2021.
+\newline\bblurlpre\url{https://arxiv.org/abs/2102.11042}
+
+\bibitem[{\citenamefont{Weiss} \protect\BIBand{} \citenamefont{Behl}(2020{\natexlab{\emph{b}}})}]{Weiss2020}
+\bibnamefont{Weiss}, \bibfnamefont{T.} \protect\BIBand{} \bibnamefont{Behl}, \bibfnamefont{M.}: Deepracing: A framework for autonomous racing.
+\newblock \emph{Proceedings of the 2020 Design, Automation and Test in Europe Conference and Exhibition}, \bblpp{} 1163--1168, 2020{\natexlab{\emph{b}}}.
+\newline\bblurlpre\url{https://doi.org/10.23919/DATE48585.2020.9116486}
+
+\bibitem[{\citenamefont{Sakai} \emph{\bbletal{}}(2018)\citenamefont{Sakai}, \citenamefont{Ingram}, \citenamefont{Dinius}, \citenamefont{Chawla}, \citenamefont{Raffin} \protect\BIBand{} \citenamefont{Paques}}]{Sakai2018}
+\bibnamefont{Sakai}, \bibfnamefont{A.}, \bibnamefont{Ingram}, \bibfnamefont{D.}, \bibnamefont{Dinius}, \bibfnamefont{J.}, \bibnamefont{Chawla}, \bibfnamefont{K.}, \bibnamefont{Raffin}, \bibfnamefont{A.} \protect\BIBand{} \bibnamefont{Paques}, \bibfnamefont{A.}: Pythonrobotics: a python code collection of robotics algorithms.
+\newblock 2018.
+\newline\bblurlpre\url{https://arxiv.org/abs/1808.10703}
+
+\bibitem[{\citenamefont{Patnaik} \emph{\bbletal{}}(2020)\citenamefont{Patnaik}, \citenamefont{Patel}, \citenamefont{Mohta}, \citenamefont{Shah}, \citenamefont{Agrawal}, \citenamefont{Rathore}, \citenamefont{Malik}, \citenamefont{Chakravarty} \protect\BIBand{} \citenamefont{Bhattacharya}}]{Patnaik2020}
+\bibnamefont{Patnaik}, \bibfnamefont{A.}, \bibnamefont{Patel}, \bibfnamefont{M.}, \bibnamefont{Mohta}, \bibfnamefont{V.}, \bibnamefont{Shah}, \bibfnamefont{H.}, \bibnamefont{Agrawal}, \bibfnamefont{S.}, \bibnamefont{Rathore}, \bibfnamefont{A.}, \bibnamefont{Malik}, \bibfnamefont{R.}, \bibnamefont{Chakravarty}, \bibfnamefont{D.} \protect\BIBand{} \bibnamefont{Bhattacharya}, \bibfnamefont{R.}: Design and implementation of path trackers for ackermann drive based vehicles.
+\newblock 2020.
+\newline\bblurlpre\url{https://arxiv.org/abs/2012.02978}
+
+\bibitem[{\citenamefont{{F1tenth Foundation}}(2020)}]{f1tenth}
+\bibnamefont{{F1tenth Foundation}}: F1tenth.
+\newblock 2020.
+\newblock [Online; accessed 9-September-2022].
+\newline\bblurlpre\url{https://f1tenth.org/}
+
+\bibitem[{\citenamefont{Betz} \emph{\bbletal{}}(2022)\citenamefont{Betz}, \citenamefont{Zheng}, \citenamefont{Liniger}, \citenamefont{Rosolia}, \citenamefont{Karle}, \citenamefont{Behl}, \citenamefont{Krovi} \protect\BIBand{} \citenamefont{Mangharam}}]{Betz2021}
+\bibnamefont{Betz}, \bibfnamefont{J.}, \bibnamefont{Zheng}, \bibfnamefont{H.}, \bibnamefont{Liniger}, \bibfnamefont{A.}, \bibnamefont{Rosolia}, \bibfnamefont{U.}, \bibnamefont{Karle}, \bibfnamefont{P.}, \bibnamefont{Behl}, \bibfnamefont{M.}, \bibnamefont{Krovi}, \bibfnamefont{V.} \protect\BIBand{} \bibnamefont{Mangharam}, \bibfnamefont{R.}: Autonomous vehicles on the edge: A survey on autonomous vehicle racing.
+\newblock \emph{IEEE Open Journal of Intelligent Transportation Systems}, \bblvol{}~3, \bblpp{} 458--488, 2022.
+\newline\bblurlpre\url{https://doi.org/10.1109/OJITS.2022.3181510}
+
+\bibitem[{\citenamefont{Rajamani}(1988)}]{Rajamani2012}
+\bibnamefont{Rajamani}, \bibfnamefont{R.}: \emph{Vehicle Dynamics and Control}.
+\newblock Springer, Minneapolis, 1988.
+\newline\bblurlpre\url{https://doi.org/10.1007/978-1-4614-1433-9}
 
 \end{thebibliography}

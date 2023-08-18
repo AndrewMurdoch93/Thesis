@@ -12,9 +12,11 @@ An overview of the vehicle dynamics is then given, after which our autonomous ra
 
 We have chosen to model an F1tenth race setting because it is a well researched platform with a standardised vehicle model and hardware requirements.
 F1tenth racing utilises one-tenth scale remote control (RC) car chassis as a vehicle platform.
+An example of an F1tenth vehicle is shown in Figure \ref{fig:sim_vehicle}.
 These vehicles are equipped with all the elements that are necessary for autonomous navigation, including a front facing LiDAR sensor, an Nvidea Jetson module for on-board computing, a servo motor for controlling the front wheels, and a DC motor for controlling the rear wheels.
 The front wheels are only used for steering, while the rear-wheels are driven.
-An example of such an F1tenth vehicle is shown in Figure \ref{fig:sim_vehicle}.
+However, the standardised F1tenth simulator is incompatible with fully end-to-end systems due to its inclusion of a velocity controller.
+We therefore chose to develop an in-house simulator that excludes the velocity controller, which allows us to compare our system to a fully end-to-end system.
 
 
 \begin{figure}[htb!]
@@ -24,10 +26,7 @@ An example of such an F1tenth vehicle is shown in Figure \ref{fig:sim_vehicle}.
     \label{fig:sim_vehicle}
 \end{figure}
 
-The standardised F1tenth simulator is incompatible with fully end-to-end systems due to its inclusion of a velocity controller.
-We therefore chose to develop an in-house simulator that excludes the velocity controller, which allows us to compare our system to a fully end-to-end system.
-
-he race rules that we consider in our simulator are as follows: a single vehicle competes to complete a single lap of a racetrack in a time trial setting.
+The race rules that we consider in our simulator are as follows: a single vehicle competes to complete a single lap of a racetrack in a time trial setting.
 The vehicle may be started anywhere along the length of the track.
 The start and finish line then coincides with the starting position of the vehicle.
 If the vehicle makes contact with the track boundary, the lap is considered failed and the lap time is not counted.
@@ -39,19 +38,17 @@ Furthermore, we represent the track boundary as a solid wall, such that points o
 We start the discussion of our simulator by detailing the vehicle dynamics model that was utilised to accurately represent the motion of the vehicle.
 An F1tenth vehicle was modelled using the single-track bicycle model by  Altoff and  W\"{u}rshing \cite{Althoff2020}.
 This model takes vehicle slipping into account, and is accurate even when the vehicle is driven close to its handling limits, thus making it suitable for the racing context.
-The single-track bicycle model assumes the car is a rigid body, with the two front wheels consolidated into a central wheel. 
+The basic assumptions of the model are that the car is a rigid body, with the two front wheels consolidated into a central wheel. 
 Similarly, the rear wheels are also consolidated into a single center wheel. 
 
 
-We use discretised time notation for the single-track bicycle model, 
+Furthermore, the model discretises time, such that each time step $k$ is $\Delta t$ secnods long:
 \begin{equation}
     t = k \cdot \Delta t,
 \end{equation}
-where the time is denoted as $t$, the time step as $k$, and the difference in time between successive time steps $k$ and $k+1$ as $\Delta t$. 
+where the time is denoted as $t$.
 This discretisation is useful in the context of MDPs, since MDPs themselves are discrete-time.
-
-
-The inputs to the single-track bicycle model at time step $k$ are the current state, denoted as $\mathbf{x}$, and control actions, which are denoted $\mathbf{u}$.
+The inputs to the single-track bicycle model at each time step are the current state, denoted as $\mathbf{x}$, and control actions, which are denoted $\mathbf{u}$.
 The output of the single-track bicycle model is then the time derivative of state, and is denoted as $\mathbf{\dot{x}}$.
 At every time step $k$, Euler's method was applied to integrate $\mathbf{\dot{x}}$, thereby determining the state at the next time step.
 
@@ -61,16 +58,14 @@ The state $\mathbf{x}$ is represented as a 7-dimensional vector
     \mathbf{x} = [s_x, \hspace{0.2cm} s_y, \hspace{0.2cm} \delta, \hspace{0.2cm} \upsilon, \hspace{0.2cm} \psi, \hspace{0.2cm} \dot{\psi}, \hspace{0.2cm} \beta]^\intercal .
 \end{equation}
 A description of each variable within the state vector, along with its unit and reference direction is given in Table \ref{tab:state_space_variables}.
-
-
-\input{contents/chapt4/figs/state_space_variables.tex}
-
-The control inputs to the state space model are represented by the vector $\mathbf{u}$. These inputs are a steering rate, denoted as $\dot{\delta}$ (measured in rad/s), and a longitudinal acceleration, denoted as $a_{\text{long}}$ (measured in m/s):
+Additionally, the control inputs to the state space model are represented by the vector $\mathbf{u}$. 
+These inputs are a steering rate, denoted as $\dot{\delta}$ (measured in rad/s), and a longitudinal acceleration, denoted as $a_{\text{long}}$ (measured in m/s):
 \begin{equation}
     \mathbf{u} = [\dot{\delta}, a_{\text{long}}]^\intercal.
 \end{equation}
-The single-track bicycle model is depicted with its state variables and control inputs in Figure \ref{fig:vehicle_dynamics_model}.
+The aforementioned state variables and control inputs in illustrated in Figure \ref{fig:vehicle_dynamics_model}.
 
+\input{contents/chapt4/figs/state_space_variables.tex}
 
 \begin{figure}[htb!]
     \centering
@@ -91,8 +86,8 @@ The following constraints are therefore applied to the steering angle, steering 
 Here, an underline denotes the minimum allowable value, while an overline denotes the maximum allowable value.
 
 The vehicle's limited engine power and braking capability impose a constraint on longitudinal acceleration. 
-However, the maximum achievable acceleration and deceleration is influenced by wheel spin. 
-To model this acceleration constraint, switch velocity, denoted as $v_S$, is introduced. 
+Additionally, the maximum achievable acceleration and deceleration is influenced by wheel spin. 
+To model this acceleration constraint, the switch velocity, denoted as $v_S$, is introduced. 
 This velocity represents the threshold above which the engine power is insufficient to induce wheel spin. 
 After taking the switch velocity into account, the acceleration constraint is expressed as
 \begin{equation}
@@ -159,7 +154,7 @@ to the input vector $\mathbf{u}$, before applying them as input to the state spa
 
 
 After applying these constraints to the input vector $\mathbf{u}$, non-linear state-space equations with inputs $\mathbf{u}$ and $\mathbf{x}$ are applied.
-Altoff and  W\"{u}rshing \cite{Althoff2020} define the state-space model as a piece-wise function defined dependent on the velocity. 
+Altoff and  W\"{u}rshing \cite{Althoff2020} define the state-space model as a piece-wise function that is dependent on the velocity. 
 For large velocities, a dynamic bicycle model denoted by $f_1 (\mathbf{x}, \mathbf{u})$ is used, as it accounts for tire slip and accurately represents the motion close to the physical limits of the vehicle. 
 However, this dynamic bicycle model becomes singular for small velocities. 
 Therefore, a kinematic bicycle model $f_2 (\mathbf{x}, \mathbf{u})$ that does not take tire slip into account is used for velocities slower than $0.1$ m/s.
@@ -221,8 +216,8 @@ The values for these vehicle parameters were identified for a standard F1tenth v
 
 
 The state space Equations \ref{eq:single_track_dynamic_equations} and \ref{eq:single_track_kinematic_equations} yield the derivative of the state with respect to time. 
-Consequently, to determine the state at the next time step, we employ numerical integration 
-\begin{equation}
+Consequently, to determine the state at the next time step, we employ a numerical integration 
+\begin{equation}\label{eq:euler}
 \mathbf{x}_{k+1} = \mathbf{x}_k + \mathbf{\dot{x}} \Delta t,
 \end{equation}
 known as Euler's method. 
@@ -232,10 +227,8 @@ We chose $\Delta t$ as $0.01$ seconds.
 
 \section{Simulation environment}\label{sec:simulation_environment}
 
-We will now discuss the design of a simulator that accurately represents the F1tenth autonomous racing problem. 
-This involves simulating the vehicle using the single-track bicycle model, as well as creating a track environment that adheres to the rules specified in Section \ref{sec:f1tenth_requirements}. 
-
-
+The vehicle single track vehicle dynamics model discussed in Section \ref{sec:sim_vehicle_dynamics} was utilised to create a custom F1tenth simulator
+that adheres to the rules specified in Section \ref{sec:f1tenth_requirements}. 
 The simulator runs an initialisation procedure at the start of each episode, after which it is sampled at every time step.
 Algorithm \ref{alg:simulator_start} details the procedure that the simulator executes at the beginning of an episode.
 This procedure takes as input a bird's-eye image of the racetrack, as well as the coordinates, velocity and heading at which to initialise the vehicle. 
@@ -250,15 +243,15 @@ Once the occupancy grid is generated, the simulator proceeds to determine the ce
 The centerline refers to a line that stretches around the track, and maintains an equal distance from either side of the track boundaries. 
 To represent the centerline, a cubic spline \cite{Sakai2018} is employed.
 
-Subsequently, the vehicle is initialized with the designated $x$ and $y$ coordinates, velocity, as well as heading.
+Subsequently, the vehicle is initialized with an $x$ and $y$ coordinate, velocity, as well as heading.
 Typically, this involves selecting a random point along the length of the centerline and applying a small offset in the $x$ and $y$ directions. 
 The remaining state variables (i.e., the steering angle, heading rate and slip angle) are initialised with a zero value.
 Following this, the start and finish line are defined as perpendicular to the track's centerline, intersecting with the initial coordinates of the vehicle.
 
 
-Once initialised, the simulator is sampled at discrete time steps to simulate the vehicle dynamics forward according to the control inputs.
+Once initialised, the simulator is sampled at discrete time steps to forward simulate the vehicle dynamics according to the control inputs.
 This is done using the single-track bicycle model from Section \ref{sec:sim_vehicle_dynamics}.
-The simulator receives an input $a_{k}$ at time step $k$ and produces outputs at time step $k+1$.
+The simulator receives an input action $a_{k}$ at time step $k$ and produces outputs at time step $k+1$.
 The output of the simulator is an observation, denoted $o_{k+1}$, and reward, denoted as $r_{k+1}$, which is consistent with the MDP environment definition.
 The interaction between the autonomous racing algorithm and simulator is shown in Figure \ref{fig:sim_mdp}.
 Additionally, the procedure that the algorithm executes at every time step is detailed in Algorithm \ref{alg:simulator_step}.
@@ -289,18 +282,20 @@ The standard deviation of noise added is discussed in the following chapters.
 
 The vehicle dynamics are simulated in line 1 of Algorithm \ref{alg:simulator_step}.
 When simulating these dynamics, we abstract the longitudinal acceleration controller and assume that the vehicle can accelerate at the desired rate, 
-so long as the desired rate is within the bounds of the upper and lower acceleration limits.
+so long as the desired rate is within the bounds of the upper and lower acceleration limits specified by Equation \ref{eq:accl_constraint}.
 The desired acceleration $a_{\text{long},d}$ then serves as the control input $a_{\text{long}}$ to the state space model. 
-However, we simulate the rate of change of steering angle caused by steering servo motor,
+However, the steering dynamics are not abstracted.
+Instead, the rate of change of steering angle by steering servo motor calculated as
 \begin{equation}
-    \dot{\delta} = \frac{\delta_d - \delta}{|\delta_d - \delta|} \overline{\dot{\delta}},
+    \dot{\delta} = \frac{\delta_d - \delta}{|\delta_d - \delta|} \overline{\dot{\delta}}.
 \label{eq:sim_servo}
 \end{equation}
-which is used as the steering rate control input for the single-track bicycle model.
+The constraints from Equation \ref{eq:vehicle_control_actions} are applied to the longitudinal acceleration and steering rate, 
+after which Equations \ref{eq:state_equation_cases} and \ref{eq:euler} are used to calculate the new state in line 2. 
 
 After updating the state using the state space model, we generate the LiDAR scan and sample from the state variables to create the observation.
 The simulator then checks the vehicle position against the occupancy grid to see if a collision has occurred.
-A terminal state is reached when the vehicle collides with the track boundary.
+If the vehicle has collided with the track boundary, a terminal state is reached and the episode ends.
 Additionally, the episode also ends if the vehicle has completed one lap.
 To ascertain whether a lap is complete, we calculate the distance travelled from the start along the centerline between the subsequent previous time step as
 \begin{equation}
@@ -309,11 +304,11 @@ To ascertain whether a lap is complete, we calculate the distance travelled from
 where distance $D_k$ represents the point on the centerline closest to the vehicle at time step $k$.
 The $\Delta D$ values at each time step are accumulated, and if the sum is equal to or greater than the track length, the vehicle has completed one lap.
 An illustration of the quantity $\Delta D$ is shown in Figure \ref{fig:centerline_distance}.
-Finally, the reward signal is generated based on the state and action,
+The distance travelled along the centerline is also useful in calculating the reward signal
 \begin{equation}
-    r_{k+1} = r(\mathbf{x}_k, a_k).
+    r_{k+1} = r(\mathbf{x}_k, a_k),
 \end{equation}
-The details of this reward signal are discussed in the next chapter.
+which appears in line 7 of Algorithm \ref{alg:simulator_step}, and whose details are discussed in the next chapter.
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt4/figs/distance/distance_centerline.pdf_tex}
@@ -330,5 +325,7 @@ Furthermore, the F1tenth vehicle is modelled using single-track bicycle dynamics
 The dynamics model is incorporated into a simulator that encompasses both the race car dynamics and the track environment. 
 By discretizing time, the simulator conforms to the time discrete framework of the MDP. 
 At each time step, the simulation receives a control input from the autonomous racing algorithm and generates an observation corresponding to the updated state of the environment. 
-Approaches to solving the autonomous racing problem that utilise an end-to-end design have an agent whose outputs (i.e., the control actions) are directly passed to the simulator.
+
+Approaches to solving the autonomous racing problem that utilise an end-to-end design have an agent whose inputs and outputs
+are directly passed from and given to the simulator.
 In the next chapter, we utilise our racing simulation within an MDP environment to train such an end-to-end RL agent to race.

@@ -31,14 +31,16 @@ Therefore, these algorithms most optimise for two objectives;
 These two objectives are inherently in conflict with each other because operating the vehicle close to its handling limit increases the risk of losing control \cite{Betz2021}.
 
 A recent breakthrough in autonomous racing was the introduction of learning based solutions, such as reinforcement learning (RL) for vehicle control.
-Learning algorithms are commonly implemented within an end-to-end architecture, whereby a deep neural network (DNN) is trained to map sensor data directly to actuator commands \cite{Betz2021}.
-End-to-end approaches have achieved excellent results in scenarios that are considered challenging for classical approaches that separate the planning and control tasks.
+Reinforcement learning is a machine learning paradigm where an agent learns to make sequential decisions by interacting with an environment to maximize cumulative rewards.
+By setting up a reward signal that is maximised through fast and safe lap completion, RL agents can learn to race effectively.
+Interestingly, RL algorithms are commonly implemented within an end-to-end architecture, whereby a deep neural network (DNN) is trained to map sensor data directly to actuator commands \cite{Betz2021}.
+These end-to-end RL approaches have achieved excellent results in scenarios that are considered challenging for classical approaches that separate the planning and control tasks.
 These scenarios include racing with low computational budgets \cite{Evans2021a, Tatulea-Codrean2020} and racing against multiple vehicles \cite{Song2021, Wurman2022}.
 
-Most RL algorithms undergo training in simulation before their deployment on physical vehicles \cite{Babu2020, Zhou2020}.
+Most RL agents undergo training in simulation before their deployment on physical vehicles \cite{Babu2020, Zhou2020}.
 To ensure a consistent environment between training and deployment, simulators attempt to replicate the real world as closely as possible.
 This involves employing system identification techniques to create precise vehicle dynamics models \cite{Zhou2020}.
-However, estimating the parameters of the vehicle model poses challenges due to the dynamic nature of the driving task. 
+However, estimating the parameters of the vehicle model is challenging due to the dynamic nature of the driving task. 
 In fact, it is inevitable that these parameters undergo changes over time \cite{Zhao2017}.
 As a result, it is likely that the vehicle dynamics model employed during training does not align with the real-world vehicle dynamics. 
 This phenomenon, known as model mismatch, leads to a decline in performance \cite{Ghignone2022}. 
@@ -77,7 +79,7 @@ Despite these efforts, the performance of learning-based methods are still negat
 \section{Aims and objectives}\label{sec:objectives}
 
 The aim of this project is to develop a reinforcement learning autonomous racing algorithm that is robust to the vehicle modelling errors associated with real-world deployment.
-As such, our racing algorithm must minimise lap time and drive safely under model mismatch conditions.
+As such, our racing algorithm must minimise lap time and drive safely under conditions where model mismatch is present.
 The racing scenario that we consider is a single-vehicle time trial, whereby the vehicle must complete laps while being alone on the track.
 Furthermore, our proposed solution should be compared to current RL solutions for autonomous racing.
 Therefore, our objectives are stated as:
@@ -110,13 +112,13 @@ Therefore, our objectives are stated as:
 Chapter \ref{chp:litreview} constitutes an overview of the existing approaches to solving the autonomous racing problem in literature.
 A variety of classical and learning-based solutions are discussed, with a focus on how these methods handle uncertainty in the vehicle model.
 We identify a suitable research avenue in methods that seek to unify ideas from classical and learning based approaches by utilising a DNN within a classical (i.e., decoupled) structure.
-These are known as \emph{partial end-to-end} methods.
+Methods that utilise this approach are known as \emph{partial end-to-end}.
 
-The literature study is followed with the an overview of the necessary theory to understand the reinforcement learning approaches developed in this project in Chapter \ref{chp:rl}.
+The literature study is followed with the an overview of the necessary theory to understand reinforcement learning in Chapter \ref{chp:rl}.
 An essential component in training a reinforcement learning algorithm to complete a robotic task is a realsitic simulator.
 As such, Chapter \ref{chp:modelling} describes how the racing environment was modelled in a suitable custom F1tenth simulator.
 
-Chapter \ref{chp:end_to_end_autonomous_racing} describes how RL is applied to solve the autonomous racing problem, as well as the  baseline RL solution, which was chosen to be an end-to-end algorithm.
+Chapter \ref{chp:end_to_end_autonomous_racing} the baseline end-to-end RL solution, as well as the techniques for applying an RL algorithm to solve the racing problem.
 This end-to-end algorithm is extensiely evaluated in racing conditions where no model mismatch is present.
 Furthermore, the effectiveness of \emph{sim-to-real} techniques for end-to-end methods in the context of autonomous racing is investigated.
 
