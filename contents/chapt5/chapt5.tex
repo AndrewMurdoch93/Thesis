@@ -317,7 +317,7 @@ Moreover, we have observed that the training stability of TD3 is superior to tha
 Having experimentally determined locally optimal values for the TD3 hyper-parameters, we investigated the reward signal.
 Our objectives were to choose reward signal parameter values that yielded agents that (a) race safety while (b) minimising lap time.
 This was a challenging task, considering that these two objectives are in conflict with each other.
-Further complicating the task is that the lap time alone is too sparse a signal to allow the agent to learn effectively \cite{Perot2017, Jaritz2018}.
+Further complicating the task is that the lap time alone is too sparse a signal to allow the agent to learn effectively \cite{Jaritz2018, Perot2017}.
 The reward signal from Equation \ref{eq:reward_signal} was therefore designed to approximate a signal that minimises lap time, while also providing continuous rewards to the agent.
 Specifically, the reward signal described in Equation \ref{eq:reward_signal} rewards the agent for the distance it travelled along the centerline between the current and previous time step, and penalises the agent a small amount on every time step \cite{Fuchs2021}. 
 Additionally, the agent receives a large penalty for colliding with the track boundary. 
