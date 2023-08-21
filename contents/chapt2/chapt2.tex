@@ -50,7 +50,7 @@ These offline planners create robustness towards the modelling errors by constru
 For instance, Heilmeier et al. \cite{Heilmeier2020} constrain the curvature of the path so that the vehicle adheres to a maximum lateral acceleration constraint.
 
 While offline planning is useful, a need exists to construct trajectories that actively avoid collisions with the environment or other vehicles in an online manner.
-Although it is an optimal control technique, model predictive control (MPC) is commonly used for generating fixed-horizon trajectories online \cite{Liniger2015a, Liniger2015, Anderson2016, Funke2017}.
+Although it is an optimal control technique, model predictive control (MPC) is commonly used for generating fixed-horizon trajectories online \cite{Liniger2015, Liniger2015a, Anderson2016, Funke2017}.
 MPCs sample dynamically feasible trajectories by forward simulating the vehicle dynamics using multiple actuator input sequences.
 A cost is assigned to each trajectory, after which the trajectory with the minimum cost is executed \cite{Betz2021}. 
 While standard MPCs consider linear vehicle dynamics, Liniger et al. \cite{Liniger2015} proposed a non-linear MPC to more accurately represent the vehicle dynamics.
@@ -369,7 +369,7 @@ Planners are designed to generate trajectories that conform to the physical cons
 Meanwhile, controllers are responsible for ensuring robustness to model-mismatch by guiding the vehicle towards the trajectory determined by the planner using feedback loops \cite{Coulter_1992, Becker2022, Hoffmann2007}.
 Additionally, a recent research trend is improving the vehicle dynamics model online, so that the modelling error is eliminated \cite{Tatulea-Codrean2020, Brunner2018a}.
 
-In contrast, many learning-based and RL systems are implemented in an end-to-end manner \cite{Fuchs2021,Song2021}.
+In contrast, many learning-based and RL systems are implemented in an end-to-end manner \cite{Song2021, Fuchs2021}.
 Furthermore, a significant portion of research in the area of end-to-end RL has focused on model-free techniques for training the agent \cite{hsu2022, Chisari2021}, 
 which excludes the possibility of enhancing the policy by learning an accurate vehicle model online like classical approaches.
 Instead, the general approach taken by end-to-end RL methods to increase robustness towards model mismatch is to 

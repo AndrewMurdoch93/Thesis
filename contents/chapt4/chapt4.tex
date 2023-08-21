@@ -29,8 +29,8 @@ We therefore chose to develop an in-house simulator that excludes the velocity c
 The race rules that we consider in our simulator are as follows: a single vehicle competes to complete a single lap of a racetrack in a time trial setting.
 The vehicle may be started anywhere along the length of the track.
 The start and finish line then coincides with the starting position of the vehicle.
-If the vehicle makes contact with the track boundary, the lap is considered failed and the lap time is not counted.
-Furthermore, we represent the track boundary as a solid wall, such that points on the LiDAR scan correspond to a track boundary.
+If the vehicle makes contact with the track boundary, which is assumed to be detectable by the LiDAR scanner, the lap is considered failed and the lap time is not counted.
+We also operate under the assumption that the track is known.
 
 
 \section{Vehicle dynamics}\label{sec:sim_vehicle_dynamics}
