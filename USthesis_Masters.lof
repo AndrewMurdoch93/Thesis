@@ -20,10 +20,10 @@
 \addvspace {10pt}
 \contentsline {figure}{\numberline {3.1}{\ignorespaces The agent environment interaction within an MDP}}{17}{figure.caption.27}%
 \contentsline {figure}{\numberline {3.2}{\ignorespaces A taxonomy of reinforcement learning algorithms}}{18}{figure.caption.28}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces A feed forward neural network}}{19}{figure.caption.29}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces A feedforward neural network}}{19}{figure.caption.29}%
 \addvspace {10pt}
 \contentsline {figure}{\numberline {4.1}{\ignorespaces The simulated F1tenth vehicle}}{25}{figure.caption.32}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces The single tack vehicle dynamics model}}{26}{figure.caption.34}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces The single track vehicle dynamics model}}{26}{figure.caption.34}%
 \contentsline {figure}{\numberline {4.3}{\ignorespaces The interaction between the }}{30}{figure.caption.38}%
 \contentsline {figure}{\numberline {4.4}{\ignorespaces A vehicle moving along the track centerline}}{31}{figure.caption.40}%
 \addvspace {10pt}

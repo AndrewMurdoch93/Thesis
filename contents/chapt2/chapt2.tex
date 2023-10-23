@@ -2,10 +2,10 @@
 \label{chp:litreview}
 
 With the project objectives in mind, we conduct a study of the literature regarding autonomous racing.
-Figure \ref{fig:lit_tax_sec} presents a taxonomy of approaches to the solving the autonomous racing problem.
-While the majority of efforts fall into the classical or end-to-end categories, a few research efforts have been made into combining classical and end-to-end ideas through a partial end-to-end driving architecture.
+Figure \ref{fig:lit_tax_sec} presents a taxonomy of approaches to solving the autonomous racing problem.
+While the majority of efforts fall into the classical or end-to-end categories, a few research efforts have been made to combine classical and end-to-end ideas through a partial end-to-end driving architecture.
 Our focus is on examining these various approaches to developing autonomous driving algorithms address the model mismatch and sim-to-real problems.
-We end the chapter with a discussion of the research gaps, as well as a summary of the expected contributions of this project towards the literature.
+We end the chapter with a discussion of the research gaps, as well as a summary of the expected contributions of this project to the literature.
 
 \begin{figure}[htb!]
     \centering
@@ -18,7 +18,7 @@ We end the chapter with a discussion of the research gaps, as well as a summary 
 \section{Classical approaches}\label{sec:classic}
 
 
-Classical approaches split the task of generating actuator commands from sensor data into three distinct phases, namely (a) perception, (b) planning and (c) control \cite{Betz2021}.
+Classical approaches split the task of generating actuator commands from sensor data into three distinct phases, namely (a) perception, (b) planning, and (c) control \cite{Betz2021}.
 Perception is the task of processing sensor data into a format that can be used for planning. 
 Generally, sensor fusion techniques are used to localise the vehicle within a map \cite{Gotlib2019, Wischnewski2019}.
 Planners use the map and localisation data to compute a trajectory that is subject to the vehicle dynamics constraints \cite{Liniger2015a}.
@@ -28,24 +28,24 @@ This generic framework is illustrated in Figure \ref{fig:full_stack}.
 \begin{figure}[h]
     \centering
     \input contents/chapt2/figs/classic_pipeline.tex
-    \caption[The classical autonomous driving architecture]{The classical autonomous driving software architecture. The driving software, which is enclosed in the dotted line, maps between sensor input and the commands sent to the actuators by performing perception, planning and control separately.}
+    \caption[The classical autonomous driving architecture]{The classical autonomous driving software architecture. The driving software, which is enclosed in the dotted line, maps between the sensor input and the commands sent to the actuators by performing perception, planning, and control separately.}
     \label{fig:full_stack}
 \end{figure}
 
-Classical approaches have successfully been used to control full scale racing cars \cite{Valls2018, alvarez2022, Nekkah2020} at high performance levels and near their handling limits.
+Classical approaches have successfully been used to control full-scale racing cars \cite{Valls2018, alvarez2022, Nekkah2020} at high performance levels and near their handling limits.
 For instance, Heilmier et al. \cite{Heilmeier2020} and
 Betz et al. \cite{Betz_2023} achieved speeds of $150$ and $270$ km/h respectively.
-The success of classical approaches have also been showcased on scaled racing cars by Liniger et al. \cite{Liniger2015}.
+The success of classical approaches has also been showcased on scaled racing cars by Liniger et al. \cite{Liniger2015}.
 We now discuss methods for planning and control in more detail.
-Perception algorithms are not discussed because they are outside of the scope for this project.
+Perception algorithms are not discussed because they are outside of the scope of this project.
 
 \subsection{Planning}\label{sec:trajectory_planning}
 Within classical planning approaches, trajectories are generated via optimisation methods that minimise a cost function.
-These trajectories trypically consist of a series of $x$ and $y$ coordinates and velocities that must be tracked using controllers.
+These trajectories typically consist of a series of $x$ and $y$ coordinates and velocities that must be tracked using controllers.
 
 Several approaches \cite{Heilmeier2020, Kelly2010, Herrmann2019} shift the computational burden of generating a trajectory to offline, before the race starts.
 These approaches are categorised by their cost function.
-While Heilmeier et al. \cite{Heilmeier2020} optimise the geometry of the path to achieve minimum curvature, Kelly et al. \cite{Kelly2010} considers a time-based optimisation to construct a minimum-time path.
+While Heilmeier et al. \cite{Heilmeier2020} optimise the geometry of the path to achieve minimum curvature, Kelly et al. \cite{Kelly2010} consider a time-based optimisation to construct a minimum-time path.
 These offline planners create robustness towards the modelling errors by constructing conservative paths and taking vehicle model constraints into account.
 For instance, Heilmeier et al. \cite{Heilmeier2020} constrain the curvature of the path so that the vehicle adheres to a maximum lateral acceleration constraint.
 
@@ -57,8 +57,8 @@ While standard MPCs consider linear vehicle dynamics, Liniger et al. \cite{Linig
 % They then extended their MPC algorithm by using a viability kernel to characterise every state that leads to a collision on the track, allowing them to sample only safe trajectories \cite{Liniger2015a}. 
 
 Another common approach to constructing a trajectory online is graph based planning, whereby a hierarchical tree of parameterised paths are spanned across the drivable area of the track \cite{Stahl2019, Werling2010, Li2017}.
-These approaches calculate the cost of each path based on its geometry, and select the path associated with the least cost.
-Since the effect of model-mismatch can be exagurated when extreme control actions are taken, the graph based approach by Stahl et al. \cite{Stahl2019} ensured continuous and smooth paths by parameterising them as cubic polynomials in a curvilinear coordinate frame attached to the track centerline, known as the Frenet frame.
+These approaches calculate the cost of each path based on its geometry and select the path associated with the least cost.
+Since the effect of model-mismatch can be exaggerated when extreme control actions are taken, the graph-based approach by Stahl et al. \cite{Stahl2019} ensured continuous and smooth paths by parameterising them as cubic polynomials in a curvilinear coordinate frame attached to the track centerline, known as the Frenet frame.
 Their method successfully controlled the Devbot $2.0$ Roborace development vehicle shown in Figure \ref{fig:Devbot2} at speeds of up to $212$ km/h.
 
 \begin{figure}[htb!]
@@ -77,7 +77,7 @@ At this level of abstraction, typical control commands are steering angle and lo
 
 Classical controllers separate steering and longitudinal acceleration control. 
 While longitudinal control is typically performed using a PID controller, methods to perform steering control to track the path vary.
-Pure pursuit is a simple steering controller presented by Coulter \cite{Coulter_1992} that steers the vehicle towards a target point on the path that is always some distance ahead of the it.
+Pure pursuit is a simple steering controller presented by Coulter \cite{Coulter_1992} that steers the vehicle towards a target point on the path that is always some distance ahead of it.
 The steering angles are based on the geometric properties of the vehicle.
 Although the method is effective at low speeds, it does not take into account a dynamic model of the vehicle, which leads to sub-optimal performance at higher speeds.
 
@@ -85,7 +85,7 @@ The approaches by Becker et al. \cite{Becker2022} and Hoffman and Montemerlo \ci
 Becker et al. \cite{Becker2022} reported a four-fold improvement in path tracking error over the pure pursuit algorithm on an F1tenth race car, while the controller by Hoffman and Montemerlo \cite{Hoffmann2007} was implemented on the winning vehicle of the DARPA Grand Challenge in 2005.
 The vehicle used by Hoffmann et al.  \cite{Hoffmann2007} is shown in Figure \ref{fig:stanley}.
 
-Model predictive control (MPC) is a state of the art classical control technique \cite{Tatulea-Codrean2020, Beal2013, Achin2021, Williams2016, Liniger2019, Brunner2018a}.
+Model predictive control (MPC) is a state-of-the-art classical control technique \cite{Tatulea-Codrean2020, Beal2013, Achin2021, Williams2016, Liniger2019, Brunner2018a}.
 When used as a path tracking controller, the objective of the MPC is to minimise the error between the vehicle's actual and planned trajectory \cite{Liniger2019}.
 However, many MPC approaches use linearised vehicle models \cite{Beal2013} because the computation requirements for an MPC that utilises a non-linear vehicle model is too demanding for hardware onboard a scaled vehicle to execute \cite{Tatulea-Codrean2020}.
 Furthermore, the MPC cost function is considered too inflexible for complex manoeuvres such as racing with multiple vehicles \cite{Fuchs2021}.
@@ -131,9 +131,9 @@ Their approach mimics an MPC expert that has access to a more expensive set of s
 By using only camera images as input to the CNN, Pan et al. \cite{Pan2017a} were able to circumvent the need for expensive LiDAR sensors.
 Furthermore, the IL algorithm performed high speed manoeuvres in a difficult off-road setting where vehicle dynamics modelling inaccuracies are likely to occur due to the difficulty of modelling the track surface.
 
-Lee et al. \cite{lee2019} used IL to to train an ensemble of Bayesian neural networks (BNNs) to create a policy that was robust to sensor failure, which was not possible with previous classical approaches. 
+Lee et al. \cite{lee2019} used IL to train an ensemble of Bayesian neural networks (BNNs) to create a policy that was robust to sensor failure, which was not possible with previous classical approaches. 
 An MPC expert was used to generate training data.
-The vehicle and track used by both Lee et al. \cite{lee2019} and Pan et al. \cite{Pan2017a} is shown in Figure \ref{fig:lee_car_track}.
+The vehicle and track used by both Lee et al. \cite{lee2019} and Pan et al. \cite{Pan2017a} are shown in Figure \ref{fig:lee_car_track}.
 
 \begin{figure}[htb!]
     \centering
@@ -166,7 +166,7 @@ Reinforcement learning is a method that aims to train decision-making agents to 
 In the context of training agents to control racing cars, RL approaches typically use DNNs to represent the decision-making policy \cite{Betz2021}. 
 DNNs offer several advantages when used within an RL framework, including the ability to map complex inputs such as camera images to control outputs \cite{hsu2022, Schwarting2021, Jaritz2018, Perot2017}, as well as the ability to sample actions with low computational cost compared to other methods such as MPC \cite{Ghignone2022}. 
 Unlike imitation learning (IL) methods, RL algorithms do not require expert training data and can find optimal strategies with minimal human intervention, making them suitable for challenging scenarios such as multi-vehicle racing \cite{Song2021, Wurman2022}. 
-Interestingly, many research efforts into RL applied to racing are focused at solving video games.
+Interestingly, many research efforts into RL applied to racing are focused on solving video games.
 
 \subsubsection*{Reinforcement learning applied to racing video games}
 
@@ -201,7 +201,7 @@ While their approach demonstrates that RL agents can learn to control vehicles w
 
 These RL techniques have shown excellent performance when applied to racing games. 
 However, they make unrealistic assumptions that render them infeasible for real-world driving scenarios.
-The most significant challenges to applying these approaches on physical vehicles are the lack of safety considerations and the availability of unrealistic input features sets.
+The most significant challenges to applying these approaches on physical vehicles are the lack of safety considerations and the availability of unrealistic input feature sets.
 
 
 \subsubsection*{Reinforcement learning applied to realistic racing scenarios}
@@ -213,7 +213,7 @@ Their model-free RL agent did not crash during training or testing with the safe
 Niu et al.'s \cite{Niu2020} approach may alleviate the sim-to-real gap by allowing an RL agent to train directly on the physical hardware without risking a crash. 
 However, their approach is not validated on a physical vehicle.
 
-The effectiveness of model-based RL in real-world applications is demonstrated by Brunbauer et al. \cite{brunnbauer2021}, who deploy an agent which learns to control the physical F1tenth vehicle shown in Figure \ref{fig:brunbauer}.
+The effectiveness of model-based RL in real-world applications is demonstrated by Brunbauer et al. \cite{brunnbauer2021}, who deploy an agent that learns to control the physical F1tenth vehicle shown in Figure \ref{fig:brunbauer}.
 Their agent learns to race using the Dreamer algorithm \cite{Hafner2019a}, whereby a learned observation model is used to predict agent-track interactions.
 The agent can then learn a policy based purely on `imagined' sequences using the observation model, without interacting with the track.
 
@@ -228,7 +228,7 @@ Hsu et al. \cite{hsu2022} deployed a model-free RL agent that takes camera image
 They apply conditioning for action policy smoothness (CAPS) \cite{Caps2021} as a policy output regularisation strategy.
 Policy output regularisation aims to prevent  jerky and extreme vehicle control actions by adding the difference between actions selected on consecutive time steps to the cost function of the policy update.
 % Reinforcement learning agents are known to take extreme control actions, such as swerving the race car unnecessarily to the left or right \cite{Brunnbauer2021a, Ghignone2022}.
-Extreme steering and acceleration control actions causes the vehicle to operate closer to the friction limits of the tires than with smooth control actions, and can lead to uncontrollable and dangerous behaviour.
+Extreme steering and acceleration control actions cause the vehicle to operate closer to the friction limits of the tires than with smooth control actions, and can lead to uncontrollable and dangerous behaviour.
 This issue becomes more pertinent when considering scenarios in which model mismatches are present \cite{Chisari2021}.
 
 Hsu et al. \cite{hsu2022} also employed domain randomisation by adding noise to the input camera images.
@@ -236,7 +236,7 @@ Domain randomisation involves varying the simulation environment slightly during
 This prevents the agent from forming a policy that overfits to a single simulation environment.
 Moreover, it is more likely that the data encountered by the agent during training includes the distribution of data encountered after deployment when domain randomisation is used \cite{Zhou2020}.
 The standard end-to-end agent's average lap completion rate, along with agents trained using solely policy output regularisation or solely domain randomisation was $0\%$. 
-However, average lap completion rate increased to $42\%$ when both domain randomisation and policy output regularisation techniques were used.
+However, the average lap completion rate increased to $42\%$ when both domain randomisation and policy output regularisation techniques were used.
 
 Ivanov et al. \cite{Ivanov2020} trained a model-free RL agent to steer the F1tenth  vehicle  shown in Figure \ref{fig:ivanov} around a corner using only a LiDAR sensor as input.
 They identified their perception model (i.e., the simulated LiDAR sensor) as a major source of uncertainty because the track reflectivity was unknown.
@@ -268,7 +268,7 @@ Furthermore, results have shown that end-to-end agents often fail under model-mi
 \label{sec:partial_end_to_end}
 
 Approaches to designing autonomous driving algorithms that synthesise the classic and end-to-end techniques are now considered. 
-In these approaches, the modular structure of classic approaches are utilised.
+In these approaches, the modular structure of classic approaches is utilised.
 However, rather than implementing techniques associated with classic approaches in each of the driving algorithm components, these components may be combined with or replaced by a DNN.
 Two popular partial end-to-end design philosophies are to use a DNN to perform the task of the planner \cite{Capo2020, Weiss2020, Weiss2020a, Mahmoud2020}, or the task of the controller \cite{Ghignone2022, Evans2021b}.
 The resulting driving software architectures are shown in Figure \ref{fig:pete}.
@@ -298,7 +298,7 @@ The resulting driving software architectures are shown in Figure \ref{fig:pete}.
 \label{sec:learned_controller}
 In the partial end-to-end configuration with a learned controller, 
 the autonomous driving system leverages classical perception and planning algorithms. 
-In this setup, a DNN serves as the controller by learning mapping between the vehicle's current state and desired state to issue actuator commands \cite{Betz2021}.
+In this setup, a DNN serves as the controller by learning the mapping between the vehicle's current state and desired state to issue actuator commands \cite{Betz2021}.
 
 Evans et al. \cite{Evans2021b}, used an RL agent to modify the control output of a pure pursuit path follower that tracks a global path, with the goal of avoiding previously unseen obstacles on the track.
 Their experiments were performed on a simulated F1tenth setup.
@@ -362,7 +362,7 @@ Furthermore, there are relatively few research efforts into partial end-to-end s
 \section{Evaluation of existing approaches}
 
 Classical approaches lead learning-based approaches in terms of real-world driving capabilities.
-The fact that several classical approaches achieve high speed control of full-size physical vehicles indicates that they are robust towards model mismatches and the sim-to-real transfer \cite{Stahl2019,Betz2019}.
+The fact that several classical approaches achieve high-speed control of full-size physical vehicles indicates that they are robust towards model mismatches and the sim-to-real transfer \cite{Stahl2019,Betz2019}.
 This robustness is achieved through the decoupling of planning and control tasks. 
 Furthermore, both planners and controllers are designed to account for uncertainty in the vehicle dynamics.
 Planners are designed to generate trajectories that conform to the physical constraints of the vehicle \cite{Heilmeier2020, Kelly2010, Stahl2019}. 
@@ -376,7 +376,7 @@ Instead, the general approach taken by end-to-end RL methods to increase robustn
 introduce slight variations to the simulation used during the training process using domain randomisation \cite{Ivanov2020, hsu2022, Chisari2021}.
 
 A popular strategy for domain randomisation is to introduce noise to the vehicle parameters \cite{Chisari2021}. 
-However, the optimal policy is highly sensitive to the vehicle model parameters, especially those pertaining to the road surface friction. 
+However, the optimal policy is highly sensitive to the vehicle model parameters, especially those pertaining to road surface friction. 
 As such, the policy discovered through domain randomisation is likely to be suboptimal for most scenarios.
 Domain randomisation is also commonly used in conjunction with policy output regularisation to smooth the control actions \cite{hsu2022, Chisari2021}.
 However, approaches that employ these techniques \cite{Ivanov2020, hsu2022, Chisari2021} still violate track boundaries, indicating that they do not guarantee the safety of the vehicle.

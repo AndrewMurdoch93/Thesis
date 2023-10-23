@@ -1,6 +1,6 @@
 \chapter{Markov decision processes}
 \label{chp:mdps}
-In this chapter we review the \emph{Markov decision process} (MDP), which is a popular mathematical framework for modelling discrete-time decision-making processes where the outcomes are partly random and partly under the control of the \emph{agent} (i.e., the decision maker).
+In this chapter, we review the \emph{Markov decision process} (MDP), which is a popular mathematical framework for modelling discrete-time decision-making processes where the outcomes are partly random and partly under the control of the \emph{agent} (i.e., the decision maker).
 MDPs are useful for studying optimisation problems whereby the goal is for the agent to learn a sequence of actions that maximise a \emph{reward} signal.
 Such optimisation problems are commonly found in the fields of robotics, automated control, and manufacturing \cite{White1985}.
 The fact that MDPs can model sequential problems is also useful for the autonomous racing problem, where the outcome of the race is determined by a sequence of control actions, and the exact vehicle dynamics model is not known.
@@ -84,7 +84,7 @@ q_\pi(s,a) = \mathbb{E}_{\pi} [R_{t+1} + \gamma q_{\pi}(S_{t+1}, A_{t+1}) | S_t 
 \label{eq:q_pi(s,a)_1}
 \end{equation}
 According to this equation, the policy and action-values are linked. 
-Hence, better policies results in higher action-values.
+Hence, better policies result in higher action-values.
 A policy $\pi$ is considered better than policy $\pi'$ if its expected return is greater than that of $\pi'$ for all states, 
 \begin{equation}\label{eq:better_policy_cond}
     q_\pi(s,a) \geq q_{\pi'}(s,a) \text{ for all } s \in \mathcal{S} \text{ and } a \in \mathcal{A}.
@@ -106,7 +106,7 @@ This section introduces the simplest tabular RL method, known as Sarsa.
 Tabular methods are suitable to solve problems in which the state and action spaces are (a) discrete, and (b) small enough for the action-value function to be represented as a table wherein each entry corresponds to a state-action pair (i.e., a state, and an action available to the agent in that state).
 Sarsa will serve as the basis for understanding more complex algorithms applied to continuous state and action spaces.
 
-All model-free reinforcement learning techniques solve the MDP and formulate an optimal policy $\pi_*$ by iteratively improving the current policy $\pi$ with respect to the action-value function $q_\pi$ in a two step process known as \emph{policy iteration}.
+All model-free reinforcement learning techniques solve the MDP and formulate an optimal policy $\pi_*$ by iteratively improving the current policy $\pi$ with respect to the action-value function $q_\pi$ in a two-step process known as \emph{policy iteration}.
 The two steps in this process are (a) policy evaluation and (b) policy improvement.
 \emph{Temporal difference} methods such as Sarsa execute these two steps at every MDP time step.
 
@@ -123,7 +123,7 @@ Temporal difference methods such as Sarsa use the definition of the return given
 \end{equation}
 
 During the policy improvement step, the policy is made better according to the condition in Equation \ref{eq:better_policy_cond}.
-Sarsa accomplishes this using $\epsilon$-\emph{greedy} policy improvement, by which the policy is updated so that the agent chooses the action associated with the maximum action-value a fraction of the time, and otherwise selects a exploratory (i.e., random) action: 
+Sarsa accomplishes this using $\epsilon$-\emph{greedy} policy improvement, by which the policy is updated so that the agent chooses the action associated with the maximum action-value a fraction of the time, and otherwise selects an exploratory (i.e., random) action: 
 \begin{equation}
     \pi'(s) = 
     \begin{cases}
@@ -131,14 +131,14 @@ Sarsa accomplishes this using $\epsilon$-\emph{greedy} policy improvement, by wh
     \frac{\epsilon}{m} & \text{otherwise,}
     \end{cases}
 \end{equation}
-where $\epsilon$ is the fraction of time that the agent selects an exploratory action.
+where $\epsilon$ is the fraction of the time that the agent selects an exploratory action.
 According to Silver's  $\epsilon$-greedy policy improvement theorem \cite{silver2015}, the new policy (i.e., the one based on the updated action-value estimate) is a guaranteed improvement over the old policy.
-Furthermore, the policy selects the best actions according to the current action-value estimates most of the time, while allowing the agent explore the state space.
+Furthermore, the policy selects the best actions according to the current action-value estimates most of the time, while allowing the agent to explore the state space.
 
 Once the new policy is generated, the action-value function is outdated and must be estimated again,
 hence the policy iterates. 
 Ideally, the action-value function improves until it converges on the optimal action-value function according to Equation \ref{eq:q_*(s,a)}.
-In practice however, the number of iterations is limited. 
+In practice, however, the number of iterations is limited. 
 This limit can be specified by the number of episodes or MDP time steps.
 
 The pseudocode for Sarsa is shown in Algorithm \ref{alg:sarsa}.

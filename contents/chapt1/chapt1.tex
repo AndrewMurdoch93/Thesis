@@ -5,20 +5,20 @@ Autonomous cars have the potential to revolutionise transportation by providing 
 These vehicles could (a) increase the independence of those who are incapable of driving, (b) reduce the number of road accidents caused by driver negligence, and (c) reduce both road congestion and pollution by optimising routes and driving style. 
 These are just a few ways in which autonomous cars are expected to impact our daily lives \cite{klaver}. 
 
-There are numerous challenges to the large scale deployment of road-going autonomous cars. 
-In particular, public roads are an unpredictable environment, and autonomous cars face a wide variety of scenarios which are difficult to program for.
-There are many edge cases which will require the vehicle to not only respond quickly, but also operate at its handling limits to ensure the safety of its occupants.
+There are numerous challenges to the large-scale deployment of road-going autonomous cars. 
+In particular, public roads are an unpredictable environment, and autonomous cars face a wide variety of scenarios that are difficult to program for.
+There are many edge cases that will require the vehicle to not only respond quickly, but also operate at its handling limits to ensure the safety of its occupants.
 An example of such a scenario is avoiding a collision \cite{Barab_s_2017}. 
 
 The emergence of autonomous racing as a research field stems from the need to design autonomous driving solutions that address these edge cases.
 Racing leagues such as Formula Student Driverless \cite{Hanqing2018}, Indy Autonomous Challenge \cite{Wischnewski2022} and F1tenth \cite{Babu2020} provide competitive environments for teams to develop autonomous algorithms that operate vehicles at the edge of their handling limits.
-In particular, F1tenth scaled racing cars, shown in Figure \ref{fig:f1tenth_car}, are an ideal research platform due to their standardised hardware requirements and well developed simulators.
+In particular, F1tenth scaled racing cars, shown in Figure \ref{fig:f1tenth_car}, is an ideal research platform due to their standardised hardware requirements and well-developed simulators.
 % Furthermore, the similarity of racing and road-going scenarios allows developments in \cite{Weiss2020a}.
 
 \begin{figure}[htb]
 \centering
   \includegraphics[width=.4\textwidth]{contents/chapt1/figs/f1tenth_car.png}
-  \captionof{figure}[The F1tenth standard racecar]{The F1tenth standard vehicle, built on the chassis of a miniature RC car \cite{f1tenth}.}
+  \captionof{figure}[The F1tenth standard racecar]{A standard F1tenth vehicle, built on the chassis of a miniature RC car \cite{f1tenth}.}
   \label{fig:f1tenth_car}
 \end{figure}
 
@@ -26,11 +26,11 @@ In particular, F1tenth scaled racing cars, shown in Figure \ref{fig:f1tenth_car}
 
 Racing vehicles such as F1tenth cars are equipped with light detection and ranging (LiDAR) scanners, inertial measurement units (IMU) and rotational encoders.
 Autonomous racing algorithms must convert data from these sensors into steering and throttle actuator commands  that safely move a vehicle around a track in the shortest possible time.
-Therefore, these algorithms most optimise for two objectives;
+Therefore, these algorithms must optimise for two objectives;
 (a) performance, i.e., operating the vehicle at the handling limits to achieve the fastest lap time, and (b) safety, which is to ensure that the vehicle does not collide with the track boundary or obstacles such as other cars.
 These two objectives are inherently in conflict with each other because operating the vehicle close to its handling limit increases the risk of losing control \cite{Betz2021}.
 
-A recent breakthrough in autonomous racing was the introduction of learning based solutions, such as reinforcement learning (RL) for vehicle control.
+A recent breakthrough in autonomous racing was the introduction of learning-based solutions, such as reinforcement learning (RL) for vehicle control.
 Reinforcement learning is a machine learning paradigm where an agent learns to make sequential decisions by interacting with an environment to maximize cumulative rewards.
 By setting up a reward signal that is maximised through fast and safe lap completion, RL agents can learn to race effectively.
 Interestingly, RL algorithms are commonly implemented within an end-to-end architecture, whereby a deep neural network (DNN) is trained to map sensor data directly to actuator commands \cite{Betz2021}.
@@ -49,31 +49,7 @@ It is imperative that autonomous vehicles exhibit robustness towards modeling er
 
 Research efforts into addressing this challenge in RL approaches have largely been limited to modifying the DNN training process.
 For example, \emph{sim-to-real} best practices include randomising vehicle model parameters during training \cite{Ivanov2020}, or retraining the DNN after deployment \cite{Zhou2020}.
-Despite these efforts, the performance of learning-based methods are still negatively affected when there is model mismatch present \cite{hsu2022}.
-% As such, RL approaches for vehicle control lag behind classical approaches in terms of their robustness towards model mismatch \cite{Chisari2021}.
-
-
-% This thesis aims to improve the performance of learning-based algorithms where practical model mismatches are present.
-
-% A large part of the difficulty is that DRL techniques rely on an assumed vehicle dynamics model to train the neural network.
-% However, this vehicle model is only an approximation of the real system dynamics. 
-% Discrepancies always exist between the simulated and actual vehicle dynamics due to the difficulty of measuring the model parameters \cite{Hewing2018}. 
-% These model inaccuracies cause a degradation in algorithm performance during physical deployment that can have catastrophic consequences.
-% This is known as the \emph{sim2real} gap \cite{Ivanov2020}.
-
-% % Research efforts into addressing the sim2real gap in learning-based approaches have largely been limited to modifying the training process to account for vehicle model uncertainty.
-% % For example, sim2real best practices include randomising vehicle model parameters during training, or retraining the neural network after deployment \cite{Zhou2020}.
-
-% A promising method to address the sim2real issues of current learning-based solutions is to include ideas from classical approaches. 
-% Classical architectures decouple the driving task into a series of modules with specific functions.
-% The task of planning a desired path and velocity profile (i.e., trajectory planning), and ensuring that the vehicle follows that trajectory (i.e., control) are handled separately. 
-% Well designed control algorithms allow classical approaches to overcome the sim2real gap by minimising the the error between the actual and planned trajectory \cite{Betz2021}. 
-
-% Approaches that synthesise classical and end-to-end architectures are known as partial end-to-end.
-% These approaches utilise the modularised structure of the classical architecture, but combine or replace modules with a neural network \cite{Weiss2020}.
-% Thus, partial end-to-end approaches leverage the reliability provided by the structure of classic approaches while benefitting from the heuristic nature of learning algorithms.
-% However, there are relatively few research efforts related to this architecture.
-% Furthermore, the use of this architecture to address the sim2real gap remains unexplored.
+Despite these efforts, the performance of learning-based methods is still negatively affected when there is model mismatch present \cite{hsu2022}.
 
 
 \section{Aims and objectives}\label{sec:objectives}
@@ -84,7 +60,7 @@ The racing scenario that we consider is a single-vehicle time trial, whereby the
 Furthermore, our proposed solution should be compared to current RL solutions for autonomous racing.
 Therefore, our objectives are stated as:
 \begin{enumerate}
-    \item Investigate the literature regarding methods for developing autonomous racing algorithms, with focus on methods that are robust to vehicle modelling error.
+    \item Investigate the literature regarding methods for developing autonomous racing algorithms, with a focus on methods that are robust to vehicle modelling error.
     % \item Derive a suitable vehicle dynamics model that captures dynamics close to the edge of the handling limit.
     % \item Identify and implement an appropriate simulation that captures vehicle dynamics close to the edge of the handling limit.
     \item Identify and implement an appropriate baseline reinforcement learning autonomous racing algorithm.
@@ -93,33 +69,20 @@ Therefore, our objectives are stated as:
 \end{enumerate}
 
 
-% \section{Solution overview}\label{sec:Solution_overview}
-
-% To address the challenge of , we propose a \emph{partial end-to-end} reinforcement learning algorithm which decouples the planning and control tasks. 
-% Within this framework, a reinforcement learning (RL) agent generates a trajectory comprising a path and velocity, which is subsequently tracked using a pure pursuit steering controller and a proportional velocity controller, respectively.
-% Current RL approaches lack the incorporation of insights from classical approaches to create algorithms that are robust to model-mismatch. 
-% While classical approaches decouple the planning and control tasks, learning-based systems are most commonly implemented end-to-end. 
-% Although there are some research efforts into partial end-to-end systems that decouple planning and control, the idea of utilizing classical controllers within a partial end-to-end system to increase robustness towards model-mismatch is a gap in the literature that the authors aim to address.
-
-% To determine whether the performance of current learning-based (i.e., end-to-end) systems can be improved by combining an RL planner and classic controller, the thesis will cover the theoretical foundations of RL agents, the development and implementation of a partial end-to-end system, as well as an end-to-end system. 
-% Furthermore, the thesis will compare the performance of these two systems under practical model-mismatch conditions. 
-% This research seeks to contribute to the existing literature by providing insight into the potential benefits of using partial end-to-end systems over current end-to-end systems.
-
-
 
 \section{Document outline}\label{sec:outline}
 
 Chapter \ref{chp:litreview} constitutes an overview of the existing approaches to solving the autonomous racing problem in literature.
 A variety of classical and learning-based solutions are discussed, with a focus on how these methods handle uncertainty in the vehicle model.
-We identify a suitable research avenue in methods that seek to unify ideas from classical and learning based approaches by utilising a DNN within a classical (i.e., decoupled) structure.
+We identify a suitable research avenue in methods that seek to unify ideas from classical and learning-based approaches by utilising a DNN within a classical (i.e., decoupled) structure.
 Methods that utilise this approach are known as \emph{partial end-to-end}.
 
 The literature study is followed with the an overview of the necessary theory to understand reinforcement learning in Chapter \ref{chp:rl}.
-An essential component in training a reinforcement learning algorithm to complete a robotic task is a realsitic simulator.
+An essential component in training a reinforcement learning algorithm to complete a robotic task is a realistic simulator.
 As such, Chapter \ref{chp:modelling} describes how the racing environment was modelled in a suitable custom F1tenth simulator.
 
 Chapter \ref{chp:end_to_end_autonomous_racing} the baseline end-to-end RL solution, as well as the techniques for applying an RL algorithm to solve the racing problem.
-This end-to-end algorithm is extensiely evaluated in racing conditions where no model mismatch is present.
+This end-to-end algorithm is extensively evaluated in racing conditions where no model mismatch is present.
 Furthermore, the effectiveness of \emph{sim-to-real} techniques for end-to-end methods in the context of autonomous racing is investigated.
 
 Chapter \ref{chp:partial_end_to_end_autonomous_racing} describes our partial end-to-end solution to the autonomous racing problem.

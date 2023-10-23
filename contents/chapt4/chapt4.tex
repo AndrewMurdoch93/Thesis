@@ -10,11 +10,11 @@ An overview of the vehicle dynamics is then given, after which our autonomous ra
 \section{Requirements of F1tenth autonomous racing}\label{sec:f1tenth_requirements}
 
 
-We have chosen to model an F1tenth race setting because it is a well researched platform with a standardised vehicle model and hardware requirements.
-F1tenth racing utilises one-tenth scale remote control (RC) car chassis as a vehicle platform.
+We have chosen to model an F1tenth race setting because it is a well-researched platform with a standardised vehicle model and hardware requirements.
+F1tenth racing utilises a one-tenth scale remote control (RC) car chassis as a vehicle platform.
 An example of an F1tenth vehicle is shown in Figure \ref{fig:sim_vehicle}.
-These vehicles are equipped with all the elements that are necessary for autonomous navigation, including a front facing LiDAR sensor, an Nvidea Jetson module for on-board computing, a servo motor for controlling the front wheels, and a DC motor for controlling the rear wheels.
-The front wheels are only used for steering, while the rear-wheels are driven.
+These vehicles are equipped with all the elements that are necessary for autonomous navigation, including a front-facing LiDAR sensor, an Nvidea Jetson module for on-board computing, a servo motor for controlling the front wheels, and a DC motor for controlling the rear wheels.
+The front wheels are only used for steering, while the rear wheels are driven.
 However, the standardised F1tenth simulator is incompatible with fully end-to-end systems due to its inclusion of a velocity controller.
 We therefore chose to develop an in-house simulator that excludes the velocity controller, which allows us to compare our system to a fully end-to-end system.
 
@@ -38,11 +38,11 @@ We also operate under the assumption that the track is known.
 We start the discussion of our simulator by detailing the vehicle dynamics model that was utilised to accurately represent the motion of the vehicle.
 An F1tenth vehicle was modelled using the single-track bicycle model by  Altoff and  W\"{u}rshing \cite{Althoff2020}.
 This model takes vehicle slipping into account, and is accurate even when the vehicle is driven close to its handling limits, thus making it suitable for the racing context.
-The basic assumptions of the model are that the car is a rigid body, with the two front wheels consolidated into a central wheel. 
+The basic assumption of the model is that the car is a rigid body, with the two front wheels consolidated into a central wheel. 
 Similarly, the rear wheels are also consolidated into a single center wheel. 
 
 
-Furthermore, the model discretises time, such that each time step $k$ is $\Delta t$ secnods long:
+Furthermore, the model discretises time, such that each time step $k$ is $\Delta t$ seconds long:
 \begin{equation}
     t = k \cdot \Delta t,
 \end{equation}
@@ -70,7 +70,7 @@ The aforementioned state variables and control inputs in illustrated in Figure \
 \begin{figure}[htb!]
     \centering
     \input{contents/chapt4/figs/single_track_model.pdf_tex}
-    \caption[The single tack vehicle dynamics model]{The single-track vehicle dynamics model with state variables. The centre of gravity (CoG) is depicted as being $l_f$ m away from the front axle, and $l_r$ m from the rear axle. Furthermore, the longitude and latitude axes are parallel and perpendicular to the forward direction.}
+    \caption[The single track vehicle dynamics model]{The single-track vehicle dynamics model with state variables. The centre of gravity (CoG) is depicted as being $l_f$ m away from the front axle, and $l_r$ m from the rear axle. Furthermore, the longitude and latitude axes are parallel and perpendicular to the forward direction.}
     \label{fig:vehicle_dynamics_model}
 \end{figure}
 
@@ -206,7 +206,7 @@ and the kinetic bicycle model $f_2(\mathbf{x}, \mathbf{u})$ by
 \end{split}
 \end{equation}
 where $m$ is the vehicle mass, $I_z$ is the moment of inertia about the $z$ axis of the vehicle (i.e., a vertical axis that passes through the CoG), $l_f$ is the distance from the CoG to the front axle, $l_r$ is the distance from the CoG to the rear axle, and $h_{cg}$ is the height of CoG.
-Furthermore, the parameters $C_{S,f}$ and $C_{S,r}$ are the cornering stiffness coefficients of the the front and rear tires, respectively.
+Furthermore, the parameters $C_{S,f}$ and $C_{S,r}$ are the cornering stiffness coefficients of the front and rear tires, respectively.
 The tire cornering stiffness coefficient is the ratio between the lateral force acting on the tire, and its slip angle, which is the angle between the direction the wheel is pointing, and its direction of travel.
 Additionally, the road surface friction is denoted $\mu$.
 The values for these vehicle parameters were identified for a standard F1tenth vehicle \cite{f1tenth}, and are summarised in Table \ref{tab:vehicle_parameters}. 
@@ -231,7 +231,7 @@ The vehicle single track vehicle dynamics model discussed in Section \ref{sec:si
 that adheres to the rules specified in Section \ref{sec:f1tenth_requirements}. 
 The simulator runs an initialisation procedure at the start of each episode, after which it is sampled at every time step.
 Algorithm \ref{alg:simulator_start} details the procedure that the simulator executes at the beginning of an episode.
-This procedure takes as input a bird's-eye image of the racetrack, as well as the coordinates, velocity and heading at which to initialise the vehicle. 
+This procedure takes as input a bird's-eye image of the racetrack, as well as the coordinates, velocity, and heading at which to initialise the vehicle. 
 
 In line 1 of the episode start procedure, the simulator generates an occupancy grid from the provided image. 
 The occupancy grid is represented as a binary array, with each element corresponding to a specific coordinate on the track. 
@@ -240,13 +240,13 @@ This occupancy grid is used to detect whether the vehicle has collided with the 
 \input{contents/chapt4/figs/simulator_start.tex}
 
 Once the occupancy grid is generated, the simulator proceeds to determine the centerline of the track. 
-The centerline refers to a line that stretches around the track, and maintains an equal distance from either side of the track boundaries. 
+The centerline refers to a line that stretches around the track and maintains an equal distance from either side of the track boundaries. 
 To represent the centerline, a cubic spline \cite{Sakai2018} is employed.
 
 Subsequently, the vehicle is initialized with an $x$ and $y$ coordinate, velocity, as well as heading.
 Typically, this involves selecting a random point along the length of the centerline and applying a small offset in the $x$ and $y$ directions. 
 The remaining state variables (i.e., the steering angle, heading rate and slip angle) are initialised with a zero value.
-Following this, the start and finish line are defined as perpendicular to the track's centerline, intersecting with the initial coordinates of the vehicle.
+Following this, the start and finish lines are defined as perpendicular to the track's centerline, intersecting with the initial coordinates of the vehicle.
 
 
 Once initialised, the simulator is sampled at discrete time steps to forward simulate the vehicle dynamics according to the control inputs.
@@ -285,7 +285,7 @@ When simulating these dynamics, we abstract the longitudinal acceleration contro
 so long as the desired rate is within the bounds of the upper and lower acceleration limits specified by Equation \ref{eq:accl_constraint}.
 The desired acceleration $a_{\text{long},d}$ then serves as the control input $a_{\text{long}}$ to the state space model. 
 However, the steering dynamics are not abstracted.
-Instead, the rate of change of steering angle by steering servo motor calculated as
+Instead, the rate of change of steering angle by steering servo motor is calculated as
 \begin{equation}
     \dot{\delta} = \frac{\delta_d - \delta}{|\delta_d - \delta|} \overline{\dot{\delta}}.
 \label{eq:sim_servo}
@@ -294,7 +294,7 @@ The constraints from Equation \ref{eq:vehicle_control_actions} are applied to th
 after which Equations \ref{eq:state_equation_cases} and \ref{eq:euler} are used to calculate the new state in line 2. 
 
 After updating the state using the state space model, we generate the LiDAR scan and sample from the state variables to create the observation.
-The simulator then checks the vehicle position against the occupancy grid to see if a collision has occurred.
+The simulator then checks the vehicle's position against the occupancy grid to see if a collision has occurred.
 If the vehicle has collided with the track boundary, a terminal state is reached and the episode ends.
 Additionally, the episode also ends if the vehicle has completed one lap.
 To ascertain whether a lap is complete, we calculate the distance travelled from the start along the centerline between the subsequent previous time step as
@@ -323,7 +323,7 @@ This chapter introduced the racing scenario, vehicle modelling, as well as simul
 By allowing F1tenth vehicles to race alone on the track, the setting that we consider provides an opportunity for autonomous racing algorithms to compete in a time-trial style environment.
 Furthermore, the F1tenth vehicle is modelled using single-track bicycle dynamics by Altoff and  W\"{u}rshing \cite{Althoff2020}, which accurately predicts the motion of the vehicle close to the handling limits.
 The dynamics model is incorporated into a simulator that encompasses both the race car dynamics and the track environment. 
-By discretizing time, the simulator conforms to the time discrete framework of the MDP. 
+By discretizing time, the simulator conforms to the time-discrete framework of the MDP. 
 At each time step, the simulation receives a control input from the autonomous racing algorithm and generates an observation corresponding to the updated state of the environment. 
 
 Approaches to solving the autonomous racing problem that utilise an end-to-end design have an agent whose inputs and outputs
