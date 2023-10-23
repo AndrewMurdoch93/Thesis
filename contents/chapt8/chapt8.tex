@@ -37,7 +37,7 @@ Within the partial end-to-end framework, an RL agent generates a trajectory comp
 To facilitate path generation, we allowed agents to select the constraints of a cubic polynomial function in the Frenet frame, enabling the consistent  generation of smooth and continuous paths.
 
 
-By specifying the path within the Frenet frame, partial end-to-end agents were able to execute smooth trajectories, and also constrained the agents to select paths that remained within the track boundaries. 
+By specifying the path within the Frenet frame, partial end-to-end agents were able to execute smooth trajectories and also constrained the agents to select paths that remained within the track boundaries. 
 As a result, training time was reduced significantly, and the number of collisions during training was minimal compared to end-to-end agents.
 Additionally, the partial end-to-end agents successfully completed all evaluation laps under conditions where no model mismatch was present, even on complex circuits such as Barcelona-Catalunya and Monaco. 
 Thus, even under nominal conditions, partial end-to-end agents demonstrated substantial advantages over their end-to-end counterparts.
@@ -45,8 +45,8 @@ Thus, even under nominal conditions, partial end-to-end agents demonstrated subs
 
 Following the evaluation of the partial end-to-end algorithm under ideal conditions, we examined its performance in scenarios involving practical model mismatches. 
 These investigations specifically considered model mismatches in the vehicle mass, cornering stiffness coefficient, and road surface friction coefficient.
-In each of the model mismatch scenarios analyzed, the partial end-to-end agent consistently outperformed the baseline end-to-end agent. 
-Notably, the partial end-to-end agents exhibited similar trajectories prior to and following the introduction of model mismatches. 
+In each of the model mismatch scenarios analysed the partial end-to-end agent consistently outperformed the baseline end-to-end agent. 
+Notably, the partial end-to-end agents exhibited similar trajectories before and following the introduction of model mismatches. 
 This trend was particularly evident when model mismatches related to the vehicle mass and cornering stiffness were considered.
 The decoupling of trajectory generation and control, combined with the use of feedback controllers, therefore offers better performance than an end-to-end approach to vehicle control in model mismatch conditions.
 
@@ -68,9 +68,9 @@ Consequently, it may lead to consistent planning behavior across a fleet of vehi
 
 Learning-based algorithms are gaining popularity in road-going production cars due to their scalability.
 These algorithms present a promising future, in which people who are incapable of driving have access to their own transportation, 
-the number of road accidents are reduced, and road conjestion is eased due to the optimised driving style of the algorithms.
+the number of road accidents is reduced, and road congestion is eased due to the optimised driving style of the algorithms.
 However, there are numerous challenges to the deployment of production vehicles.
 One of these challenges is to ensure that learning-based driving algorithms are robust towards the sim-to-real gap.
-This includes robustness towards towards practical model mismatches.
+This includes robustness towards practical model mismatches.
 In this project, we have shown that partial end-to-end solution methods for autonomous driving present a promising solution method for handling scenarios in which model mismatches are present.
 

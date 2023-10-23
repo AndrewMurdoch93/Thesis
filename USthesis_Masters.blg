@@ -15,9 +15,9 @@ A level-1 auxiliary file: contents/chapt8/chapt8.aux
 A level-1 auxiliary file: contents/appendix/App1.aux
 Database file #1: backmatter/library_1.bib
 Warning--I'm ignoring Chisari2021's extra "url" field
---line 2364 of file backmatter/library_1.bib
+--line 4727 of file backmatter/library_1.bib
 Warning--I'm ignoring keefer2022's extra "title" field
---line 4601 of file backmatter/library_1.bib
+--line 9201 of file backmatter/library_1.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Warning--empty journal in brunnbauer2021
