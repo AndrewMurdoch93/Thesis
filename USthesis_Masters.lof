@@ -43,7 +43,7 @@
 \contentsline {figure}{\numberline {5.14}{\ignorespaces Learning curves of agents with different numbers of LiDAR beams during training}}{47}{figure.caption.59}%
 \contentsline {figure}{\numberline {5.15}{\ignorespaces Path and velocity profiles of end-to-end agents that were trained with and without noise added to the observation vector}}{48}{figure.caption.60}%
 \contentsline {figure}{\numberline {5.16}{\ignorespaces Learning curves for tuning the target update rate}}{49}{figure.caption.61}%
-\contentsline {figure}{\numberline {5.17}{\ignorespaces The velocity profile and slip angle of agents with different maximum velocities during one test lap.}}{50}{figure.caption.63}%
+\contentsline {figure}{\numberline {5.17}{\ignorespaces The velocity profile and slip angle of agents with different maximum velocities during one test lap.\relax }}{50}{figure.caption.63}%
 \contentsline {figure}{\numberline {5.18}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Porto}}{51}{figure.caption.64}%
 \contentsline {figure}{\numberline {5.19}{\ignorespaces Learning curves for end-to-end agents trained and tested on Porto, Circuit de Barcelona-Catalunya and Circuit de Monaco}}{51}{figure.caption.65}%
 \contentsline {figure}{\numberline {5.20}{\ignorespaces The path and velocity profile taken by an end-to-end agent completing Circuit de Barcelona-Catalunya}}{52}{figure.caption.66}%
@@ -62,7 +62,7 @@
 \contentsline {figure}{\numberline {6.9}{\ignorespaces The path driven by a partial end-to-end agent on a section of Circuit de Barcelona-Catalunya}}{65}{figure.caption.79}%
 \contentsline {figure}{\numberline {6.10}{\ignorespaces Paths taken by partial end-to-end agents utilising controller gain ($k_v$) values of $0.5$, $1$ and $2$ on the final section of Barcelona-Catalunya}}{67}{figure.caption.81}%
 \contentsline {figure}{\numberline {6.11}{\ignorespaces Learning curves of partial and fully end-to-end agents trained to race on the Porto and Monaco tracks}}{67}{figure.caption.82}%
-\contentsline {figure}{\numberline {6.12}{\ignorespaces Locations where the end-to-end and partial end-to-end agents crashed during training.}}{68}{figure.caption.83}%
+\contentsline {figure}{\numberline {6.12}{\ignorespaces Locations where the end-to-end and partial end-to-end agents crashed during training.\relax }}{68}{figure.caption.83}%
 \contentsline {figure}{\numberline {6.13}{\ignorespaces Distribution of percentage successful laps completed by agents under evaluation conditions}}{69}{figure.caption.85}%
 \contentsline {figure}{\numberline {6.14}{\ignorespaces The path and velocity profile taken by a partial end-to-end agent completing Circuit de Barcelona-Catalunya}}{69}{figure.caption.86}%
 \contentsline {figure}{\numberline {6.15}{\ignorespaces The path and velocity profile taken by a partial end-to-end agent completing Circuit de Monaco}}{70}{figure.caption.87}%

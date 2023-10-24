@@ -19,12 +19,12 @@
     Exploration noise standard deviation    & $\sigma_{\text{action}}$  & $0.1$             & $0.1$ \\
     Reward discount rate                    & $\gamma$                  & $0.99$            & $0.99$ \\
     Agent samples between network updates   & $d$                       & $2$               & $2$ \\
-    Agent sample rate                       & $f_{\text{agent}}$        & $5$ Hz            & $5$ Hz \\
+    Agent sample rate                       & $f_{\text{agent}}$        & $10$ Hz           & $10$ Hz \\
     Target action noise standard deviation  & $\tilde{\sigma}$          & $0.2$             & $0.2$ \\ 
     Target action noise clip                & $c$                       & $0.5$             & $0.5$ \\
     \textbf{Reward signal}                  &                           &                   & \\
-    Distance reward                         & $r_{\text{dist}}$         & $0.2$             & $0.2$  \\ 
-    Time step penalty                       & $r_{\text{time}}$         & $0.01$            & $0.01$ \\
+    Distance reward                         & $r_{\text{dist}}$         & $0.2$             & $0.25$  \\ 
+    Time step penalty                       & $r_{\text{time}}$         & $-0.01$            & $-0.01$ \\
     Collision penalty                       & $r_{\text{collision}}$    & $-5$              & $-5$ \\
     \textbf{Observation}                    &                           &                   & \\
     Number of LiDAR beams                   & L                         & 20                & 20 \\
